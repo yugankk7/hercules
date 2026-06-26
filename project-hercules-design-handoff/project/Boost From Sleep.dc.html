@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes gateIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.78)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes scoreIn{0%{opacity:0;filter:blur(18px);transform:translateY(16px) scale(1.18)}60%{opacity:1;filter:blur(0)}100%{opacity:1;filter:blur(0);transform:translateY(0) scale(1)}}
+  @keyframes revealUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+<meta name="design_doc_mode" content="canvas">
+</helmet>
+
+<!-- ============ FRAME 1 — FULL FORECAST ============ -->
+<div style="position:absolute;left:0;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">01 · FULL FORECAST</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Boost — Full" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 34px;display:flex;flex-direction:column;gap:20px;overflow:hidden">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">BOOST FROM SLEEP</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">YESTERDAY · WED 23</div>
+        </div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:10px;font-weight:700;letter-spacing:1px">
+          <div style="{{ dayTabStyle }}" onClick="{{ setDay }}">DAY</div>
+          <div style="{{ wkTabStyle }}" onClick="{{ setWk }}">WK</div>
+        </div>
+      </div>
+
+      <sc-if value="{{ isDay }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:20px">
+
+      <!-- forecast subbar -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;border-top:1px solid #16242C;border-bottom:1px solid #16242C;padding:9px 0;color:rgba(234,236,240,0.5);font-size:9.5px;font-weight:600;letter-spacing:2px">
+        <span style="width:14px;height:14px;border:1px solid #5E7280;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#5E7280">i</span>FORECAST FOR THE DAY
+      </div>
+
+      <!-- HERO SCORE -->
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:4px">
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:3px;color:rgba(234,236,240,0.45);margin-bottom:2px">BOOST</div>
+          <div style="display:flex;align-items:flex-start">
+            <span style="font-size:108px;font-weight:800;color:#FE7F2D;line-height:0.78;letter-spacing:-5px;display:inline-block;transform-origin:left center;animation:scoreIn .9s cubic-bezier(.2,.9,.25,1) both">{{ score }}</span>
+            <span style="font-size:26px;font-weight:600;color:#5E7280;margin-top:8px;margin-left:5px;animation:revealUp .5s ease .55s both">/10</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:9px;padding-bottom:6px">
+          <div style="border:1.5px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:2.5px;animation:revealUp .5s ease .65s both">FAIR</div>
+          <div style="font-size:9.5px;font-weight:500;letter-spacing:1px;color:rgba(234,236,240,0.4);text-align:right;max-width:96px;animation:revealUp .5s ease .8s both">DECENT REST,<br>STEADY DAY AHEAD</div>
+        </div>
+      </div>
+
+      <!-- HOURLY BOOST STRIP -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">HOURLY BOOST</div>
+          <div style="display:flex;gap:11px;font-size:8.5px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.5)">
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;background:#FE7F2D;border-radius:1px"></span>ALERT</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;background:#3A5160;border-radius:1px"></span>LOW</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border:1px dashed #FE7F2D;border-radius:2px"></span>GATE</span>
+          </div>
+        </div>
+
+        <!-- marker track -->
+        <div style="position:relative;height:18px;margin-bottom:5px">
+          <div style="position:absolute;left:0;top:0;display:flex;align-items:center;gap:5px;font-size:8.5px;font-weight:700;letter-spacing:0.5px;color:#EAECF0">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5.5" cy="5.5" r="2.4" stroke="#FE7F2D" stroke-width="1.1"/><path d="M5.5.6V2M5.5 9v1.4M.6 5.5H2M9 5.5h1.4M2 2l1 1M8 8l1 1M9 2L8 3M3 8l-1 1" stroke="#FE7F2D" stroke-width="1.1" stroke-linecap="round"/></svg>WAKE 10:12
+          </div>
+          <div style="position:absolute;right:0;top:0;display:flex;align-items:center;gap:5px;font-size:8.5px;font-weight:700;letter-spacing:0.5px;color:#FE7F2D">GATE 02:00–02:30 ▸</div>
+        </div>
+
+        <!-- bars -->
+        <div style="position:relative;height:132px">
+          <div style="position:absolute;top:-6px;bottom:0;left:84%;width:6%;background:rgba(254,127,45,0.12);border-left:1px dashed rgba(254,127,45,0.6);border-right:1px dashed rgba(254,127,45,0.6);animation:gateIn .5s ease 1.45s both"></div>
+          <div style="display:flex;align-items:flex-end;gap:3px;height:100%;position:relative;z-index:1">
+            <sc-for list="{{ bars }}" as="b" hint-placeholder-count="19">
+              <div style="{{ b.style }}"></div>
+            </sc-for>
+          </div>
+          <!-- sleep window: opens at the gate, fades toward morning -->
+          <div style="position:absolute;left:84%;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,#FE7F2D,rgba(254,127,45,0));border-radius:2px;z-index:2;animation:revealUp .5s ease 1.55s both"></div>
+          <div style="position:absolute;left:82.5%;bottom:-4px;width:9px;height:9px;border-radius:999px;background:#FE7F2D;border:2px solid #000;z-index:3;animation:gateIn .4s ease 1.55s both"></div>
+        </div>
+
+        <!-- hour axis -->
+        <div style="display:flex;gap:3px;margin-top:7px">
+          <sc-for list="{{ bars }}" as="b" hint-placeholder-count="19">
+            <div style="flex:1;text-align:center;font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.35)">{{ b.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- SECONDARY STAT ROW -->
+      <div style="display:flex;border-top:1px solid #16242C;padding-top:15px">
+        <div style="flex:1;border-right:1px solid #16242C;padding-right:8px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">INERTIA</div>
+          <div style="font-size:19px;font-weight:700;margin-top:5px;color:#FE7F2D">MILD</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">DURATION</div>
+          <div style="font-size:19px;font-weight:700;margin-top:5px">7<span style="font-size:12px;font-weight:600;color:#5E7280">H</span>19<span style="font-size:12px;font-weight:600;color:#5E7280">M</span></div>
+        </div>
+        <div style="flex:1.2;padding-left:8px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">SLEEP BLOCK</div>
+          <div style="font-size:15px;font-weight:700;margin-top:7px">02:53<span style="color:#5E7280">–</span>10:12</div>
+        </div>
+      </div>
+
+      <!-- 28-DAY TREND -->
+      <div style="background:#0E1B22;border:1px solid #16242C;border-radius:14px;padding:13px 15px 15px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">28-DAY BOOST</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:#5E7280">AVG <span style="color:#EAECF0">7.4</span></div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:2px;height:44px">
+          <sc-for list="{{ trend }}" as="t" hint-placeholder-count="28">
+            <div style="{{ t.style }}"></div>
+          </sc-for>
+        </div>
+      </div>
+
+      </div>
+      </sc-if>
+
+      <!-- WEEK VIEW -->
+      <sc-if value="{{ isWk }}">
+      <div style="display:flex;flex-direction:column;animation:fadeUp .3s ease both">
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;border-top:1px solid #16242C;border-bottom:1px solid #16242C;padding:9px 0;margin-bottom:4px;color:rgba(234,236,240,0.5);font-size:9.5px;font-weight:600;letter-spacing:2px">
+          <span style="width:14px;height:14px;border:1px solid #5E7280;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#5E7280">i</span>LAST 7 DAYS
+        </div>
+        <sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+          <div onClick="{{ d.onToggle }}" style="border-bottom:1px solid #16242C;padding:14px 2px;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:11px">
+              <div style="flex:1;font-size:15px;font-weight:700;letter-spacing:1px">{{ d.label }} <span style="color:#5E7280">{{ d.date }}</span></div>
+              <div style="{{ d.pillStyle }}">{{ d.cls }}</div>
+              <div style="display:flex;align-items:baseline;gap:2px;min-width:62px;justify-content:flex-end">
+                <span style="font-size:27px;font-weight:800;color:#FE7F2D;letter-spacing:-1px;line-height:1">{{ d.score }}</span>
+                <span style="font-size:11px;color:#5E7280">/10</span>
+              </div>
+              <svg style="{{ d.chevStyle }}" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5 6 6.5l5-5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <sc-if value="{{ d.isOpen }}">{{ d.detail }}</sc-if>
+          </div>
+        </sc-for>
+      </div>
+      </sc-if>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 2 — CALIBRATING ============ -->
+<div style="position:absolute;left:482px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">02 · CALIBRATING</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Boost — Calibrating" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 34px;display:flex;flex-direction:column;gap:20px;overflow:hidden">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">BOOST FROM SLEEP</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">TODAY · WED 23</div>
+        </div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:10px;font-weight:700;letter-spacing:1px;opacity:0.4">
+          <div style="padding:7px 11px;background:#233D4D;color:#EAECF0">DAY</div>
+          <div style="padding:7px 11px;color:rgba(234,236,240,0.5)">WK</div>
+        </div>
+      </div>
+
+      <!-- HERO — calibrating -->
+      <div style="margin-top:10px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:3px;color:rgba(234,236,240,0.45);margin-bottom:14px">BOOST</div>
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="width:18px;height:18px;border-radius:999px;background:#FE7F2D;animation:pulseDot 1.4s ease-in-out infinite;flex-shrink:0"></div>
+          <div style="font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1">CALIBRATING</div>
+        </div>
+        <div style="font-size:12.5px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.55);margin-top:18px;line-height:1.5;max-width:300px">SleepWise is learning your rhythm. Your daily Boost forecast unlocks after two weeks of nights.</div>
+      </div>
+
+      <!-- progress -->
+      <div style="margin-top:2px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">NIGHTS LOGGED</div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:1px"><span style="color:#FE7F2D">04</span><span style="color:#5E7280"> / 14</span></div>
+        </div>
+        <div style="height:6px;border-radius:999px;background:#16242C;overflow:hidden">
+          <div style="width:28.5%;height:100%;background:#FE7F2D;border-radius:999px"></div>
+        </div>
+      </div>
+
+      <!-- ghost strip -->
+      <div style="margin-top:4px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45);margin-bottom:10px">HOURLY BOOST</div>
+        <div style="position:relative;height:132px">
+          <div style="display:flex;align-items:flex-end;gap:3px;height:100%">
+            <sc-for list="{{ ghost }}" as="g" hint-placeholder-count="19">
+              <div style="{{ g.style }}"></div>
+            </sc-for>
+          </div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+            <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:rgba(234,236,240,0.5);background:#000;padding:6px 14px;border:1px solid #233D4D;border-radius:999px">COLLECTING DATA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- stat row — empty -->
+      <div style="display:flex;border-top:1px solid #16242C;padding-top:15px">
+        <div style="flex:1;border-right:1px solid #16242C;padding-right:8px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">INERTIA</div>
+          <div style="font-size:19px;font-weight:700;margin-top:5px;color:#3A5160">—</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">DURATION</div>
+          <div style="font-size:19px;font-weight:700;margin-top:5px;color:#3A5160">—</div>
+        </div>
+        <div style="flex:1.2;padding-left:8px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">SLEEP BLOCK</div>
+          <div style="font-size:15px;font-weight:700;margin-top:7px;color:#3A5160">—</div>
+        </div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 3 — NO DATA ============ -->
+<div style="position:absolute;left:964px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">03 · NO DATA</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Boost — No Data" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 34px;display:flex;flex-direction:column;overflow:hidden">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">BOOST FROM SLEEP</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">YESTERDAY · WED 23</div>
+        </div>
+        <div style="width:34px;height:34px;flex-shrink:0"></div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:0;animation:fadeUp .5s ease both">
+        <div style="width:78px;height:78px;border:1.5px solid #233D4D;border-radius:22px;display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:30px">
+          <div style="width:34px;height:42px;border:1.5px solid #5E7280;border-radius:9px"></div>
+          <div style="position:absolute;width:34px;height:7px;background:#5E7280;border-radius:3px;top:14px"></div>
+          <div style="position:absolute;width:34px;height:7px;background:#5E7280;border-radius:3px;bottom:14px"></div>
+          <div style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:999px;background:#FE7F2D;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;line-height:1">!</div>
+        </div>
+        <div style="font-size:32px;font-weight:800;letter-spacing:-0.5px">NO DATA</div>
+        <div style="font-size:12.5px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.55);margin-top:14px;line-height:1.6;max-width:250px">Your band wasn't worn last night. Wear it to sleep to see your Boost from Sleep forecast.</div>
+        <div style="display:flex;gap:10px;margin-top:30px">
+          <div style="background:#FE7F2D;color:#000;border-radius:999px;padding:12px 22px;font-size:11px;font-weight:700;letter-spacing:1.5px">SYNC BAND</div>
+          <div style="border:1px solid #233D4D;color:#EAECF0;border-radius:999px;padding:12px 22px;font-size:11px;font-weight:700;letter-spacing:1.5px">HOW IT WORKS</div>
+        </div>
+      </div>
+
+      <!-- ghost strip footer -->
+      <div style="opacity:0.5">
+        <div style="display:flex;align-items:flex-end;gap:3px;height:60px">
+          <sc-for list="{{ ghost }}" as="g" hint-placeholder-count="19">
+            <div style="{{ g.styleFlat }}"></div>
+          </sc-for>
+        </div>
+        <div style="text-align:center;font-size:8px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.3);margin-top:10px">LAST 24 HOURS · UNAVAILABLE</div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { score: 0, view: 'day', open: -1 };
+
+  componentDidMount() {
+    const target = 8.1, dur = 1150, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      this.setState({ score: +(target * e).toFixed(1) });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  renderVals() {
+    const lv = {
+      HIGH:    { c: '#FE7F2D', h: 92 },
+      MED:     { c: '#E0793A', h: 64 },
+      LOW:     { c: '#5E7280', h: 46 },
+      VERY_LOW:{ c: '#3A5160', h: 32 },
+      MINIMAL: { c: '#2A4253', h: 20 },
+    };
+    // Timeline runs from wake (10 AM) through the day to the next early morning.
+    const raw = [
+      ['10','LOW'],['11','MED'],['12','HIGH'],['13','HIGH'],['14','HIGH'],
+      ['15','MED'],['16','MED'],['17','LOW'],['18','MED'],['19','MED'],
+      ['20','HIGH'],['21','HIGH'],['22','HIGH'],['23','MED'],['00','LOW'],
+      ['01','VERY_LOW'],['02','MINIMAL'],['03','MINIMAL'],['04','MINIMAL'],
+    ];
+    const labelHours = ['10','12','14','16','18','20','22','00','02','04'];
+    const barStyle = (h, bg, delay) => ({
+      flex: 1, height: h + '%', background: bg, borderRadius: '2px 2px 0 0',
+      transformOrigin: 'bottom', animation: 'grow .52s cubic-bezier(.16,.84,.3,1) both',
+      animationDelay: delay,
+    });
+
+    const bars = raw.map((b, i) => {
+      const m = lv[b[1]];
+      return {
+        hour: b[0],
+        label: labelHours.includes(b[0]) ? String(parseInt(b[0], 10)) : '',
+        style: barStyle(m.h, m.c, (i * 0.05).toFixed(3) + 's'),
+      };
+    });
+
+    const ghost = raw.map((b, i) => {
+      const h = 14 + ((i * 37) % 30);
+      const s = barStyle(h, '#1B2D38', (i * 0.05).toFixed(3) + 's');
+      return { style: s, styleFlat: { ...s, animation: 'none' } };
+    });
+
+    const trendH = [7.2,6.8,7.5,8.0,7.1,6.5,7.8,8.2,7.9,7.0,6.6,7.3,8.1,7.7,
+                    7.4,6.9,7.6,8.3,7.2,6.8,7.0,7.9,8.1,7.5,7.1,6.7,7.8,8.1];
+    const trend = trendH.map((v, i) => ({
+      style: {
+        flex: 1, height: Math.round((v / 10) * 100) + '%',
+        background: v >= 8 ? '#FE7F2D' : '#2E4E61', borderRadius: '1px',
+        transformOrigin: 'bottom', animation: 'grow .5s ease both',
+        animationDelay: (0.45 + i * 0.014).toFixed(3) + 's',
+      },
+    }));
+
+    // ---- view toggle + last-7-days list ----
+    const isDay = this.state.view === 'day';
+    const isWk = !isDay;
+    const setDay = () => this.setState({ view: 'day' });
+    const setWk = () => this.setState({ view: 'wk' });
+    const tabBase = { padding: '7px 12px', cursor: 'pointer', transition: 'background .15s, color .15s' };
+    const dayTabStyle = { ...tabBase, background: isDay ? '#FE7F2D' : 'transparent', color: isDay ? '#000' : 'rgba(234,236,240,0.5)' };
+    const wkTabStyle  = { ...tabBase, background: isWk ? '#FE7F2D' : 'transparent', color: isWk ? '#000' : 'rgba(234,236,240,0.5)' };
+
+    const order = ['MINIMAL', 'VERY_LOW', 'LOW', 'MED', 'HIGH'];
+    const basePat = [2,3,4,4,4,3,3,2,3,3,4,4,4,3,2,1,0,0,0];
+    const dayDefs = [
+      ['WED','23',8.1,'FAIR','10:12','02:53–10:12','7H19M','MILD','02:00–02:30'],
+      ['TUE','22',7.4,'FAIR','07:48','00:10–07:48','7H38M','MILD','01:30–02:00'],
+      ['MON','21',6.2,'LOW','06:30','00:05–06:30','6H25M','STRONG','01:00–01:30'],
+      ['SUN','20',8.8,'GOOD','09:20','01:15–09:20','8H05M','NONE','01:45–02:15'],
+      ['SAT','19',9.1,'GOOD','09:50','01:00–09:50','8H50M','NONE','01:30–02:00'],
+      ['FRI','18',5.6,'LOW','06:05','00:40–06:05','5H25M','STRONG','00:45–01:15'],
+      ['THU','17',7.0,'FAIR','07:10','23:40–07:10','7H30M','MILD','01:15–01:45'],
+    ];
+    const clsColor = (c) => c === 'LOW' ? '#5E7280' : '#FE7F2D';
+    const days = dayDefs.map((dd, di) => {
+      const [label, date, sc, cls, wake, block, dur, inertia, gate] = dd;
+      const delta = Math.max(-1, Math.min(1, Math.round((sc - 7) / 1.5)));
+      const dayBars = basePat.map((idx, i) => {
+        const k = i <= 13 ? Math.max(0, Math.min(4, idx + delta)) : idx;
+        const m = lv[order[k]];
+        return {
+          label: labelHours.includes(raw[i][0]) ? String(parseInt(raw[i][0], 10)) : '',
+          style: barStyle(m.h, m.c, (i * 0.045).toFixed(3) + 's'),
+        };
+      });
+      const clr = clsColor(cls);
+      const h = React.createElement;
+      const legendItem = (sw, lab) => h('span', { style: { display: 'flex', alignItems: 'center', gap: 5 } }, sw, lab);
+      const statCell = (lab, val, vColor, last, flexv, vFs) => h('div',
+        { style: { flex: flexv || 1, borderRight: last ? 'none' : '1px solid #16242C', padding: last ? '0 0 0 8px' : '0 8px 0 0' } },
+        h('div', { style: { fontSize: 8.5, fontWeight: 600, letterSpacing: '1.5px', color: 'rgba(234,236,240,0.4)' } }, lab),
+        h('div', { style: { fontSize: vFs || 16, fontWeight: 700, marginTop: 4, color: vColor } }, val));
+      const detail = h('div', { style: { marginTop: 18, animation: 'fadeUp .3s ease both' } },
+        h('div', { style: { display: 'flex', justifyContent: 'flex-end', gap: 11, fontSize: 8, fontWeight: 600, letterSpacing: '0.5px', color: 'rgba(234,236,240,0.5)', marginBottom: 9 } },
+          legendItem(h('span', { style: { width: 7, height: 7, background: '#FE7F2D', borderRadius: 1 } }), 'ALERT'),
+          legendItem(h('span', { style: { width: 7, height: 7, background: '#3A5160', borderRadius: 1 } }), 'LOW'),
+          legendItem(h('span', { style: { width: 8, height: 8, border: '1px dashed #FE7F2D', borderRadius: 2 } }), 'GATE')),
+        h('div', { style: { position: 'relative', height: 16, marginBottom: 5 } },
+          h('div', { style: { position: 'absolute', left: 0, top: 0, display: 'flex', alignItems: 'center', gap: 5, fontSize: 8, fontWeight: 700, letterSpacing: '0.5px', color: '#EAECF0' } },
+            h('span', { style: { width: 8, height: 8, borderRadius: 999, border: '1.5px solid #FE7F2D', display: 'inline-block' } }), 'WAKE ' + wake),
+          h('div', { style: { position: 'absolute', right: 0, top: 0, fontSize: 8, fontWeight: 700, letterSpacing: '0.5px', color: '#FE7F2D' } }, 'GATE ' + gate + ' \u25B8')),
+        h('div', { style: { position: 'relative', height: 90 } },
+          h('div', { style: { position: 'absolute', top: -5, bottom: 0, left: '84%', width: '6%', background: 'rgba(254,127,45,0.12)', borderLeft: '1px dashed rgba(254,127,45,0.6)', borderRight: '1px dashed rgba(254,127,45,0.6)' } }),
+          h('div', { style: { display: 'flex', alignItems: 'flex-end', gap: 3, height: '100%', position: 'relative', zIndex: 1 } },
+            dayBars.map((b, i) => h('div', { key: i, style: b.style }))),
+          h('div', { style: { position: 'absolute', left: '84%', right: 0, bottom: -1, height: 2, background: 'linear-gradient(90deg,#FE7F2D,rgba(254,127,45,0))', borderRadius: 2, zIndex: 2 } }),
+          h('div', { style: { position: 'absolute', left: '82.5%', bottom: -4, width: 9, height: 9, borderRadius: 999, background: '#FE7F2D', border: '2px solid #000', zIndex: 3 } })),
+        h('div', { style: { display: 'flex', gap: 3, marginTop: 7 } },
+          dayBars.map((b, i) => h('div', { key: i, style: { flex: 1, textAlign: 'center', fontSize: 8, fontWeight: 600, letterSpacing: '0.5px', color: 'rgba(234,236,240,0.35)' } }, b.label))),
+        h('div', { style: { display: 'flex', borderTop: '1px solid #16242C', marginTop: 14, paddingTop: 13 } },
+          statCell('INERTIA', inertia, '#FE7F2D', false),
+          statCell('DURATION', dur, '#EAECF0', false),
+          statCell('SLEEP BLOCK', block, '#EAECF0', true, 1.3, 13)));
+      return {
+        label, date, cls, score: sc.toFixed(1), bars: dayBars, detail,
+        wake, block, dur, inertia, gate,
+        isOpen: this.state.open === di,
+        onToggle: () => this.setState((s) => ({ open: s.open === di ? -1 : di })),
+        pillStyle: { border: '1.2px solid ' + clr, color: clr, borderRadius: '999px', padding: '4px 11px', fontSize: '9px', fontWeight: 700, letterSpacing: '1.5px', whiteSpace: 'nowrap' },
+        chevStyle: { transition: 'transform .2s ease', transform: this.state.open === di ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 },
+      };
+    });
+
+    return { score: this.state.score.toFixed(1), bars, ghost, trend, isDay, isWk, setDay, setWk, dayTabStyle, wkTabStyle, days };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+name: Hercules
+options:
+  bundleIdPrefix: dev.hercules
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+
+packages:
+  # Local multi-product package: PolarProtocol, PolarStore, HerculesUI.
+  # GRDB is pulled in transitively via this package's own Package.swift.
+  HerculesPackages:
+    path: Packages
+
+targets:
+  Hercules:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.hercules.app
+        PRODUCT_NAME: Hercules
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        TARGETED_DEVICE_FAMILY: "1" # iPhone only — single-user iPhone app
+        SUPPORTS_MACCATALYST: NO
+        GENERATE_INFOPLIST_FILE: YES
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Hercules
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        # OAuth callback scheme — HERC-001: hercules://oauth/callback opens the app.
+        CFBundleURLTypes:
+          - CFBundleURLName: dev.hercules.app.oauth
+            CFBundleTypeRole: Editor
+            CFBundleURLSchemes:
+              - hercules
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    dependencies:
+      - package: HerculesPackages
+        product: PolarProtocol
+      - package: HerculesPackages
+        product: PolarStore
+      - package: HerculesPackages
+        product: HerculesUI

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes drawLine{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes snapUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes snapOpen{from{opacity:0;transform:translateY(-10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+<meta name="design_doc_mode" content="canvas">
+</helmet>
+
+<!-- ============ FRAME 1 — STRENGTH · HR-FOCUSED ============ -->
+<div style="position:absolute;left:0;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">01 · HR-FOCUSED · STRENGTH</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Workout Detail — Strength" style="position:relative;height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;overflow:hidden">
+      <div style="position:absolute;inset:0;overflow-y:auto;padding:58px 22px 40px;display:flex;flex-direction:column;gap:20px">
+
+        <!-- HEADER -->
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">WORKOUT</div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">THU JUN 25 · 18:05</div>
+          </div>
+          <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:3px">
+            <span style="width:3px;height:3px;border-radius:999px;background:#EAECF0"></span><span style="width:3px;height:3px;border-radius:999px;background:#EAECF0"></span><span style="width:3px;height:3px;border-radius:999px;background:#EAECF0"></span>
+          </div>
+        </div>
+
+        <!-- IDENTITY -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:13px;border-top:1px solid #16242C;padding-top:22px;animation:snapUp .5s cubic-bezier(.16,.84,.3,1) both">
+          <div style="width:58px;height:58px;border-radius:14px;background:#233D4D;display:flex;align-items:center;justify-content:center">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#FE7F2D" stroke-width="2.2" stroke-linecap="round">
+              <line x1="11" y1="15" x2="19" y2="15"></line>
+              <line x1="7.5" y1="10.5" x2="7.5" y2="19.5"></line>
+              <line x1="10.5" y1="12.5" x2="10.5" y2="17.5"></line>
+              <line x1="19.5" y1="12.5" x2="19.5" y2="17.5"></line>
+              <line x1="22.5" y1="10.5" x2="22.5" y2="19.5"></line>
+            </svg>
+          </div>
+          <div onClick="{{ toggleSport1 }}" style="display:inline-flex;align-items:center;gap:9px;cursor:pointer">
+            <span style="font-size:23px;font-weight:800;letter-spacing:-0.5px">{{ sportName1 }}</span>
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><path d="M1.5 2 6.5 7l5-5" stroke="#FE7F2D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="border:1.5px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:5px 13px;font-size:9px;font-weight:700;letter-spacing:1.5px;display:flex;align-items:center;gap:5px"><span style="width:5px;height:5px;border-radius:999px;background:#FE7F2D"></span>AUTOMATIC</span>
+            <span style="border:1px solid #233D4D;color:rgba(234,236,240,0.6);border-radius:999px;padding:5px 13px;font-size:9px;font-weight:700;letter-spacing:1.5px">POLAR LOOP GEN 2</span>
+          </div>
+        </div>
+
+        <!-- SUMMARY GRID -->
+        <div style="border-top:1px solid #16242C;padding-top:18px;display:flex;flex-direction:column;gap:11px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">TRAINING SUMMARY</div>
+          <div style="display:flex;gap:11px">
+            <div style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 17px">
+              <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.42)">DURATION</div>
+              <div style="font-size:27px;font-weight:800;letter-spacing:-1px;margin-top:8px;font-variant-numeric:tabular-nums">1:01<span style="font-size:14px;color:#5E7280">:31</span></div>
+            </div>
+            <div style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 17px">
+              <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.42)">CALORIES</div>
+              <div style="font-size:27px;font-weight:800;letter-spacing:-1px;margin-top:8px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ calDisp }}<span style="font-size:14px;color:#5E7280">KCAL</span></div>
+            </div>
+          </div>
+          <div style="display:flex;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:15px 4px">
+            <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">HR AVG</div>
+              <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;color:#FE7F2D;font-variant-numeric:tabular-nums">122</div>
+            </div>
+            <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">HR MIN</div>
+              <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">90</div>
+            </div>
+            <div style="flex:1;padding:0 8px;text-align:center">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">HR MAX</div>
+              <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">158</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOAD & BENEFIT CONSOLE -->
+        <div style="border-top:1px solid #16242C;padding-top:18px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">LOAD &amp; BENEFIT</div>
+          <!-- benefit -->
+          <div style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 17px;display:flex;align-items:center;gap:14px">
+            <div style="width:4px;align-self:stretch;background:#FE7F2D;border-radius:2px"></div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:800;letter-spacing:-0.3px;line-height:1.15">BASIC &amp; STEADY STATE</div>
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:#5E7280;margin-top:5px">TRAINING BENEFIT</div>
+            </div>
+          </div>
+          <!-- cardio load -->
+          <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #16242C;padding-bottom:13px">
+            <div>
+              <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#FE7F2D">HIGH</span><span style="font-size:8.5px;font-weight:600;letter-spacing:1px;color:#5E7280">CARDIO LOAD · TRIMP</span></div>
+              <div style="display:flex;gap:5px;align-items:center;margin-top:9px">
+                <span style="width:9px;height:9px;border-radius:999px;background:#FE7F2D"></span><span style="width:9px;height:9px;border-radius:999px;background:#FE7F2D"></span><span style="width:9px;height:9px;border-radius:999px;background:#FE7F2D"></span><span style="width:9px;height:9px;border-radius:999px;background:#FE7F2D"></span><span style="width:9px;height:9px;border-radius:999px;background:#16242C;border:1px solid #233D4D"></span>
+              </div>
+            </div>
+            <div style="font-size:30px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums">52</div>
+          </div>
+          <!-- perceived load -->
+          <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #16242C;padding-bottom:13px">
+            <div>
+              <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#EAECF0">HIGH</span><span style="font-size:8.5px;font-weight:600;letter-spacing:1px;color:#5E7280">PERCEIVED LOAD</span></div>
+              <div style="display:flex;gap:5px;align-items:center;margin-top:9px">
+                <span style="width:9px;height:9px;border-radius:999px;background:#E0793A"></span><span style="width:9px;height:9px;border-radius:999px;background:#E0793A"></span><span style="width:9px;height:9px;border-radius:999px;background:#E0793A"></span><span style="width:9px;height:9px;border-radius:999px;background:#E0793A"></span><span style="width:9px;height:9px;border-radius:999px;background:#16242C;border:1px solid #233D4D"></span>
+              </div>
+            </div>
+            <div style="font-size:30px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums">308</div>
+          </div>
+          <!-- RPE -->
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="flex:1">
+              <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#EAECF0">HARD</span><span style="font-size:8.5px;font-weight:600;letter-spacing:1px;color:#5E7280">YOUR ESTIMATE · RPE</span></div>
+              <div style="display:flex;gap:3px;margin-top:9px">
+                <span style="flex:1;height:6px;border-radius:2px;background:#FE7F2D"></span><span style="flex:1;height:6px;border-radius:2px;background:#FE7F2D"></span><span style="flex:1;height:6px;border-radius:2px;background:#FE7F2D"></span><span style="flex:1;height:6px;border-radius:2px;background:#FE7F2D"></span><span style="flex:1;height:6px;border-radius:2px;background:#FE7F2D"></span><span style="flex:1;height:6px;border-radius:2px;background:#16242C"></span><span style="flex:1;height:6px;border-radius:2px;background:#16242C"></span><span style="flex:1;height:6px;border-radius:2px;background:#16242C"></span><span style="flex:1;height:6px;border-radius:2px;background:#16242C"></span><span style="flex:1;height:6px;border-radius:2px;background:#16242C"></span>
+              </div>
+            </div>
+            <div style="font-size:30px;font-weight:800;letter-spacing:-1px;margin-left:16px;font-variant-numeric:tabular-nums">5<span style="font-size:15px;color:#5E7280">/10</span></div>
+          </div>
+        </div>
+
+        <!-- TRAINING ZONES -->
+        <div style="border-top:1px solid #16242C;padding-top:18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">TRAINING ZONES</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:8px;font-weight:600;letter-spacing:1px;color:#5E7280"><span>BPM</span><span style="display:flex;align-items:center;gap:4px"><span style="width:11px;height:1.5px;background:#FE7F2D;border-top:1px dashed #FE7F2D"></span>AVG 122</span></div>
+          </div>
+          <div style="position:relative">{{ hrCurve }}</div>
+          <div style="display:flex;justify-content:space-between;margin-top:7px;font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.35)">
+            <span>0:00</span><span>0:15</span><span>0:30</span><span>0:45</span><span>1:00</span>
+          </div>
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4);margin:18px 0 11px">TIME IN ZONES</div>
+          {{ hrZoneBar }}
+        </div>
+
+        <!-- ENERGY USED -->
+        <div style="border-top:1px solid #16242C;padding-top:18px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">ENERGY USED</div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-top:12px">
+            <div style="font-size:34px;font-weight:800;letter-spacing:-1.5px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ calDisp }}<span style="font-size:16px;color:#5E7280;letter-spacing:0">KCAL</span></div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280;margin-left:auto">FUEL MIX</div>
+          </div>
+          <div style="margin-top:14px">{{ macroS }}</div>
+          <div style="display:flex;margin-top:13px">
+            <div style="flex:1;text-align:center;border-right:1px solid #16242C">
+              <div style="font-size:18px;font-weight:800;letter-spacing:-0.5px;color:#FE7F2D">53<span style="font-size:10px;color:#5E7280">%</span></div>
+              <div style="font-size:8px;font-weight:600;letter-spacing:1.5px;color:#5E7280;margin-top:3px">CARBS</div>
+            </div>
+            <div style="flex:1;text-align:center;border-right:1px solid #16242C">
+              <div style="font-size:18px;font-weight:800;letter-spacing:-0.5px;color:#3A5160">0<span style="font-size:10px;color:#3A5160">%</span></div>
+              <div style="font-size:8px;font-weight:600;letter-spacing:1.5px;color:#5E7280;margin-top:3px">PROTEIN</div>
+            </div>
+            <div style="flex:1;text-align:center">
+              <div style="font-size:18px;font-weight:800;letter-spacing:-0.5px">47<span style="font-size:10px;color:#5E7280">%</span></div>
+              <div style="font-size:8px;font-weight:600;letter-spacing:1.5px;color:#5E7280;margin-top:3px">FAT</div>
+            </div>
+          </div>
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4);margin:18px 0 8px">KCAL / MIN</div>
+          <div style="position:relative">{{ sparkS }}</div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:8px;font-weight:600;color:rgba(234,236,240,0.3)">
+            <span>0:00</span><span>0:30</span><span>1:00</span>
+          </div>
+        </div>
+
+        <!-- SESSION FEEDBACK -->
+        <div style="border-top:1px solid #16242C;padding-top:18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">SESSION FEEDBACK</div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280">HOW DO YOU FEEL?</div>
+          </div>
+          {{ facesS }}
+          <div onClick="{{ toggleAsk1 }}" style="display:flex;align-items:center;justify-content:space-between;margin-top:18px;cursor:pointer">
+            <span style="font-size:11px;font-weight:600;letter-spacing:1px;color:rgba(234,236,240,0.7)">ASK FOR FEEDBACK</span>
+            <div style="{{ ask1Track }}"><div style="{{ ask1Knob }}"></div></div>
+          </div>
+        </div>
+
+      </div>
+      {{ dropdown1 }}
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 2 — WALKING · DISTANCE-FOCUSED ============ -->
+<div style="position:absolute;left:482px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">02 · DISTANCE-FOCUSED · WALKING</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Workout Detail — Walking" style="position:relative;height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;overflow:hidden">
+      <div style="position:absolute;inset:0;overflow-y:auto;padding:58px 22px 40px;display:flex;flex-direction:column;gap:20px">
+
+        <!-- HEADER -->
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">WORKOUT</div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">THU JUN 25 · 19:09</div>
+          </div>
+          <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:3px">
+            <span style="width:3px;height:3px;border-radius:999px;background:#EAECF0"></span><span style="width:3px;height:3px;border-radius:999px;background:#EAECF0"></span><span style="width:3px;height:3px;border-radius:999px;background:#EAECF0"></span>
+          </div>
+        </div>
+
+        <!-- IDENTITY -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:13px;border-top:1px solid #16242C;padding-top:22px;animation:snapUp .5s cubic-bezier(.16,.84,.3,1) both">
+          <div style="width:58px;height:58px;border-radius:14px;background:#233D4D;display:flex;align-items:center;justify-content:center">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#FE7F2D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="17" cy="6.5" r="2.4" fill="#FE7F2D" stroke="none"></circle>
+              <path d="M17 10 14.5 17.5"></path>
+              <path d="M14.5 17.5 11 24.5"></path>
+              <path d="M14.5 17.5 19 23.5"></path>
+              <path d="M16 12.5 20.5 15"></path>
+              <path d="M16 12.5 12 14.5"></path>
+            </svg>
+          </div>
+          <div style="display:inline-flex;align-items:center;gap:9px">
+            <span style="font-size:23px;font-weight:800;letter-spacing:-0.5px">WALKING</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="border:1px solid #233D4D;color:rgba(234,236,240,0.6);border-radius:999px;padding:5px 13px;font-size:9px;font-weight:700;letter-spacing:1.5px">MANUAL</span>
+            <span style="border:1px solid #233D4D;color:rgba(234,236,240,0.6);border-radius:999px;padding:5px 13px;font-size:9px;font-weight:700;letter-spacing:1.5px">POLAR FLOW APP</span>
+          </div>
+        </div>
+
+        <!-- SUMMARY GRID -->
+        <div style="border-top:1px solid #16242C;padding-top:18px;display:flex;flex-direction:column;gap:11px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">TRAINING SUMMARY</div>
+          <div style="display:flex;gap:11px">
+            <div style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 17px">
+              <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.42)">DURATION</div>
+              <div style="font-size:27px;font-weight:800;letter-spacing:-1px;margin-top:8px;font-variant-numeric:tabular-nums">32<span style="font-size:14px;color:#5E7280">:14</span></div>
+            </div>
+            <div style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 17px">
+              <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.42)">DISTANCE</div>
+              <div style="font-size:27px;font-weight:800;letter-spacing:-1px;margin-top:8px;color:#FE7F2D;font-variant-numeric:tabular-nums">1.99<span style="font-size:14px;color:#5E7280">KM</span></div>
+            </div>
+          </div>
+          <div style="display:flex;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:15px 4px">
+            <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">PACE AVG</div>
+              <div style="font-size:20px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;color:#FE7F2D;font-variant-numeric:tabular-nums">16:08</div>
+            </div>
+            <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">PACE MAX</div>
+              <div style="font-size:20px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">13:48</div>
+            </div>
+            <div style="flex:1;padding:0 8px;text-align:center">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">CALORIES</div>
+              <div style="font-size:20px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">118</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOAD — ESTIMATE (no data) -->
+        <div style="border-top:1px solid #16242C;padding-top:18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">LOAD &amp; BENEFIT</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:9px;font-weight:700;letter-spacing:1.5px;color:#5E7280"><span style="width:13px;height:13px;border:1px solid #3A5160;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#5E7280">i</span>NO HR DATA</div>
+          </div>
+          <div style="font-size:12px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.5);line-height:1.55;margin-bottom:14px">Movement session — no chest strap. Add a perceived-effort estimate to log this session's load.</div>
+          <div style="border:1px solid #233D4D;border-radius:999px;height:54px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:2px;color:#EAECF0">ESTIMATE SESSION LOAD</div>
+        </div>
+
+        <!-- TRAINING ZONES — PACE -->
+        <div style="border-top:1px solid #16242C;padding-top:18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">TRAINING ZONES</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:8px;font-weight:600;letter-spacing:1px;color:#5E7280"><span>MIN/KM</span><span style="display:flex;align-items:center;gap:4px"><span style="width:11px;height:1.5px;background:#FE7F2D;border-top:1px dashed #FE7F2D"></span>AVG 16:08</span></div>
+          </div>
+          <div style="position:relative">{{ paceCurve }}</div>
+          <div style="display:flex;justify-content:space-between;margin-top:7px;font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.35)">
+            <span>0:00</span><span>0:08</span><span>0:16</span><span>0:24</span><span>0:32</span>
+          </div>
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4);margin:18px 0 11px">TIME IN ZONES</div>
+          {{ paceZoneBar }}
+        </div>
+
+        <!-- ENERGY USED -->
+        <div style="border-top:1px solid #16242C;padding-top:18px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">ENERGY USED</div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-top:12px">
+            <div style="font-size:34px;font-weight:800;letter-spacing:-1.5px;color:#FE7F2D;font-variant-numeric:tabular-nums">118<span style="font-size:16px;color:#5E7280;letter-spacing:0">KCAL</span></div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280;margin-left:auto">FUEL MIX</div>
+          </div>
+          <div style="margin-top:14px">{{ macroW }}</div>
+          <div style="display:flex;margin-top:13px">
+            <div style="flex:1;text-align:center;border-right:1px solid #16242C">
+              <div style="font-size:18px;font-weight:800;letter-spacing:-0.5px;color:#FE7F2D">30<span style="font-size:10px;color:#5E7280">%</span></div>
+              <div style="font-size:8px;font-weight:600;letter-spacing:1.5px;color:#5E7280;margin-top:3px">CARBS</div>
+            </div>
+            <div style="flex:1;text-align:center;border-right:1px solid #16242C">
+              <div style="font-size:18px;font-weight:800;letter-spacing:-0.5px">4<span style="font-size:10px;color:#5E7280">%</span></div>
+              <div style="font-size:8px;font-weight:600;letter-spacing:1.5px;color:#5E7280;margin-top:3px">PROTEIN</div>
+            </div>
+            <div style="flex:1;text-align:center">
+              <div style="font-size:18px;font-weight:800;letter-spacing:-0.5px">66<span style="font-size:10px;color:#5E7280">%</span></div>
+              <div style="font-size:8px;font-weight:600;letter-spacing:1.5px;color:#5E7280;margin-top:3px">FAT</div>
+            </div>
+          </div>
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4);margin:18px 0 8px">KCAL / MIN</div>
+          <div style="position:relative">{{ sparkW }}</div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:8px;font-weight:600;color:rgba(234,236,240,0.3)">
+            <span>0:00</span><span>0:16</span><span>0:32</span>
+          </div>
+        </div>
+
+        <!-- SESSION FEEDBACK -->
+        <div style="border-top:1px solid #16242C;padding-top:18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">SESSION FEEDBACK</div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280">HOW DO YOU FEEL?</div>
+          </div>
+          {{ facesW }}
+          <div onClick="{{ toggleAsk2 }}" style="display:flex;align-items:center;justify-content:space-between;margin-top:18px;cursor:pointer">
+            <span style="font-size:11px;font-weight:600;letter-spacing:1px;color:rgba(234,236,240,0.7)">ASK FOR FEEDBACK</span>
+            <div style="{{ ask2Track }}"><div style="{{ ask2Knob }}"></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 3 — RECLASSIFY · DROPDOWN ACTIVE ============ -->
+<div style="position:absolute;left:964px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">03 · RECLASSIFY · DROPDOWN ACTIVE</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Workout Detail — Reclassify" style="position:relative;height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;overflow:hidden">
+      <div style="position:absolute;inset:0;overflow-y:auto;padding:58px 22px 40px;display:flex;flex-direction:column;gap:20px">
+
+        <!-- HEADER -->
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">WORKOUT</div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">THU JUN 25 · 18:05</div>
+          </div>
+          <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:3px">
+            <span style="width:3px;height:3px;border-radius:999px;background:#EAECF0"></span><span style="width:3px;height:3px;border-radius:999px;background:#EAECF0"></span><span style="width:3px;height:3px;border-radius:999px;background:#EAECF0"></span>
+          </div>
+        </div>
+
+        <!-- IDENTITY -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:13px;border-top:1px solid #16242C;padding-top:22px">
+          <div style="width:58px;height:58px;border-radius:14px;background:#233D4D;display:flex;align-items:center;justify-content:center">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#FE7F2D" stroke-width="2.2" stroke-linecap="round">
+              <line x1="11" y1="15" x2="19" y2="15"></line>
+              <line x1="7.5" y1="10.5" x2="7.5" y2="19.5"></line>
+              <line x1="10.5" y1="12.5" x2="10.5" y2="17.5"></line>
+              <line x1="19.5" y1="12.5" x2="19.5" y2="17.5"></line>
+              <line x1="22.5" y1="10.5" x2="22.5" y2="19.5"></line>
+            </svg>
+          </div>
+          <div onClick="{{ openSport3 }}" style="display:inline-flex;align-items:center;gap:9px;cursor:pointer">
+            <span style="font-size:23px;font-weight:800;letter-spacing:-0.5px">{{ sportName3 }}</span>
+            <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><path d="M1.5 2 6.5 7l5-5" stroke="#FE7F2D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="border:1.5px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:5px 13px;font-size:9px;font-weight:700;letter-spacing:1.5px;display:flex;align-items:center;gap:5px"><span style="width:5px;height:5px;border-radius:999px;background:#FE7F2D"></span>AUTOMATIC</span>
+            <span style="border:1px solid #233D4D;color:rgba(234,236,240,0.6);border-radius:999px;padding:5px 13px;font-size:9px;font-weight:700;letter-spacing:1.5px">POLAR LOOP GEN 2</span>
+          </div>
+        </div>
+
+        <!-- faded summary grid behind the dim -->
+        <div style="border-top:1px solid #16242C;padding-top:18px;display:flex;flex-direction:column;gap:11px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">TRAINING SUMMARY</div>
+          <div style="display:flex;gap:11px">
+            <div style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 17px">
+              <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.42)">DURATION</div>
+              <div style="font-size:27px;font-weight:800;letter-spacing:-1px;margin-top:8px;font-variant-numeric:tabular-nums">1:01<span style="font-size:14px;color:#5E7280">:31</span></div>
+            </div>
+            <div style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 17px">
+              <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.42)">CALORIES</div>
+              <div style="font-size:27px;font-weight:800;letter-spacing:-1px;margin-top:8px;color:#FE7F2D;font-variant-numeric:tabular-nums">660<span style="font-size:14px;color:#5E7280">KCAL</span></div>
+            </div>
+          </div>
+          <div style="display:flex;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:15px 4px">
+            <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">HR AVG</div>
+              <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;color:#FE7F2D;font-variant-numeric:tabular-nums">122</div>
+            </div>
+            <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">HR MIN</div>
+              <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">90</div>
+            </div>
+            <div style="flex:1;padding:0 8px;text-align:center">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">HR MAX</div>
+              <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">158</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      {{ dropdown3 }}
+    </div>
+  </x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { open1: false, sport1: 'STRENGTH TRAINING', open3: true, sport3: 'STRENGTH TRAINING', feel1: 2, feel2: 3, ask1: true, ask2: true, cal: 0 };
+
+  constructor(props) {
+    super(props);
+    const lerp = (cps, count, amp, hf) => {
+      const out = [];
+      const t0 = cps[0][0], t1 = cps[cps.length - 1][0];
+      for (let i = 0; i < count; i++) {
+        const t = t0 + (i / (count - 1)) * (t1 - t0);
+        let a = cps[0], b = cps[cps.length - 1];
+        for (let k = 0; k < cps.length - 1; k++) {
+          if (t >= cps[k][0] && t <= cps[k + 1][0]) { a = cps[k]; b = cps[k + 1]; break; }
+        }
+        const f = (t - a[0]) / ((b[0] - a[0]) || 1);
+        const base = a[1] + (b[1] - a[1]) * f;
+        const noise = amp * Math.sin(i * 1.7) + amp * 0.5 * Math.sin(i * 0.6 + 1) + (hf ? hf * Math.sin(i * 2.4 + 0.5) : 0);
+        out.push(base + noise);
+      }
+      return out;
+    };
+    // HR curve (strength) — bpm over 61 min
+    this.hr = lerp([[0, 96], [2, 120], [5, 131], [9, 126], [13, 141], [17, 134], [21, 129], [25, 146], [29, 150], [33, 140], [37, 148], [41, 134], [45, 151], [49, 156], [52, 142], [55, 131], [58, 124], [61, 119]], 122, 2.6, 0);
+    // Pace curve (walking) — min/km over 32 min, spiky
+    this.pace = lerp([[0, 24], [3, 18], [6, 21], [9, 16.5], [12, 19], [15, 15.5], [18, 22], [21, 17], [24, 16], [27, 20], [30, 15.8], [32, 17]], 108, 2.4, 2.8)
+      .map((v) => Math.max(13.2, Math.min(28.5, v)));
+    // kcal/min sparklines
+    this.kcalS = lerp([[0, 2], [5, 7], [14, 9.5], [26, 7], [38, 11], [50, 6.5], [61, 3]], 110, 1.8, 1.2).map((v) => Math.max(0.5, v));
+    this.kcalW = lerp([[0, 1], [6, 3.5], [14, 4.2], [22, 3], [30, 4], [32, 2]], 96, 0.8, 0.6).map((v) => Math.max(0.3, v));
+  }
+
+  componentDidMount() {
+    const target = 660, dur = 1150, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      this.setState({ cal: Math.round(target * e) });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // ---- training-zones curve with subtle slate banding ----
+  makeCurve(cfg) {
+    const h = React.createElement;
+    const { data, dom, invert, bands, avg, delay } = cfg;
+    const W = 358, H = 158, padT = 14, padB = 20, padL = 4, padR = 34;
+    const plotH = H - padT - padB, plotW = W - padL - padR;
+    const yv = (v) => { const n = (v - dom[0]) / (dom[1] - dom[0]); return padT + (invert ? n : (1 - n)) * plotH; };
+    const xv = (i) => padL + (i / (data.length - 1)) * plotW;
+    const gid = 'wg' + (this._g = (this._g || 0) + 1);
+    const ch = [];
+    bands.forEach((b, i) => {
+      const y1 = yv(b.lo), y2 = yv(b.hi), top = Math.min(y1, y2), hh = Math.abs(y2 - y1);
+      ch.push(h('rect', { key: 'b' + i, x: 0, y: top, width: W, height: hh, fill: b.wash ? 'rgba(254,127,45,0.06)' : (i % 2 ? '#0A141A' : '#070F13') }));
+      ch.push(h('line', { key: 'bl' + i, x1: 0, y1: top, x2: W - padR, y2: top, stroke: '#16242C', strokeWidth: 1 }));
+      ch.push(h('text', { key: 'bt' + i, x: W - 4, y: (y1 + y2) / 2 + 3, textAnchor: 'end', style: { fontFamily: "'Azeret Mono',monospace", fontSize: 7.5, fontWeight: 700, letterSpacing: '0.5px', fill: b.wash ? 'rgba(254,127,45,0.55)' : 'rgba(234,236,240,0.26)' } }, b.label));
+    });
+    ch.push(h('line', { key: 'avg', x1: padL, y1: yv(avg), x2: W - padR, y2: yv(avg), stroke: '#FE7F2D', strokeWidth: 1, strokeDasharray: '4 4', opacity: 0.5 }));
+    ch.push(h('defs', { key: 'd' }, h('linearGradient', { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 },
+      h('stop', { offset: '0%', stopColor: '#FE7F2D', stopOpacity: 0.22 }),
+      h('stop', { offset: '100%', stopColor: '#FE7F2D', stopOpacity: 0 }))));
+    const areaD = 'M ' + xv(0).toFixed(1) + ' ' + (H - padB) + data.map((v, i) => ' L ' + xv(i).toFixed(1) + ' ' + yv(v).toFixed(1)).join('') + ' L ' + xv(data.length - 1).toFixed(1) + ' ' + (H - padB) + ' Z';
+    ch.push(h('path', { key: 'area', d: areaD, fill: 'url(#' + gid + ')' }));
+    const pts = data.map((v, i) => xv(i).toFixed(1) + ',' + yv(v).toFixed(1)).join(' ');
+    let L = 0; for (let i = 1; i < data.length; i++) { L += Math.hypot(xv(i) - xv(i - 1), yv(data[i]) - yv(data[i - 1])); }
+    L = Math.ceil(L) + 10;
+    ch.push(h('polyline', { key: 'ln', points: pts, fill: 'none', stroke: '#FE7F2D', strokeWidth: 2, strokeLinejoin: 'round', strokeLinecap: 'round', style: { '--len': L, strokeDasharray: L, animation: 'drawLine 1.2s cubic-bezier(.4,0,.2,1) ' + (delay || 0) + 's both' } }));
+    return h('svg', { viewBox: '0 0 ' + W + ' ' + H, width: '100%', height: H, preserveAspectRatio: 'none', style: { display: 'block', overflow: 'visible' } }, ch);
+  }
+
+  makeZoneBar(zones) {
+    const h = React.createElement;
+    const max = Math.max(...zones.map((z) => z.sec), 1);
+    const fmt = (s) => { const m = Math.floor(s / 60), ss = s % 60; return String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0'); };
+    return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 7 } }, zones.map((z, i) =>
+      h('div', { key: i, style: { display: 'flex', alignItems: 'center', gap: 11 } },
+        h('div', { style: { width: 22, fontSize: 9.5, fontWeight: 700, letterSpacing: '0.5px', color: z.sec > 0 ? '#EAECF0' : '#3A5160' } }, z.z),
+        h('div', { style: { flex: 1, height: 11, background: '#0E1B22', borderRadius: 2, overflow: 'hidden' } },
+          h('div', { style: { height: '100%', width: (z.sec / max * 100).toFixed(1) + '%', background: z.color, borderRadius: 2, transformOrigin: 'left', animation: 'growX .5s cubic-bezier(.16,.84,.3,1) both', animationDelay: (i * 0.06).toFixed(2) + 's' } })),
+        h('div', { style: { width: 48, textAlign: 'right', fontSize: 10.5, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: z.sec > 0 ? '#EAECF0' : '#3A5160' } }, fmt(z.sec)))));
+  }
+
+  makeMacro(segs) {
+    const h = React.createElement;
+    return h('div', { style: { height: 30, borderRadius: 4, border: '1px solid #1B2D38', overflow: 'hidden', padding: 2 } },
+      h('div', { style: { display: 'flex', gap: 2, height: '100%', transformOrigin: 'center', animation: 'growX .7s cubic-bezier(.16,.84,.3,1) .2s both' } },
+        segs.filter((s) => s.pct > 0).map((s, i) =>
+          h('div', { key: i, style: { width: s.pct + '%', height: '100%', background: s.color, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+            s.pct >= 18 ? h('span', { style: { fontSize: 9, fontWeight: 800, letterSpacing: '0.5px', color: s.dark ? '#000' : '#EAECF0' } }, s.label) : null))));
+  }
+
+  makeSpark(data, maxY, delay) {
+    const h = React.createElement;
+    const W = 358, H = 62, n = data.length, bw = W / n;
+    return h('svg', { viewBox: '0 0 ' + W + ' ' + H, width: '100%', height: H, preserveAspectRatio: 'none', style: { display: 'block' } },
+      data.map((v, i) => {
+        const hgt = Math.max(1, (Math.min(v, maxY) / maxY) * (H - 3));
+        const col = v > maxY * 0.62 ? '#FE7F2D' : v > maxY * 0.4 ? '#E0793A' : '#5E7280';
+        return h('rect', { key: i, x: i * bw + 0.4, y: H - hgt, width: Math.max(0.8, bw - 0.9), height: hgt, fill: col, style: { transformBox: 'fill-box', transformOrigin: 'bottom', animation: 'grow .5s cubic-bezier(.16,.84,.3,1) both', animationDelay: ((delay || 0) + i * 0.004).toFixed(3) + 's' } });
+      }));
+  }
+
+  makeFaces(key) {
+    const h = React.createElement;
+    const sel = this.state[key];
+    const labels = ['ROUGH', 'POOR', 'OK', 'GOOD', 'STRONG'];
+    return h('div', { style: { display: 'flex', justifyContent: 'space-between', gap: 8 } }, [0, 1, 2, 3, 4].map((i) => {
+      const on = i === sel;
+      const curve = -5 + i * (11 / 4);
+      const stroke = on ? '#000' : (i <= 1 ? '#5E7280' : '#8295A1');
+      return h('div', { key: i, onClick: () => this.setState({ [key]: i }), style: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, cursor: 'pointer' } },
+        h('div', { style: { width: 46, height: 46, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: on ? '#FE7F2D' : 'transparent', border: '1.5px solid ' + (on ? '#FE7F2D' : '#233D4D'), transition: 'background .15s, border-color .15s' } },
+          h('svg', { width: 26, height: 26, viewBox: '0 0 32 32', fill: 'none' },
+            h('circle', { cx: 16, cy: 16, r: 12.5, stroke: stroke, strokeWidth: 1.8 }),
+            h('rect', { x: 10.2, y: 11.5, width: 2.6, height: 2.6, rx: 0.6, fill: stroke }),
+            h('rect', { x: 19.2, y: 11.5, width: 2.6, height: 2.6, rx: 0.6, fill: stroke }),
+            h('path', { d: 'M 10.5 21 Q 16 ' + (21 + curve).toFixed(1) + ' 21.5 21', stroke: stroke, strokeWidth: 1.8, strokeLinecap: 'round', fill: 'none' }))),
+        h('div', { style: { fontSize: 8, fontWeight: 700, letterSpacing: '1px', color: on ? '#FE7F2D' : '#5E7280' } }, labels[i]));
+    }));
+  }
+
+  makeDropdown(openKey, sportKey) {
+    if (!this.state[openKey]) return null;
+    const h = React.createElement;
+    const cur = this.state[sportKey];
+    const sports = [
+      { n: 'WALKING', s: 'DOG WALK' }, { n: 'STRENGTH TRAINING' }, { n: 'RUNNING' }, { n: 'CYCLING' },
+      { n: 'CORE WORKOUT' }, { n: 'YOGA' }, { n: 'WALKING', s: 'BRISK' }, { n: 'MOBILITY ROUTINE' },
+      { n: 'INDOOR CYCLING' }, { n: 'ACTIVE GAMING / VR' }, { n: 'FUNCTIONAL TRAINING' }, { n: 'HIIT' },
+    ];
+    const close = () => this.setState({ [openKey]: false });
+    return h('div', { style: { position: 'absolute', inset: 0, zIndex: 20 } },
+      h('div', { onClick: close, style: { position: 'absolute', inset: 0, background: 'rgba(0,4,6,0.62)', backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)', animation: 'fadeIn .2s ease both' } }),
+      h('div', { style: { position: 'absolute', top: 118, left: '50%', transform: 'translateX(-50%)', width: 316, maxHeight: 392, background: '#0B141A', border: '1px solid #1B2D38', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 18px 50px rgba(0,0,0,0.6)', animation: 'snapOpen .26s cubic-bezier(.16,.84,.3,1) both' } },
+        h('div', { style: { padding: '14px 16px', borderBottom: '1px solid #16242C' } },
+          h('div', { style: { fontSize: 11, fontWeight: 700, letterSpacing: '2px' } }, 'RECLASSIFY'),
+          h('div', { style: { fontSize: 8.5, fontWeight: 600, letterSpacing: '1.5px', color: '#5E7280', marginTop: 4 } }, 'AUTO-DETECTED MOVEMENT')),
+        h('div', { style: { overflowY: 'auto' } }, sports.map((sp, i) => {
+          const label = sp.n + (sp.s ? ' (' + sp.s + ')' : '');
+          const on = label === cur;
+          return h('div', { key: i, onClick: () => this.setState({ [sportKey]: label, [openKey]: false }), style: { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid #111E25', background: on ? 'rgba(254,127,45,0.06)' : 'transparent' } },
+            h('span', { style: { fontSize: 9, fontWeight: 700, color: on ? '#FE7F2D' : '#3A5160', width: 16, fontVariantNumeric: 'tabular-nums' } }, String(i + 1).padStart(2, '0')),
+            h('span', { style: { flex: 1, fontSize: 11.5, fontWeight: on ? 700 : 600, letterSpacing: '0.5px', color: on ? '#FE7F2D' : '#EAECF0' } }, label),
+            on ? h('svg', { width: 14, height: 14, viewBox: '0 0 14 14', fill: 'none' }, h('path', { d: 'M2.5 7.5 5.5 10.5 11.5 3.5', stroke: '#FE7F2D', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' })) : null);
+        }))));
+  }
+
+  renderVals() {
+    const hrBands = [
+      { lo: 175, hi: 194, label: 'Z5' }, { lo: 155, hi: 175, label: 'Z4' }, { lo: 136, hi: 155, label: 'Z3' },
+      { lo: 116, hi: 136, label: 'Z2', wash: true }, { lo: 97, hi: 116, label: 'Z1' },
+    ];
+    const paceBands = [
+      { lo: 12.5, hi: 13.5, label: 'Z5' }, { lo: 13.5, hi: 15, label: 'Z4' }, { lo: 15, hi: 17, label: 'Z3' },
+      { lo: 17, hi: 22, label: 'Z2', wash: true }, { lo: 22, hi: 29, label: 'Z1' },
+    ];
+    const ZC = { Z5: '#FE7F2D', Z4: '#E0793A', Z3: '#8295A1', Z2: '#5E7280', Z1: '#3A5160' };
+    const sz = [{ z: 'Z5', sec: 0 }, { z: 'Z4', sec: 38 }, { z: 'Z3', sec: 892 }, { z: 'Z2', sec: 1518 }, { z: 'Z1', sec: 1178 }].map((o) => ({ ...o, color: ZC[o.z] }));
+    const wz = [{ z: 'Z5', sec: 0 }, { z: 'Z4', sec: 0 }, { z: 'Z3', sec: 58 }, { z: 'Z2', sec: 799 }, { z: 'Z1', sec: 361 }].map((o) => ({ ...o, color: ZC[o.z] }));
+
+    const ask = (on) => ({ width: 42, height: 24, borderRadius: 999, background: on ? '#FE7F2D' : '#1B2D38', position: 'relative', transition: 'background .2s', flexShrink: 0 });
+    const knob = (on) => ({ position: 'absolute', top: 3, left: on ? 21 : 3, width: 18, height: 18, borderRadius: 999, background: on ? '#000' : '#5E7280', transition: 'left .2s' });
+
+    return {
+      sportName1: this.state.sport1,
+      sportName3: this.state.sport3,
+      toggleSport1: () => this.setState((s) => ({ open1: !s.open1 })),
+      openSport3: () => this.setState({ open3: true }),
+      dropdown1: this.makeDropdown('open1', 'sport1'),
+      dropdown3: this.makeDropdown('open3', 'sport3'),
+      calDisp: String(this.state.cal),
+      hrCurve: this.makeCurve({ data: this.hr, dom: [90, 196], bands: hrBands, avg: 122, delay: 0.1 }),
+      paceCurve: this.makeCurve({ data: this.pace, dom: [12.5, 29], invert: true, bands: paceBands, avg: 16.13, delay: 0.1 }),
+      hrZoneBar: this.makeZoneBar(sz),
+      paceZoneBar: this.makeZoneBar(wz),
+      macroS: this.makeMacro([{ pct: 53, color: '#FE7F2D', label: 'CARBS', dark: true }, { pct: 47, color: '#5E7280', label: 'FAT' }]),
+      macroW: this.makeMacro([{ pct: 30, color: '#FE7F2D', label: 'CARBS', dark: true }, { pct: 4, color: '#E0793A', label: '' }, { pct: 66, color: '#5E7280', label: 'FAT' }]),
+      sparkS: this.makeSpark(this.kcalS, 15, 0.2),
+      sparkW: this.makeSpark(this.kcalW, 8, 0.2),
+      facesS: this.makeFaces('feel1'),
+      facesW: this.makeFaces('feel2'),
+      toggleAsk1: () => this.setState((s) => ({ ask1: !s.ask1 })),
+      toggleAsk2: () => this.setState((s) => ({ ask2: !s.ask2 })),
+      ask1Track: ask(this.state.ask1), ask1Knob: knob(this.state.ask1),
+      ask2Track: ask(this.state.ask2), ask2Knob: knob(this.state.ask2),
+    };
+  }
+}
+</script>
+</body>
+</html>

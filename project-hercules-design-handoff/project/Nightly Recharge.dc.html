@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes snapUp{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes bubbleIn{0%{opacity:0;transform:translate(-50%,8px) scale(.8)}100%{opacity:1;transform:translate(-50%,0) scale(1)}}
+  @keyframes winFade{from{opacity:0}to{opacity:1}}
+  @keyframes traceLine{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+</style>
+<meta name="design_doc_mode" content="canvas">
+</helmet>
+
+<!-- ============ FRAME 1 — RECHARGE OVERVIEW ============ -->
+<div style="position:absolute;left:0;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">01 · RECHARGE OVERVIEW</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Nightly Recharge — Overview" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 40px;display:flex;flex-direction:column;gap:24px;overflow-y:auto">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">NIGHTLY RECHARGE</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">SAT 20 JUN · TODAY</div>
+        </div>
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="3" height="13" viewBox="0 0 3 13"><circle cx="1.5" cy="1.5" r="1.5" fill="#5E7280"/><circle cx="1.5" cy="6.5" r="1.5" fill="#5E7280"/><circle cx="1.5" cy="11.5" r="1.5" fill="#5E7280"/></svg>
+        </div>
+      </div>
+
+      <!-- HERO INDICATOR -->
+      <div style="border-top:1px solid #16242C;padding-top:26px;display:flex;flex-direction:column;align-items:center;gap:18px">
+        <div style="align-self:flex-start;font-size:11px;font-weight:600;letter-spacing:3px;color:rgba(234,236,240,0.45)">RECHARGE STATUS</div>
+        <!-- charge bar strip -->
+        <div style="display:flex;align-items:flex-end;gap:3px;height:64px;width:100%">
+          <sc-for list="{{ heroBars }}" as="b" hint-placeholder-count="22">
+            <div style="{{ b }}"></div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;animation:fadeUp .5s ease .55s both">
+          <div style="font-size:34px;font-weight:800;letter-spacing:-0.5px;color:#FE7F2D">COMPROMISED</div>
+          <div style="font-size:12px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.5);text-align:center;max-width:300px;line-height:1.5">ANS rebounded, but short sleep held the charge back.</div>
+        </div>
+      </div>
+
+      <!-- SPLIT CARDS -->
+      <div style="display:flex;gap:12px">
+        <!-- ANS charge -->
+        <div onClick="{{ goAns }}" style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px 16px 18px;cursor:pointer;display:flex;flex-direction:column;animation:fadeUp .5s ease .7s both">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;color:rgba(234,236,240,0.55)">ANS CHARGE</div>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:3px;margin-top:12px">
+            <span style="font-size:40px;font-weight:800;letter-spacing:-2px;color:#FE7F2D;line-height:1">{{ ansDisp }}</span>
+          </div>
+          <div style="margin-top:9px;align-self:flex-start;border:1.5px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:4px 10px;font-size:8.5px;font-weight:700;letter-spacing:1px">ABOVE USUAL</div>
+          <div style="margin-top:16px">{{ ansScale }}</div>
+        </div>
+        <!-- Sleep charge -->
+        <div onClick="{{ goSleep }}" style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px 16px 18px;cursor:pointer;display:flex;flex-direction:column;animation:fadeUp .5s ease .8s both">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;color:rgba(234,236,240,0.55)">SLEEP CHARGE</div>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:3px;margin-top:12px">
+            <span style="font-size:40px;font-weight:800;letter-spacing:-2px;color:#EAECF0;line-height:1">{{ sleepDisp }}</span>
+          </div>
+          <div style="margin-top:9px;align-self:flex-start;border:1.5px solid #233D4D;color:#9FB0BC;border-radius:999px;padding:4px 10px;font-size:8.5px;font-weight:700;letter-spacing:1px">MUCH BELOW USUAL</div>
+          <div style="margin-top:16px">{{ sleepScale }}</div>
+        </div>
+      </div>
+
+      <!-- footnote -->
+      <div style="border-top:1px solid #16242C;padding-top:16px;display:flex;align-items:center;justify-content:space-between;font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280">
+        <span>28-DAY BASELINE</span><span>TAP A CARD TO DRILL ▸</span>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 2 — ANS CHARGE DETAIL ============ -->
+<div style="position:absolute;left:482px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">02 · ANS CHARGE DETAIL</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="ANS Charge — Detail" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 40px;display:flex;flex-direction:column;gap:22px;overflow-y:auto">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">ANS CHARGE</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">SAT 20 JUN 2026</div>
+        </div>
+        <div style="width:34px;height:34px;flex-shrink:0"></div>
+      </div>
+
+      <!-- HERO GAUGE -->
+      <div style="border-top:1px solid #16242C;padding-top:22px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:3px;color:rgba(234,236,240,0.45);margin-bottom:30px">ANS CHARGE · −10 TO +10</div>
+        {{ gaugeEl }}
+        <div style="display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:14px;animation:fadeUp .5s ease .5s both">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2px">ANS CHARGE</div>
+          <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#FE7F2D">ABOVE USUAL</div>
+        </div>
+      </div>
+
+      <!-- TELEMETRY STACK -->
+      <sc-for list="{{ telemetry }}" as="s" hint-placeholder-count="3">
+        <div style="border-top:1px solid #16242C;padding-top:18px">
+          <div style="display:flex;align-items:center;gap:11px">
+            <div style="width:30px;height:30px;flex-shrink:0;background:#233D4D;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#FE7F2D;letter-spacing:0.5px">{{ s.glyph }}</div>
+            <div style="flex:1;font-size:11px;font-weight:700;letter-spacing:1.2px;color:rgba(234,236,240,0.75)">{{ s.name }}</div>
+            <div style="display:flex;align-items:baseline;gap:4px">
+              <span style="font-size:26px;font-weight:800;letter-spacing:-1px;color:#FE7F2D">{{ s.value }}</span>
+              <span style="font-size:11px;font-weight:600;color:#5E7280">{{ s.unit }}</span>
+            </div>
+          </div>
+          {{ s.extra }}
+          <div style="font-size:9.5px;font-weight:600;letter-spacing:0.8px;color:#5E7280;margin-top:10px">{{ s.baseline }}</div>
+          <div style="margin-top:12px">{{ s.chart }}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+            <span style="display:flex;align-items:center;gap:6px;font-size:8.5px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.4)">
+              <svg width="11" height="11" viewBox="0 0 13 13" fill="none"><path d="M11 7.2A4.6 4.6 0 1 1 5.8 2 3.6 3.6 0 0 0 11 7.2Z" stroke="#5E7280" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              3:13 AM
+            </span>
+            <span style="font-size:8px;font-weight:700;letter-spacing:1px;color:#FE7F2D;opacity:0.8">▸ 4H AVG WINDOW</span>
+            <span style="display:flex;align-items:center;gap:6px;font-size:8.5px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.4)">
+              11:05 AM
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="3" stroke="#5E7280" stroke-width="1.3"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.8 2.8l1 1M10.2 10.2l1 1M11.2 2.8l-1 1M3.8 10.2l-1 1" stroke="#5E7280" stroke-width="1.1" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+        </div>
+      </sc-for>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 3 — NOT MEASURED ============ -->
+<div style="position:absolute;left:964px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">03 · NOT MEASURED</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Nightly Recharge — Not Measured" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 40px;display:flex;flex-direction:column;overflow:hidden">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">NIGHTLY RECHARGE</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">FRI 19 JUN · NO RECORD</div>
+        </div>
+        <div style="width:34px;height:34px;flex-shrink:0"></div>
+      </div>
+
+      <!-- empty hero -->
+      <div style="border-top:1px solid #16242C;margin-top:22px;padding-top:30px;display:flex;flex-direction:column;align-items:center;gap:20px">
+        <div style="align-self:flex-start;font-size:11px;font-weight:600;letter-spacing:3px;color:rgba(234,236,240,0.4)">RECHARGE STATUS</div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:64px;width:100%">
+          <sc-for list="{{ emptyBars }}" as="b" hint-placeholder-count="22">
+            <div style="{{ b }}"></div>
+          </sc-for>
+        </div>
+        <div style="position:relative;width:100%;display:flex;align-items:center;justify-content:center;height:30px">
+          <div style="position:absolute;width:100%;border-top:1.5px dashed #1B2D38"></div>
+          <div style="position:relative;background:#000;padding:0 14px;font-size:11px;font-weight:700;letter-spacing:2.5px;color:#3A5160">TELEMETRY UNAVAILABLE</div>
+        </div>
+      </div>
+
+      <!-- empty cards -->
+      <div style="display:flex;gap:12px;margin-top:26px">
+        <div style="flex:1;background:#0E1B22;border:1px dashed #1B2D38;border-radius:16px;padding:17px 16px 18px">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">ANS CHARGE</div>
+          <div style="font-size:40px;font-weight:800;letter-spacing:-2px;color:#3A5160;line-height:1;margin-top:12px">—</div>
+          <div style="margin-top:11px;align-self:flex-start;font-size:8.5px;font-weight:700;letter-spacing:1px;color:#3A5160">NO DATA</div>
+        </div>
+        <div style="flex:1;background:#0E1B22;border:1px dashed #1B2D38;border-radius:16px;padding:17px 16px 18px">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">SLEEP CHARGE</div>
+          <div style="font-size:40px;font-weight:800;letter-spacing:-2px;color:#3A5160;line-height:1;margin-top:12px">—</div>
+          <div style="margin-top:11px;align-self:flex-start;font-size:8.5px;font-weight:700;letter-spacing:1px;color:#3A5160">NO DATA</div>
+        </div>
+      </div>
+
+      <!-- empty CTA -->
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:14px">
+        <div style="font-size:12px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.5);line-height:1.6;text-align:center">Band wasn't worn Thursday night, or sleep was too short to compute recovery. Wear it overnight to capture ANS and sleep charge.</div>
+        <div style="background:#FE7F2D;color:#000;border-radius:999px;height:56px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;letter-spacing:2px">SYNC BAND</div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ans: 0, sleep: 0, hr: 0, b2b: 0, hrv: 0, br: 0 };
+
+  componentDidMount() {
+    const dur = 1150, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      this.setState({
+        ans: +(4.7 * e).toFixed(1),
+        sleep: Math.round(53 * e),
+        hr: Math.round(71 * e),
+        b2b: Math.round(841 * e),
+        hrv: Math.round(27 * e),
+        br: +(14.3 * e).toFixed(1),
+      });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  renderVals() {
+    const h = React.createElement;
+    const C = {
+      accent: '#FE7F2D', med: '#E0793A', muted: '#5E7280', faint: '#3A5160',
+      text: '#EAECF0', card: '#0E1B22', well: '#070F13', hair: '#16242C', border: '#1B2D38', track: '#16242C',
+    };
+
+    // ---------- FRAME 1 hero charge bars (COMPROMISED ≈ 32%) ----------
+    const NB = 22, filled = 7;
+    const heroBars = Array.from({ length: NB }, (_, i) => {
+      const on = i < filled;
+      return {
+        flex: 1, height: '100%', borderRadius: '2px',
+        background: on ? C.accent : '#16242C',
+        transformOrigin: 'bottom',
+        animation: 'grow .5s cubic-bezier(.16,.84,.3,1) both',
+        animationDelay: (i * 0.025).toFixed(3) + 's',
+      };
+    });
+    const emptyBars = Array.from({ length: NB }, () => ({
+      flex: 1, height: '100%', borderRadius: '2px', background: '#0E1B22', border: '1px dashed #1B2D38',
+    }));
+
+    // ---------- FRAME 1 ANS mini scale (−10..+10) ----------
+    const ansPct = (4.7 + 10) / 20 * 100; // value position
+    const ansScale = h('div', { style: { animation: 'fadeUp .5s ease .9s both' } },
+      h('div', { style: { position: 'relative', height: 8, borderRadius: 999, background: C.well, border: '1px solid ' + C.border, overflow: 'visible' } },
+        // fill from center to value
+        h('div', { style: { position: 'absolute', left: '50%', width: (ansPct - 50) + '%', top: 0, bottom: 0,
+          background: C.accent, borderRadius: 999, transformOrigin: 'left', animation: 'growX .6s cubic-bezier(.16,.84,.3,1) .95s both' } }),
+        // zero tick
+        h('div', { style: { position: 'absolute', left: '50%', top: -3, width: 1, height: 14, background: C.muted, opacity: 0.7 } }),
+        // value node
+        h('div', { style: { position: 'absolute', left: ansPct + '%', top: '50%', width: 9, height: 9, borderRadius: 999,
+          background: C.accent, border: '2px solid #000', transform: 'translate(-50%,-50%)' } })),
+      h('div', { style: { display: 'flex', justifyContent: 'space-between', marginTop: 7, fontSize: 8, fontWeight: 700, letterSpacing: '0.5px', color: C.faint } },
+        h('span', null, '−10'), h('span', { style: { color: C.muted } }, '0'), h('span', null, '+10')));
+
+    // ---------- FRAME 1 Sleep mini scale (0..100, usual 64) ----------
+    const sUsual = 64, sVal = 53;
+    const sleepScale = h('div', { style: { animation: 'fadeUp .5s ease 1s both' } },
+      h('div', { style: { position: 'relative', height: 8, borderRadius: 999, background: C.well, border: '1px solid ' + C.border, overflow: 'visible' } },
+        // fill from 0 to value (muted — below usual)
+        h('div', { style: { position: 'absolute', left: 0, width: sVal + '%', top: 0, bottom: 0,
+          background: C.muted, borderRadius: 999, transformOrigin: 'left', animation: 'growX .6s cubic-bezier(.16,.84,.3,1) 1.05s both' } }),
+        // usual marker
+        h('div', { style: { position: 'absolute', left: sUsual + '%', top: -3, width: 1, height: 14, borderLeft: '1px dashed ' + C.text, opacity: 0.6 } }),
+        // value node
+        h('div', { style: { position: 'absolute', left: sVal + '%', top: '50%', width: 9, height: 9, borderRadius: 999,
+          background: C.text, border: '2px solid #000', transform: 'translate(-50%,-50%)' } })),
+      h('div', { style: { display: 'flex', justifyContent: 'space-between', marginTop: 7, fontSize: 8, fontWeight: 700, letterSpacing: '0.5px', color: C.muted } },
+        h('span', null, '0'), h('span', { style: { color: C.text, opacity: 0.65 } }, 'USUAL 64'), h('span', { style: { color: C.faint } }, '100')));
+
+    // ---------- FRAME 2 hero gauge (−10..+10) ----------
+    const gv = 4.7, gPct = (gv + 10) / 20 * 100;
+    const ticks = [-10, -6, -2, 2, 6, 10];
+    const gaugeEl = h('div', { style: { position: 'relative', paddingTop: 26 } },
+      // value bubble
+      h('div', { style: { position: 'absolute', left: gPct + '%', top: -4, transform: 'translateX(-50%)',
+        background: C.accent, color: '#000', fontWeight: 800, fontSize: 14, letterSpacing: '-0.5px',
+        padding: '5px 11px', borderRadius: 999, whiteSpace: 'nowrap', animation: 'bubbleIn .5s cubic-bezier(.16,.84,.3,1) .25s both' } }, '+4.7'),
+      // pointer
+      h('div', { style: { position: 'absolute', left: gPct + '%', top: 26, transform: 'translate(-50%,-100%)',
+        width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '6px solid ' + C.accent,
+        animation: 'bubbleIn .5s cubic-bezier(.16,.84,.3,1) .25s both' } }),
+      // track
+      h('div', { style: { position: 'relative', height: 16, borderRadius: 999, background: C.well, border: '1px solid ' + C.border, overflow: 'visible' } },
+        h('div', { style: { position: 'absolute', left: '50%', width: (gPct - 50) + '%', top: 0, bottom: 0,
+          background: C.accent, borderRadius: 999, transformOrigin: 'left', animation: 'growX .7s cubic-bezier(.16,.84,.3,1) .3s both' } }),
+        // zero line
+        h('div', { style: { position: 'absolute', left: '50%', top: -6, width: 1, height: 28, borderLeft: '1px dashed ' + C.muted } })),
+      // zero label
+      h('div', { style: { position: 'absolute', left: '50%', top: 6, transform: 'translateX(-50%)', fontSize: 8, fontWeight: 700, color: C.muted } }, '0'),
+      // ticks
+      h('div', { style: { position: 'relative', marginTop: 10, height: 12 } },
+        ticks.map((t, i) => h('div', { key: i, style: { position: 'absolute', left: ((t + 10) / 20 * 100) + '%', transform: 'translateX(-50%)',
+          fontSize: 9, fontWeight: 700, letterSpacing: '0.5px', color: t === 2 ? C.accent : C.faint } }, (t > 0 ? '+' : '') + t))));
+
+    // ---------- FRAME 2 sample-series sparklines ----------
+    const N = 92; // ~5-min samples across 7h52m
+    const rng = (seed) => () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    const series = (seed, base, amp, spikeChance, spikeAmp) => {
+      const r = rng(seed); const out = []; let v = base;
+      for (let i = 0; i < N; i++) {
+        v += (base - v) * 0.25 + (r() - 0.5) * amp;        // mean-reverting jitter, un-smoothed
+        let s = v;
+        if (r() < spikeChance) s += (r() - 0.3) * spikeAmp; // occasional raw spike
+        out.push(s);
+      }
+      return out;
+    };
+    // win = 4h average window as fractions of the night
+    const makeSpark = (data, dom, grids, win, color) => {
+      const W = 340, H = 104, padT = 8, padB = 6, padL = 26;
+      const plotH = H - padT - padB, plotW = W - padL;
+      const xx = (i) => padL + (i / (N - 1)) * plotW;
+      const yy = (v) => padT + (1 - (v - dom[0]) / (dom[1] - dom[0])) * plotH;
+      const pts = data.map((v, i) => xx(i) + ',' + yy(Math.max(dom[0], Math.min(dom[1], v))).toFixed(1)).join(' ');
+      const winL = padL + win[0] * plotW, winR = padL + win[1] * plotW;
+      return h('svg', { viewBox: '0 0 ' + W + ' ' + H, width: '100%', height: H, preserveAspectRatio: 'none', style: { display: 'block', overflow: 'visible' } },
+        // panel
+        h('rect', { x: padL, y: padT, width: plotW, height: plotH, fill: C.well, rx: 3 }),
+        // 4h window highlight
+        h('rect', { x: winL, y: padT, width: winR - winL, height: plotH, fill: 'rgba(254,127,45,0.10)',
+          style: { animation: 'winFade .8s ease .35s both' } }),
+        h('line', { x1: winL, y1: padT, x2: winL, y2: padT + plotH, stroke: C.accent, strokeWidth: 1, strokeDasharray: '3 3', opacity: 0.55,
+          style: { animation: 'winFade .8s ease .35s both' } }),
+        h('line', { x1: winR, y1: padT, x2: winR, y2: padT + plotH, stroke: C.accent, strokeWidth: 1, strokeDasharray: '3 3', opacity: 0.55,
+          style: { animation: 'winFade .8s ease .35s both' } }),
+        // gridlines + labels
+        grids.map((g, i) => h('g', { key: i },
+          h('line', { x1: padL, y1: yy(g), x2: W, y2: yy(g), stroke: C.hair, strokeWidth: 1, strokeDasharray: '2 3' }),
+          h('text', { x: padL - 5, y: yy(g) + 3, textAnchor: 'end', style: { fontFamily: "'Azeret Mono',monospace", fontSize: 7.5, fontWeight: 700, fill: C.faint } }, String(g)))),
+        // raw line
+        h('polyline', { points: pts, fill: 'none', stroke: color, strokeWidth: 1.3, strokeLinejoin: 'round', strokeLinecap: 'round',
+          style: { '--len': 2600, strokeDasharray: 2600, strokeDashoffset: 2600, animation: 'traceLine 1.15s ease .35s both' } }));
+    };
+
+    const hrData = series(7, 71, 8, 0.04, 12);
+    const hrvData = series(31, 27, 14, 0.10, 40);
+    const brData = series(53, 14.3, 2.4, 0.05, 6);
+
+    const telemetry = [
+      {
+        glyph: 'H', name: 'HEART RATE · 4 H AVG', value: String(this.state.hr), unit: 'BPM',
+        baseline: 'BASELINE 74 BPM · 808 MS',
+        extra: h('div', { style: { display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 12, borderTop: '1px solid ' + C.hair, paddingTop: 11 } },
+          h('span', { style: { fontSize: 9.5, fontWeight: 600, letterSpacing: '0.8px', color: 'rgba(234,236,240,0.55)' } }, 'BEAT-TO-BEAT AVG'),
+          h('span', { style: { fontSize: 16, fontWeight: 800, letterSpacing: '-0.5px' } }, String(this.state.b2b), h('span', { style: { fontSize: 9, fontWeight: 600, color: C.muted, marginLeft: 3 } }, 'MS'))),
+        chart: makeSpark(hrData, [55, 95], [60, 70, 80, 90], [0.07, 0.55], C.text),
+      },
+      {
+        glyph: 'V', name: 'HEART RATE VARIABILITY · 4 H AVG', value: String(this.state.hrv), unit: 'MS',
+        baseline: 'BASELINE 24 MS',
+        extra: null,
+        chart: makeSpark(hrvData, [10, 90], [30, 50, 70], [0.07, 0.55], C.text),
+      },
+      {
+        glyph: 'B', name: 'BREATHING RATE · 4 H AVG', value: this.state.br.toFixed(1), unit: 'BR/MIN',
+        baseline: 'BASELINE 14.1 BR/MIN',
+        extra: null,
+        chart: makeSpark(brData, [8, 22], [10, 15, 20], [0.07, 0.55], C.text),
+      },
+    ];
+
+    return {
+      heroBars, emptyBars, ansScale, sleepScale, gaugeEl, telemetry,
+      ansDisp: '+' + this.state.ans.toFixed(1),
+      sleepDisp: String(this.state.sleep),
+      goAns: () => {}, goSleep: () => {},
+    };
+  }
+}
+</script>
+</body>
+</html>

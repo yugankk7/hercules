@@ -1,0 +1,29 @@
+/* ============================================================
+   EFFECTS — Hercules Telemetry
+   Borders over shadow. Depth comes from layered near-black surfaces
+   and 1px hairlines, not drop shadows. Blur is reserved for the
+   dimmed backdrop behind a slide-up web-auth sheet.
+   ============================================================ */
+:root {
+  /* ---- BORDERS ---- */
+  --hc-border-hairline: 1px solid var(--hc-hairline);
+  --hc-border-card:     1px solid var(--hc-border);
+  --hc-border-accent:   1.5px solid var(--hc-accent);
+  --hc-border-muted:    1.5px solid var(--hc-muted);
+
+  /* ---- SHADOWS (sparing — mostly none) ---- */
+  --hc-shadow-none:  none;
+  --hc-shadow-sheet: 0 -8px 40px rgba(0,0,0,0.55); /* slide-up sheet lip */
+  --hc-shadow-node:  0 0 0 2px #000;               /* timeline node ring against black */
+
+  /* ---- BACKDROP ---- */
+  --hc-backdrop-dim:  rgba(0,0,0,0.55);
+  --hc-backdrop-blur: blur(8px); /* @kind other */
+
+  /* ---- PROTECTION / HIGHLIGHT GRADIENTS ---- */
+  --hc-marker-fade: linear-gradient(90deg, var(--hc-accent), rgba(254,127,45,0)); /* timeline marker tail */
+  --hc-gate-band:   var(--hc-accent-wash); /* gate window fill on the strip */
+
+  /* ---- FOCUS ---- */
+  --hc-focus-ring: 0 0 0 2px #000, 0 0 0 4px var(--hc-accent);
+}

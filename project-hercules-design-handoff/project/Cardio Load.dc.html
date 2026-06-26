@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes drawLine{to{stroke-dashoffset:0}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes snapUp{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+</style>
+<meta name="design_doc_mode" content="canvas">
+</helmet>
+
+<!-- ============ FRAME 1 — PRODUCTIVE (populated) ============ -->
+<div style="position:absolute;left:0;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">01 · PRODUCTIVE</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Cardio Load — Populated" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 30px;display:flex;flex-direction:column;gap:22px;overflow:hidden">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">CARDIO LOAD</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">{{ dateLabel }}</div>
+        </div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:9.5px;font-weight:700;letter-spacing:1px">
+          <div style="{{ wkTabStyle }}" onClick="{{ setWk }}">WK</div>
+          <div style="{{ moTabStyle }}" onClick="{{ setMo }}">28D</div>
+        </div>
+      </div>
+
+      <!-- STATUS BANNER -->
+      <div style="display:flex;flex-direction:column;gap:13px;animation:snapUp .5s cubic-bezier(.16,.84,.3,1) both">
+        <div style="font-size:10px;font-weight:600;letter-spacing:2.5px;color:rgba(234,236,240,0.45)">TRAINING STATUS</div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:4px;height:38px;background:#FE7F2D;border-radius:2px;flex-shrink:0"></div>
+          <div style="font-size:38px;font-weight:800;letter-spacing:-1px;line-height:0.9;color:#FE7F2D">PRODUCTIVE</div>
+          <div style="border:1.5px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:5px 12px;font-size:10px;font-weight:700;letter-spacing:1.5px;white-space:nowrap;align-self:flex-start;margin-top:2px">▲ RAMPING</div>
+        </div>
+        <div style="font-size:12.5px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.55);line-height:1.55;max-width:330px">Strain is outpacing tolerance. Fitness is building — hold this load through the week to keep adapting.</div>
+      </div>
+
+      <!-- STAT ROW -->
+      <div style="display:flex;border-top:1px solid #16242C;border-bottom:1px solid #16242C;padding:14px 0">
+        <div style="flex:1;border-right:1px solid #16242C;padding-right:10px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">STRAIN</div>
+          <div style="display:flex;align-items:baseline;gap:4px;margin-top:6px"><span style="font-size:24px;font-weight:800;color:#FE7F2D;letter-spacing:-1px">{{ strainDisp }}</span><span style="font-size:10px;color:#5E7280">▲</span></div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 10px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">TOLERANCE</div>
+          <div style="font-size:24px;font-weight:800;letter-spacing:-1px;margin-top:6px">{{ tolDisp }}</div>
+        </div>
+        <div style="flex:1;padding-left:10px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">LOAD RATIO</div>
+          <div style="display:flex;align-items:baseline;gap:3px;margin-top:6px"><span style="font-size:24px;font-weight:800;letter-spacing:-1px">{{ ratioDisp }}</span><span style="font-size:10px;color:#5E7280">×</span></div>
+        </div>
+      </div>
+
+      <!-- LOAD MATRIX -->
+      <div style="display:flex;flex-direction:column;gap:11px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">LOAD MATRIX</div>
+          <div style="display:flex;gap:13px;font-size:8.5px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.5)">
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:13px;height:2.5px;background:#FE7F2D;border-radius:2px"></span>STRAIN</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:13px;height:2.5px;background:#5E7280;border-radius:2px"></span>TOLERANCE</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:3px;height:9px;background:#2E4E61;border-radius:1px"></span>SESSIONS</span>
+          </div>
+        </div>
+        {{ matrixFull }}
+        <div style="display:flex">
+          <sc-for list="{{ axisFull }}" as="a" hint-placeholder-count="7">
+            <div style="flex:1;text-align:center">
+              <div style="{{ a.lStyle }}">{{ a.l }}</div>
+              <div style="{{ a.dStyle }}">{{ a.d }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 2 — ESTIMATE (sparse) ============ -->
+<div style="position:absolute;left:482px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">02 · ESTIMATE · NEEDS DATA</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Cardio Load — Sparse" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 30px;display:flex;flex-direction:column;gap:22px;overflow:hidden">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">CARDIO LOAD</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">JUN 23–25 · WK</div>
+        </div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:9.5px;font-weight:700;letter-spacing:1px;opacity:0.45">
+          <div style="padding:7px 11px;background:#233D4D;color:#EAECF0">WK</div>
+          <div style="padding:7px 11px;color:rgba(234,236,240,0.5)">28D</div>
+        </div>
+      </div>
+
+      <!-- STATUS BANNER — estimate -->
+      <div style="display:flex;flex-direction:column;gap:13px;animation:snapUp .5s cubic-bezier(.16,.84,.3,1) both">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2.5px;color:rgba(234,236,240,0.45)">TRAINING STATUS</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:9px;font-weight:700;letter-spacing:1.5px;color:#FE7F2D"><span style="width:13px;height:13px;border:1px solid #FE7F2D;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:9px">!</span>ESTIMATE</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px">
+          <div style="width:4px;height:38px;background:#5E7280;border-radius:2px;flex-shrink:0"></div>
+          <div style="display:flex;align-items:flex-start;gap:6px"><span style="font-size:38px;font-weight:800;letter-spacing:-1px;line-height:0.9;color:#9FB0BC">PRODUCTIVE</span><span style="font-size:18px;font-weight:800;color:#FE7F2D;line-height:1">*</span></div>
+        </div>
+        <div style="font-size:12.5px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.55);line-height:1.55;max-width:330px"><span style="color:#FE7F2D">*Estimate</span> — 3 of 7 sessions tracked. Log 4 more workouts this week to lock in an accurate status.</div>
+      </div>
+
+      <!-- STAT ROW — estimate -->
+      <div style="display:flex;border-top:1px solid #16242C;border-bottom:1px solid #16242C;padding:14px 0">
+        <div style="flex:1;border-right:1px solid #16242C;padding-right:10px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">STRAIN</div>
+          <div style="display:flex;align-items:baseline;gap:2px;margin-top:6px"><span style="font-size:24px;font-weight:800;color:#FE7F2D;letter-spacing:-1px">58</span><span style="font-size:13px;font-weight:800;color:#FE7F2D">*</span></div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 10px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">TOLERANCE</div>
+          <div style="font-size:24px;font-weight:800;letter-spacing:-1px;margin-top:6px;color:#3A5160">—</div>
+        </div>
+        <div style="flex:1;padding-left:10px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">LOAD RATIO</div>
+          <div style="font-size:24px;font-weight:800;letter-spacing:-1px;margin-top:6px;color:#3A5160">—</div>
+        </div>
+      </div>
+
+      <!-- LOAD MATRIX — sparse -->
+      <div style="display:flex;flex-direction:column;gap:11px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">LOAD MATRIX</div>
+          <div style="display:flex;gap:13px;font-size:8.5px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.5)">
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:13px;height:2.5px;background:#FE7F2D;border-radius:2px"></span>STRAIN</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:13px;height:2.5px;background:#5E7280;border-radius:2px"></span>TOLERANCE</span>
+          </div>
+        </div>
+        {{ matrixSparse }}
+        <div style="display:flex">
+          <sc-for list="{{ axisSparse }}" as="a" hint-placeholder-count="7">
+            <div style="flex:1;text-align:center">
+              <div style="{{ a.lStyle }}">{{ a.l }}</div>
+              <div style="{{ a.dStyle }}">{{ a.d }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { range: 'WK', strain: 0, tol: 0, ratio: 0 };
+
+  componentDidMount() {
+    const dur = 1100, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      this.setState({
+        strain: Math.round(85 * e),
+        tol: Math.round(70 * e),
+        ratio: +(1.21 * e).toFixed(2),
+      });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  renderVals() {
+    const h = React.createElement;
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+    // Load Matrix builder -------------------------------------------------
+    const makeMatrix = (cfg) => {
+      const W = 358, H = 206, yTop = 10, yBot = H - 4;
+      const n = cfg.strain.length;
+      const plotH = yBot - yTop;
+      const colW = W / n;
+      const yv = (v) => yBot - (v / 100) * plotH;
+      const xc = (i) => (i + 0.5) * colW;
+      const vis = cfg.visible == null ? n : cfg.visible;
+      const sBarW = n > 10 ? 2 : 3.4;          // session bar width
+      const barScale = 0.6;                     // session bars occupy lower portion, beneath the lines
+
+      // load zone bands
+      const zones = [
+        [88, 100, 'rgba(254,127,45,0.11)', 'OVERREACHING'],
+        [62, 88,  'rgba(254,127,45,0.055)', 'PRODUCTIVE'],
+        [35, 62,  '#0E1B22',               'MAINTAINING'],
+        [0,  35,  '#070F13',               'DETRAINING'],
+      ];
+      const bg = [];
+      zones.forEach((z, i) => {
+        const yhi = yv(z[1]);
+        bg.push(h('rect', { key: 'z' + i, x: 0, y: yhi, width: W, height: yv(z[0]) - yhi, fill: z[2] }));
+        bg.push(h('text', { key: 'zl' + i, x: W - 5, y: yhi + 11, textAnchor: 'end',
+          style: { fontFamily: "'Azeret Mono',monospace", fontSize: 7, fontWeight: 600, letterSpacing: '0.5px', fill: 'rgba(234,236,240,0.2)' } }, z[3]));
+      });
+
+      // per-day vertical gridlines
+      const grid = [];
+      const step = cfg.grid === 'week' ? 7 : 1;
+      for (let i = step; i < n; i += step) {
+        grid.push(h('line', { key: 'g' + i, x1: i * colW, x2: i * colW, y1: yTop, y2: yBot, stroke: '#15232B', strokeWidth: 1 }));
+      }
+      // today marker column tint
+      if (cfg.today != null && cfg.today < n) {
+        grid.push(h('rect', { key: 'today', x: cfg.today * colW, y: yTop, width: colW, height: plotH, fill: 'rgba(254,127,45,0.04)' }));
+      }
+
+      // session load bars (multiple thin bars per day) ----------------------
+      const bars = [];
+      (cfg.sessions || []).forEach((day, i) => {
+        if (i >= vis) return;
+        day.forEach((s, j) => {
+          const bh = (s.l / 100) * plotH * barScale;
+          const x = i * colW + s.p * colW - sBarW / 2;
+          const col = s.l < 40 ? '#1B2D38' : s.l < 70 ? '#27424F' : '#33576B';
+          bars.push(h('rect', { key: 'b' + i + '_' + j, x, y: yBot - bh, width: sBarW, height: bh, rx: 1.5, fill: col,
+            style: { transformBox: 'fill-box', transformOrigin: 'bottom', animation: 'grow .45s cubic-bezier(.16,.84,.3,1) both', animationDelay: (i * 0.05 + j * 0.03).toFixed(2) + 's' } }));
+        });
+      });
+      // ghost ticks for untracked days
+      for (let i = vis; i < n; i++) {
+        bars.push(h('rect', { key: 'gh' + i, x: xc(i) - sBarW / 2, y: yBot - 11, width: sBarW, height: 11, rx: 1.5,
+          fill: 'none', stroke: '#1B2D38', strokeWidth: 1, strokeDasharray: '2 3' }));
+      }
+
+      // dual trend lines (straight segments + vertex dots) ------------------
+      const path = (pts) => pts.map((p, i) => `${i ? 'L' : 'M'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+      const tolPts = cfg.tol.slice(0, vis).map((v, i) => ({ x: xc(i), y: yv(v) }));
+      const strPts = cfg.strain.slice(0, vis).map((v, i) => ({ x: xc(i), y: yv(v) }));
+      const baseDelay = Math.min(0.55, vis * 0.04 + 0.15);
+      const fx = [];
+
+      // sparse: dashed tolerance projection + AWAITING region
+      if (cfg.visible != null && vis >= 1 && vis < n) {
+        const ly = yv(cfg.tol[vis - 1]);
+        const bx = vis * colW;
+        fx.push(h('line', { key: 'sep', x1: bx, y1: yTop, x2: bx, y2: yBot, stroke: '#1B2D38', strokeWidth: 1, strokeDasharray: '2 4' }));
+        fx.push(h('line', { key: 'proj', x1: xc(vis - 1), y1: ly, x2: W, y2: ly, stroke: '#33454F', strokeWidth: 1.5, strokeDasharray: '4 4', strokeLinecap: 'round' }));
+        fx.push(h('text', { key: 'aw', x: (bx + W) / 2, y: yv(46), textAnchor: 'middle',
+          style: { fontFamily: "'Azeret Mono',monospace", fontSize: 8, fontWeight: 700, letterSpacing: '1.5px', fill: 'rgba(234,236,240,0.3)' } }, 'AWAITING'));
+      }
+
+      fx.push(h('path', { key: 'tol', d: path(tolPts), fill: 'none', stroke: '#8295A1', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', pathLength: 1,
+        style: { strokeDasharray: 1, strokeDashoffset: 1, animation: `drawLine .9s ease ${baseDelay}s forwards` } }));
+      fx.push(h('path', { key: 'str', d: path(strPts), fill: 'none', stroke: '#FE7F2D', strokeWidth: 2.6, strokeLinecap: 'round', strokeLinejoin: 'round', pathLength: 1,
+        style: { strokeDasharray: 1, strokeDashoffset: 1, animation: `drawLine .9s ease ${(baseDelay + 0.1).toFixed(2)}s forwards` } }));
+
+      // vertex dots
+      tolPts.forEach((p, i) => fx.push(h('circle', { key: 'td' + i, cx: p.x, cy: p.y, r: 2.6, fill: '#8295A1',
+        style: { opacity: 0, animation: `fadeUp .3s ease ${(baseDelay + 0.5 + i * 0.05).toFixed(2)}s both` } })));
+      strPts.forEach((p, i) => {
+        const lastOne = i === strPts.length - 1;
+        fx.push(h('circle', { key: 'sd' + i, cx: p.x, cy: p.y, r: lastOne ? 4.5 : 3, fill: '#FE7F2D', stroke: '#000', strokeWidth: lastOne ? 2 : 1.5,
+          style: { opacity: 0, animation: `fadeUp .3s ease ${(baseDelay + 0.55 + i * 0.05).toFixed(2)}s both` } }));
+      });
+
+      return h('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H, preserveAspectRatio: 'none',
+        style: { display: 'block', overflow: 'visible' } }, ...bg, ...grid, ...bars, ...fx);
+    };
+
+    // data ----------------------------------------------------------------
+    const weekly = {
+      sessions: [
+        [{ l: 78, p: 0.32 }, { l: 42, p: 0.5 }, { l: 22, p: 0.64 }],
+        [{ l: 58, p: 0.4 }, { l: 28, p: 0.58 }],
+        [{ l: 85, p: 0.46 }],
+        [{ l: 30, p: 0.5 }],
+        [{ l: 62, p: 0.38 }, { l: 34, p: 0.58 }],
+        [{ l: 90, p: 0.42 }, { l: 52, p: 0.6 }],
+        [{ l: 46, p: 0.5 }],
+      ],
+      strain: [56, 60, 58, 62, 64, 80, 85],
+      tol:    [66, 67, 67, 68, 69, 69, 70],
+      grid: 'day', today: 6,
+    };
+    const md = Array.from({ length: 28 }, (_, i) => i);
+    const monthly = {
+      sessions: md.map((i) => {
+        const base = clamp(44 + 11 * Math.sin(i / 2.1) + ((i * 31) % 19) - 9, 0, 96);
+        if (i % 7 === 3) return [];                       // a rest day each week
+        const arr = [{ l: base, p: 0.5 }];
+        if (i % 3 === 0) arr.push({ l: clamp(base - 28, 12, 70), p: 0.28 });
+        return arr;
+      }),
+      strain: md.map((i) => clamp(46 + i * 1.05 + 9 * Math.sin(i / 2.4), 18, 92)),
+      tol:    md.map((i) => clamp(57 + i * 0.5, 56, 72)),
+      grid: 'week', today: 27,
+    };
+    const sparse = {
+      sessions: [
+        [{ l: 60, p: 0.4 }, { l: 30, p: 0.6 }],
+        [{ l: 72, p: 0.46 }],
+        [{ l: 50, p: 0.4 }, { l: 24, p: 0.6 }],
+        [], [], [], [],
+      ],
+      strain: [54, 58, 57, 0, 0, 0, 0],
+      tol:    [64, 65, 66, 0, 0, 0, 0],
+      visible: 3, grid: 'day', today: 3,
+    };
+
+    const isWk = this.state.range === 'WK';
+    const tabBase = { padding: '7px 11px', cursor: 'pointer', transition: 'background .15s, color .15s' };
+    const wkTabStyle = { ...tabBase, background: isWk ? '#FE7F2D' : 'transparent', color: isWk ? '#000' : 'rgba(234,236,240,0.5)' };
+    const moTabStyle = { ...tabBase, background: !isWk ? '#FE7F2D' : 'transparent', color: !isWk ? '#000' : 'rgba(234,236,240,0.5)' };
+
+    // two-line axes: { l, d, lStyle, dStyle } — today emphasized
+    const axTop = (on) => ({ fontSize: '9px', fontWeight: on ? 700 : 600, letterSpacing: '0.5px', color: on ? '#EAECF0' : 'rgba(234,236,240,0.4)' });
+    const axBot = (on) => ({ fontSize: '8px', fontWeight: on ? 700 : 500, letterSpacing: '0.5px', color: on ? '#FE7F2D' : 'rgba(234,236,240,0.3)', marginTop: '2px' });
+    const mkAxis = (defs, todayIdx) => defs.map((dd, i) => ({ l: dd[0], d: dd[1], lStyle: axTop(i === todayIdx), dStyle: axBot(i === todayIdx) }));
+
+    const weekDefs = [['M', '22'], ['T', '23'], ['W', '24'], ['T', '25'], ['F', '26'], ['S', '27'], ['S', '28']];
+    const sparseDefs = [['M', '23'], ['T', '24'], ['W', '25'], ['T', '26'], ['F', '27'], ['S', '28'], ['S', '29']];
+    const monthDefs = md.map((i) => [(i === 0 ? '4W' : i === 7 ? '3W' : i === 14 ? '2W' : i === 21 ? '1W' : i === 27 ? 'NOW' : ''), '']);
+
+    return {
+      dateLabel: isWk ? 'JUN 22–28 · WK' : 'MAY 29 – JUN 25 · 28D',
+      strainDisp: String(this.state.strain),
+      tolDisp: String(this.state.tol),
+      ratioDisp: this.state.ratio.toFixed(1),
+      setWk: () => this.setState({ range: 'WK' }),
+      setMo: () => this.setState({ range: '28D' }),
+      wkTabStyle, moTabStyle,
+      matrixFull: makeMatrix(isWk ? weekly : monthly),
+      matrixSparse: makeMatrix(sparse),
+      axisFull: isWk ? mkAxis(weekDefs, 6) : mkAxis(monthDefs, 27),
+      axisSparse: mkAxis(sparseDefs, 3),
+    };
+  }
+}
+</script>
+</body>
+</html>

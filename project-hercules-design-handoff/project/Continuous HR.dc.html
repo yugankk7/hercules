@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  @keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.065)}26%{transform:scale(0.985)}42%{transform:scale(1.02)}}
+  @keyframes ping{0%{transform:scale(0.6);opacity:0.55}80%{opacity:0}100%{transform:scale(1.75);opacity:0}}
+  @keyframes glowP{0%,100%{opacity:0.32}13%{opacity:0.6}}
+  @keyframes drawLine{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+  @keyframes edgeGlow{0%,100%{opacity:0.16}50%{opacity:0.42}}
+  @keyframes livePulse{0%,100%{opacity:0.5;transform:scale(0.85)}50%{opacity:1;transform:scale(1.2)}}
+  @keyframes snapUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes revealUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+<meta name="design_doc_mode" content="canvas">
+</helmet>
+
+<!-- ============ FRAME 1 — LIVE / TODAY ============ -->
+<div style="position:absolute;left:0;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">01 · LIVE / TODAY</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Continuous HR — Live" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:58px 22px 36px;display:flex;flex-direction:column;gap:18px;overflow-y:auto">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">CONTINUOUS HR</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">TODAY · THU 25</div>
+        </div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:9px;font-weight:700;letter-spacing:0.5px">
+          <div style="padding:7px 9px;background:#FE7F2D;color:#000">DAY</div>
+          <div style="padding:7px 9px;color:rgba(234,236,240,0.5)">3D</div>
+          <div style="padding:7px 9px;color:rgba(234,236,240,0.5)">WK</div>
+        </div>
+      </div>
+
+      <!-- HERO — LIVE PULSE -->
+      <div style="border-top:1px solid #16242C;padding-top:8px">
+        <div ref="{{ heartRef }}" style="position:relative;height:230px;display:flex;align-items:center;justify-content:center;--beat:0.83s;animation:snapUp .5s cubic-bezier(.2,.9,.25,1) both">
+          <div style="position:absolute;width:196px;height:196px;border-radius:999px;background:radial-gradient(circle,rgba(254,127,45,0.55),rgba(254,127,45,0) 68%);filter:blur(24px);opacity:0.45;animation:glowP var(--beat) ease-in-out infinite"></div>
+          <div style="position:absolute;width:128px;height:128px;border-radius:999px;border:1.5px solid rgba(254,127,45,0.6);animation:ping var(--beat) cubic-bezier(.2,.7,.3,1) infinite"></div>
+          <div style="position:absolute;width:128px;height:128px;border-radius:999px;border:1.5px solid rgba(254,127,45,0.4);animation:ping var(--beat) cubic-bezier(.2,.7,.3,1) infinite;animation-delay:calc(var(--beat) / 2)"></div>
+          <div style="position:absolute;width:196px;height:196px;border-radius:999px;border:1px solid rgba(254,127,45,0.15)"></div>
+          <div style="position:absolute;width:154px;height:154px;border-radius:999px;border:1px solid rgba(254,127,45,0.26)"></div>
+          <div style="position:absolute;width:112px;height:112px;border-radius:999px;border:2px solid #FE7F2D;background:rgba(254,127,45,0.05);box-shadow:0 0 22px rgba(254,127,45,0.25),inset 0 0 18px rgba(254,127,45,0.12);animation:beat var(--beat) cubic-bezier(.2,.7,.25,1) infinite"></div>
+          <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center">
+            <span style="font-size:74px;font-weight:800;color:#FE7F2D;letter-spacing:-4px;line-height:0.78;font-variant-numeric:tabular-nums">{{ liveNum }}</span>
+            <div style="font-size:10px;font-weight:700;letter-spacing:4px;color:#5E7280;margin-top:6px">BPM</div>
+          </div>
+        </div>
+        <div style="margin-top:2px">{{ liveTag }}</div>
+      </div>
+
+      <!-- SUPPORTING STAT ROW -->
+      <div style="display:flex;border-top:1px solid #16242C;border-bottom:1px solid #16242C;padding:13px 0">
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">RESTING</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ lvRest }}</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">MIN</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">{{ lvMin }}</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">MAX</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">{{ lvMax }}</div>
+        </div>
+        <div style="flex:1;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">AVG</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">{{ lvAvg }}</div>
+        </div>
+      </div>
+
+      <!-- 24/7 CURVE -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">24/7 HR CURVE</div>
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1px;color:#5E7280">DRAG TO SCRUB ◂▸</div>
+        </div>
+        <div style="position:relative;height:150px;overflow:visible">
+          {{ liveChartEl }}
+          <div style="position:absolute;inset:0;cursor:ew-resize;touch-action:none" onPointerDown="{{ liveDown }}" onPointerMove="{{ liveMove }}" onPointerUp="{{ liveUp }}" onPointerLeave="{{ liveUp }}">{{ liveScrubEl }}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.35)">
+          <span>00</span><span>04</span><span>08</span><span>12</span><span>16</span><span>20</span><span>24</span>
+        </div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 2 — HISTORICAL DAY ============ -->
+<div style="position:absolute;left:472px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">02 · HISTORICAL DAY</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Continuous HR — Historical" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:58px 22px 36px;display:flex;flex-direction:column;gap:18px;overflow-y:auto">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">CONTINUOUS HR</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">MON · JUN 22</div>
+        </div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:9px;font-weight:700;letter-spacing:0.5px">
+          <div style="padding:7px 9px;background:#FE7F2D;color:#000">DAY</div>
+          <div style="padding:7px 9px;color:rgba(234,236,240,0.5)">3D</div>
+          <div style="padding:7px 9px;color:rgba(234,236,240,0.5)">WK</div>
+        </div>
+      </div>
+
+      <!-- HERO — STATIC -->
+      <div style="border-top:1px solid #16242C;padding-top:8px">
+        <div style="position:relative;height:230px;display:flex;align-items:center;justify-content:center">
+          <div style="position:absolute;width:188px;height:188px;border-radius:999px;background:radial-gradient(circle,rgba(35,61,77,0.7),rgba(35,61,77,0) 68%);filter:blur(22px);opacity:0.5"></div>
+          <div style="position:absolute;width:196px;height:196px;border-radius:999px;border:1px solid rgba(35,61,77,0.7)"></div>
+          <div style="position:absolute;width:154px;height:154px;border-radius:999px;border:1px solid rgba(35,61,77,0.9)"></div>
+          <div style="position:absolute;width:112px;height:112px;border-radius:999px;border:2px solid #233D4D;background:rgba(35,61,77,0.12)"></div>
+          <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center">
+            <span style="font-size:74px;font-weight:800;color:#EAECF0;letter-spacing:-4px;line-height:0.78;font-variant-numeric:tabular-nums">{{ histNum }}</span>
+            <div style="font-size:10px;font-weight:700;letter-spacing:4px;color:#5E7280;margin-top:6px">BPM</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;justify-content:center;margin-top:2px">
+          <span style="width:7px;height:7px;border-radius:999px;background:#5E7280"></span>
+          <span style="font-size:11px;font-weight:700;letter-spacing:2.5px;color:#5E7280">{{ histSub }}</span>
+        </div>
+      </div>
+
+      <!-- STAT ROW -->
+      <div style="display:flex;border-top:1px solid #16242C;border-bottom:1px solid #16242C;padding:13px 0">
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">RESTING</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ hvRest }}</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">MIN</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">{{ hvMin }}</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">MAX</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">{{ hvMax }}</div>
+        </div>
+        <div style="flex:1;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">AVG</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">{{ hvAvg }}</div>
+        </div>
+      </div>
+
+      <!-- 24/7 CURVE -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">24/7 HR CURVE</div>
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1px;color:#5E7280">DRAG TO SCRUB ◂▸</div>
+        </div>
+        <div style="position:relative;height:150px;overflow:visible">
+          {{ histChartEl }}
+          <div style="position:absolute;inset:0;cursor:ew-resize;touch-action:none" onPointerDown="{{ histDown }}" onPointerMove="{{ histMove }}" onPointerUp="{{ histUp }}" onPointerLeave="{{ histUp }}">{{ histScrubEl }}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.35)">
+          <span>00</span><span>04</span><span>08</span><span>12</span><span>16</span><span>20</span><span>24</span>
+        </div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 3 — GAPS / NO DATA ============ -->
+<div style="position:absolute;left:944px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">03 · GAPS / BAND OFF</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Continuous HR — Gaps" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:58px 22px 36px;display:flex;flex-direction:column;gap:18px;overflow-y:auto">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">CONTINUOUS HR</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">TUE · JUN 23</div>
+        </div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:9px;font-weight:700;letter-spacing:0.5px">
+          <div style="padding:7px 9px;background:#FE7F2D;color:#000">DAY</div>
+          <div style="padding:7px 9px;color:rgba(234,236,240,0.5)">3D</div>
+          <div style="padding:7px 9px;color:rgba(234,236,240,0.5)">WK</div>
+        </div>
+      </div>
+
+      <!-- HERO — PARTIAL -->
+      <div style="border-top:1px solid #16242C;padding-top:8px">
+        <div style="position:relative;height:230px;display:flex;align-items:center;justify-content:center">
+          <div style="position:absolute;width:188px;height:188px;border-radius:999px;background:radial-gradient(circle,rgba(35,61,77,0.55),rgba(35,61,77,0) 68%);filter:blur(22px);opacity:0.4"></div>
+          <div style="position:absolute;width:196px;height:196px;border-radius:999px;border:1px dashed rgba(35,61,77,0.7)"></div>
+          <div style="position:absolute;width:154px;height:154px;border-radius:999px;border:1px solid rgba(35,61,77,0.8)"></div>
+          <div style="position:absolute;width:112px;height:112px;border-radius:999px;border:2px solid #233D4D;background:rgba(35,61,77,0.1)"></div>
+          <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center">
+            <span style="font-size:74px;font-weight:800;color:#EAECF0;letter-spacing:-4px;line-height:0.78;font-variant-numeric:tabular-nums">{{ gapAvg }}</span>
+            <div style="font-size:10px;font-weight:700;letter-spacing:4px;color:#5E7280;margin-top:6px">BPM</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:2px">
+          <span style="font-size:11px;font-weight:700;letter-spacing:2.5px;color:#5E7280">PARTIAL DAY</span>
+          <span style="border:1px solid #3A5160;border-radius:999px;padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:1px;color:#5E7280">OFF {{ gapOff }}</span>
+        </div>
+      </div>
+
+      <!-- STAT ROW -->
+      <div style="display:flex;border-top:1px solid #16242C;border-bottom:1px solid #16242C;padding:13px 0">
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">RESTING</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ gapRest }}</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">MIN</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">{{ gapMin }}</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">MAX</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">{{ gapMax }}</div>
+        </div>
+        <div style="flex:1;padding:0 8px;text-align:center">
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">AVG</div>
+          <div style="font-size:21px;font-weight:800;letter-spacing:-0.5px;margin-top:5px;font-variant-numeric:tabular-nums">{{ gapAvg }}</div>
+        </div>
+      </div>
+
+      <!-- 24/7 CURVE WITH GAPS -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">24/7 HR CURVE</div>
+          <div style="font-size:8.5px;font-weight:600;letter-spacing:1px;color:#3A5160">2 GAPS · BAND OFF</div>
+        </div>
+        <div style="position:relative;height:150px;overflow:visible">
+          {{ gapChartEl }}
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.35)">
+          <span>00</span><span>04</span><span>08</span><span>12</span><span>16</span><span>20</span><span>24</span>
+        </div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { liveBpm: 0, scrubLive: null, scrubHist: null };
+
+  constructor(props) {
+    super(props);
+    this.heartRef = React.createRef();
+    this.N = 145;            // 0:00 .. 24:00 every 10 min
+    this.LIVE = 85;          // live edge ~ 14:10
+    this.W = 358; this.H = 150;
+    this.pad = { l: 6, r: 6, t: 16, b: 24 };
+    this.DMIN = 40; this.DMAX = 156;
+    this.gapRanges = [[12, 30], [78, 93]];   // 02:00-05:00, 13:00-15:30
+
+    const lerpCps = (cps) => {
+      const out = [];
+      for (let i = 0; i < this.N; i++) {
+        const hr = i / 6;
+        let a = cps[0], b = cps[cps.length - 1];
+        for (let k = 0; k < cps.length - 1; k++) {
+          if (hr >= cps[k][0] && hr <= cps[k + 1][0]) { a = cps[k]; b = cps[k + 1]; break; }
+        }
+        const span = (b[0] - a[0]) || 1;
+        const f = (hr - a[0]) / span;
+        const base = a[1] + (b[1] - a[1]) * f;
+        const noise = 2.0 * Math.sin(i * 1.9) + 1.1 * Math.sin(i * 0.7 + 1);
+        out.push(Math.round(base + noise));
+      }
+      return out;
+    };
+    this.day = lerpCps([
+      [0,50],[2,46],[4,48],[6,47],[6.8,55],[7.5,69],[9,79],[10.5,73],
+      [12,87],[12.4,116],[12.75,149],[13.1,121],[13.6,90],[15,82],
+      [16.5,89],[18,76],[19.5,81],[21,70],[22,60],[23,54],[24,51],
+    ]);
+    this.hist = lerpCps([
+      [0,49],[2,47],[4,48],[6,48],[7,56],[8.5,72],[10,76],[12,80],
+      [14,78],[15.5,85],[17,77],[18.5,81],[20,72],[21.5,66],[23,56],[24,52],
+    ]);
+  }
+
+  componentDidMount() {
+    this.applyBeat(72);
+    const target = 72, dur = 1100, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      this.setState({ liveBpm: Math.round(target * e) });
+      if (p < 1) requestAnimationFrame(tick); else this.startWander();
+    };
+    requestAnimationFrame(tick);
+  }
+  componentWillUnmount() { clearInterval(this.wander); }
+
+  startWander() {
+    this.wander = setInterval(() => {
+      if (this.state.scrubLive != null) return;
+      const b = 70 + Math.round(Math.random() * 9);
+      this.setState({ liveBpm: b });
+      this.applyBeat(b);
+    }, 1500);
+  }
+  applyBeat(bpm) {
+    const el = this.heartRef.current;
+    if (el) el.style.setProperty('--beat', (60 / bpm).toFixed(2) + 's');
+  }
+
+  X(i) { const { l, r } = this.pad; return l + (i / (this.N - 1)) * (this.W - l - r); }
+  Y(v) { const { t, b } = this.pad; return t + (1 - (v - this.DMIN) / (this.DMAX - this.DMIN)) * (this.H - t - b); }
+
+  scrubAt(e, key, maxIdx) {
+    const r = e.currentTarget.getBoundingClientRect();
+    let idx = Math.round(((e.clientX - r.left) / r.width) * (this.N - 1));
+    idx = Math.max(0, Math.min(maxIdx, idx));
+    this.setState({ [key]: idx });
+  }
+  mkScrub(key, maxIdx) {
+    return {
+      down: (e) => { this['_d_' + key] = true; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {} this.scrubAt(e, key, maxIdx); },
+      move: (e) => { if (this['_d_' + key]) this.scrubAt(e, key, maxIdx); },
+      up: () => { this['_d_' + key] = false; this.setState({ [key]: null }); },
+    };
+  }
+
+  renderVals() {
+    const h = React.createElement;
+    const C = { accent: '#FE7F2D', muted: '#5E7280', faint: '#3A5160', text: '#EAECF0', hair: '#16242C' };
+    const timeLabel = (idx) => { const m = idx * 10; return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+    const slice = (a, s, e) => a.slice(s, e + 1);
+    const mn = (a) => Math.min(...a), mx = (a) => Math.max(...a), av = (a) => Math.round(a.reduce((x, y) => x + y, 0) / a.length);
+
+    const segLen = (data, run) => {
+      let L = 0;
+      for (let k = 1; k < run.length; k++) {
+        const dx = this.X(run[k]) - this.X(run[k - 1]);
+        const dy = this.Y(data[run[k]]) - this.Y(data[run[k - 1]]);
+        L += Math.hypot(dx, dy);
+      }
+      return Math.ceil(L) + 10;
+    };
+
+    const buildChart = (data, drawTo, gaps, o) => {
+      o = o || {};
+      const W = this.W, H = this.H;
+      const gid = 'hrg' + (this._gc = (this._gc || 0) + 1);
+      const inGap = (i) => gaps.some((g) => i >= g[0] && i <= g[1]);
+      const segs = []; let cur = [];
+      for (let i = 0; i <= drawTo; i++) {
+        if (inGap(i)) { if (cur.length > 1) segs.push(cur); cur = []; } else cur.push(i);
+      }
+      if (cur.length > 1) segs.push(cur);
+      const ptStr = (run) => run.map((i) => this.X(i).toFixed(1) + ',' + this.Y(data[i]).toFixed(1)).join(' ');
+      const ch = [];
+      ch.push(h('defs', { key: 'd' },
+        h('linearGradient', { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 },
+          h('stop', { offset: '0%', stopColor: '#FE7F2D', stopOpacity: 0.2 }),
+          h('stop', { offset: '100%', stopColor: '#FE7F2D', stopOpacity: 0 }))));
+      const guide = (v, label, col) => h('g', { key: 'gu' + label },
+        h('line', { x1: this.pad.l, y1: this.Y(v), x2: W - this.pad.r, y2: this.Y(v), stroke: col, strokeWidth: 1, strokeDasharray: '2 4', opacity: 0.55 }),
+        h('text', { x: W - this.pad.r, y: this.Y(v) - 4, fill: col, fontSize: 7, fontWeight: 700, fontFamily: 'Azeret Mono', textAnchor: 'end', letterSpacing: '0.5' }, label));
+      const dmax = mx(data.filter((_, i) => i <= drawTo && !inGap(i)));
+      ch.push(guide(48, 'RESTING 48', C.muted));
+      ch.push(guide(dmax, 'PEAK ' + dmax, 'rgba(254,127,45,0.5)'));
+      if (o.fill !== false) {
+        segs.forEach((run, si) => {
+          const d = 'M ' + this.X(run[0]).toFixed(1) + ' ' + (H - this.pad.b) +
+            run.map((i) => ' L ' + this.X(i).toFixed(1) + ' ' + this.Y(data[i]).toFixed(1)).join('') +
+            ' L ' + this.X(run[run.length - 1]).toFixed(1) + ' ' + (H - this.pad.b) + ' Z';
+          ch.push(h('path', { key: 'a' + si, d, fill: 'url(#' + gid + ')', stroke: 'none' }));
+        });
+      }
+      segs.forEach((run, si) => {
+        const len = segLen(data, run);
+        ch.push(h('polyline', { key: 'l' + si, points: ptStr(run), fill: 'none', stroke: C.accent, strokeWidth: 2, strokeLinejoin: 'round', strokeLinecap: 'round',
+          style: o.animate ? { strokeDasharray: len, animation: 'drawLine 1.1s cubic-bezier(.4,0,.2,1) both', '--len': len } : null }));
+      });
+      gaps.forEach((g, gi) => {
+        if (g[0] > drawTo) return;
+        const x1 = this.X(Math.max(0, g[0] - 1)), x2 = this.X(Math.min(drawTo, g[1] + 1));
+        ch.push(h('line', { key: 'gp' + gi, x1, y1: this.Y(50), x2, y2: this.Y(50), stroke: C.faint, strokeWidth: 1.5, strokeDasharray: '1 5', strokeLinecap: 'round' }));
+        ch.push(h('text', { key: 'gt' + gi, x: (x1 + x2) / 2, y: this.Y(50) - 6, fill: C.faint, fontSize: 6.5, fontWeight: 700, fontFamily: 'Azeret Mono', textAnchor: 'middle', letterSpacing: '1' }, 'OFF'));
+      });
+      if (o.liveDot) {
+        const cx = this.X(drawTo), cy = this.Y(data[drawTo]);
+        ch.push(h('circle', { key: 'glow', cx, cy, r: 11, fill: C.accent, opacity: 0.25, style: { animation: 'edgeGlow 1.1s ease-in-out infinite' } }));
+        ch.push(h('circle', { key: 'dot', cx, cy, r: 4.5, fill: C.accent, stroke: '#000', strokeWidth: 1.5 }));
+      } else if (o.endDot) {
+        const cx = this.X(drawTo), cy = this.Y(data[drawTo]);
+        ch.push(h('circle', { key: 'dot', cx, cy, r: 3.5, fill: C.muted, stroke: '#000', strokeWidth: 1.5 }));
+      }
+      return h('svg', { viewBox: '0 0 ' + W + ' ' + H, preserveAspectRatio: 'none', style: { position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' } }, ch);
+    };
+
+    if (!this._charts) {
+      this._charts = {
+        live: buildChart(this.day, this.LIVE, [], { fill: true, animate: true, liveDot: true }),
+        hist: buildChart(this.hist, this.N - 1, [], { fill: true, animate: true, endDot: true }),
+        gap: buildChart(this.day, this.N - 1, this.gapRanges, { fill: true, animate: true }),
+      };
+    }
+
+    const scrubEl = (data, idx) => {
+      if (idx == null) return null;
+      const xP = (this.X(idx) / this.W) * 100, yP = (this.Y(data[idx]) / this.H) * 100;
+      const v = data[idx], tl = timeLabel(idx);
+      const clampL = Math.max(15, Math.min(85, xP));
+      return h('div', { style: { position: 'absolute', inset: 0, pointerEvents: 'none' } },
+        h('div', { style: { position: 'absolute', left: xP + '%', top: 0, bottom: 0, width: 1, background: 'rgba(234,236,240,0.4)' } }),
+        h('div', { style: { position: 'absolute', left: xP + '%', top: yP + '%', width: 10, height: 10, borderRadius: 999, background: C.text, border: '2px solid #000', transform: 'translate(-50%,-50%)', boxShadow: '0 0 0 3px rgba(234,236,240,0.12)' } }),
+        h('div', { style: { position: 'absolute', left: clampL + '%', top: -4, transform: 'translate(-50%,-100%)', background: '#0E1B22', border: '1px solid #1B2D38', borderRadius: 8, padding: '5px 10px', whiteSpace: 'nowrap', textAlign: 'center' } },
+          h('div', { style: { fontSize: 17, fontWeight: 800, color: C.accent, letterSpacing: '-0.5px', lineHeight: 1, fontVariantNumeric: 'tabular-nums' } }, String(v)),
+          h('div', { style: { fontSize: 8, fontWeight: 700, color: C.muted, letterSpacing: '1px', marginTop: 3 } }, tl)));
+    };
+
+    // ----- LIVE -----
+    const liveScrub = this.mkScrub('scrubLive', this.LIVE);
+    const lvIdx = this.state.scrubLive;
+    const liveNum = lvIdx != null ? this.day[lvIdx] : this.state.liveBpm;
+    const lvR = slice(this.day, 0, this.LIVE);
+    const liveTag = lvIdx != null
+      ? h('div', { style: { display: 'flex', alignItems: 'center', gap: 7, justifyContent: 'center' } },
+          h('span', { style: { width: 7, height: 7, borderRadius: 999, background: C.muted } }),
+          h('span', { style: { fontSize: 11, fontWeight: 700, letterSpacing: '2px', color: C.muted } }, 'INSPECTING ' + timeLabel(lvIdx)))
+      : h('div', { style: { display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' } },
+          h('span', { style: { width: 8, height: 8, borderRadius: 999, background: C.accent, boxShadow: '0 0 8px ' + C.accent, animation: 'livePulse 1.1s ease-in-out infinite' } }),
+          h('span', { style: { fontSize: 11, fontWeight: 700, letterSpacing: '3px', color: C.accent } }, 'LIVE'));
+
+    // ----- HISTORICAL -----
+    const histScrub = this.mkScrub('scrubHist', this.N - 1);
+    const hsIdx = this.state.scrubHist;
+    const histAvg = av(this.hist);
+    const histNum = hsIdx != null ? this.hist[hsIdx] : histAvg;
+    const histSub = hsIdx != null ? ('INSPECTING ' + timeLabel(hsIdx)) : 'DAY AVERAGE';
+
+    // ----- GAPS -----
+    const avail = this.day.filter((_, i) => !this.gapRanges.some((g) => i >= g[0] && i <= g[1]));
+    let offMin = 0;
+    this.gapRanges.forEach((g) => { offMin += (g[1] - g[0] + 1) * 10; });
+    const gapOff = Math.floor(offMin / 60) + 'H' + String(offMin % 60).padStart(2, '0') + 'M';
+
+    return {
+      heartRef: this.heartRef,
+      liveNum, liveTag,
+      lvRest: 48, lvMin: mn(lvR), lvMax: mx(lvR), lvAvg: av(lvR),
+      liveChartEl: this._charts.live, liveScrubEl: scrubEl(this.day, lvIdx),
+      liveDown: liveScrub.down, liveMove: liveScrub.move, liveUp: liveScrub.up,
+
+      histNum, histSub,
+      hvRest: 47, hvMin: mn(this.hist), hvMax: mx(this.hist), hvAvg: histAvg,
+      histChartEl: this._charts.hist, histScrubEl: scrubEl(this.hist, hsIdx),
+      histDown: histScrub.down, histMove: histScrub.move, histUp: histScrub.up,
+
+      gapRest: 48, gapMin: mn(avail), gapMax: mx(avail), gapAvg: av(avail), gapOff,
+      gapChartEl: this._charts.gap,
+    };
+  }
+}
+</script>
+</body>
+</html>

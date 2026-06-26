@@ -1,0 +1,47 @@
+/* ============================================================
+   TYPOGRAPHY — Hercules Telemetry
+   One family. Azeret Mono — technical, monospace, engineered.
+   Tabular figures keep numbers from jittering as they animate.
+   ============================================================ */
+@import url("https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap");
+
+:root {
+  /* ---- FAMILY ---- */
+  --hc-font-mono: "Azeret Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-family:  var(--hc-font-mono);
+
+  /* ---- WEIGHTS ---- */
+  --hc-w-regular:  400; /* @kind font */
+  --hc-w-medium:   500; /* @kind font */
+  --hc-w-semibold: 600; /* @kind font */
+  --hc-w-bold:     700; /* @kind font */
+  --hc-w-black:    800; /* @kind font */
+
+  /* ---- ROLE SIZES (px) ---- */
+  --hc-size-hero:    76px; /* Cover / focal numerals scale 46–96 in use */
+  --hc-size-numeral: 46px; /* In-card hero numeral */
+  --hc-size-display: 24px; /* Section / screen display heading */
+  --hc-size-title:   14px; /* Spaced uppercase screen title */
+  --hc-size-label:   11px; /* Stat & field labels */
+  --hc-size-body:    12.5px;
+  --hc-size-caption: 10px;
+  --hc-size-micro:   9px;  /* Axis ticks, timeline markers */
+
+  /* ---- TRACKING (letter-spacing) ---- */
+  --hc-ls-hero:    -3px;
+  --hc-ls-numeral: -2px;
+  --hc-ls-display: -0.5px;
+  --hc-ls-title:   2.5px;
+  --hc-ls-label:   1.5px;
+  --hc-ls-body:    0.3px;
+  --hc-ls-caption: 1.5px;
+  --hc-ls-eyebrow: 2px; /* tiny uppercase eyebrows */
+
+  /* ---- LINE HEIGHTS ---- */
+  --hc-lh-tight:   0.82; /* @kind font */ /* stacked display numerals */
+  --hc-lh-snug:    1.2; /* @kind font */
+  --hc-lh-body:    1.6; /* @kind font */
+
+  /* ---- FEATURES ---- */
+  --hc-numeric: "tnum" 1, "lnum" 1; /* @kind font */ /* tabular lining figures */
+}

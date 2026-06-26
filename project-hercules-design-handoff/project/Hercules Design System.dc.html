@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+</style>
+</helmet>
+
+<div style="background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;width:1280px;margin:0 auto;padding:0 0 90px">
+
+  <!-- ============ COVER ============ -->
+  <div style="padding:80px 72px 56px;border-bottom:1px solid #16242C">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:64px">
+      <div style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:2.5px;color:rgba(234,236,240,0.45)"><span style="width:7px;height:7px;border-radius:999px;background:#FE7F2D;display:inline-block"></span>HERCULES TELEMETRY</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;color:rgba(234,236,240,0.45)">DESIGN SYSTEM · v1.0 · JUN 2026</div>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:24px">
+      <div style="width:104px;height:104px;border:2.5px solid #FE7F2D;border-radius:26px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0">
+        <div style="display:flex;align-items:flex-end;gap:5px;height:46px">
+          <div style="width:9px;height:42%;background:#5E7280"></div>
+          <div style="width:9px;height:70%;background:#FE7F2D"></div>
+          <div style="width:9px;height:100%;background:#FE7F2D"></div>
+          <div style="width:9px;height:56%;background:#5E7280"></div>
+        </div>
+        <div style="position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:999px;background:#FE7F2D;border:3px solid #000"></div>
+      </div>
+      <div>
+        <div style="font-size:76px;font-weight:800;letter-spacing:-3px;line-height:0.82">INSTRUMENT<br><span style="color:#FE7F2D">DESIGN SYSTEM</span></div>
+      </div>
+    </div>
+    <div style="font-size:15px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.55);margin-top:34px;max-width:680px;line-height:1.6">A precision-instrument dashboard language for a dark, high-contrast iOS fitness app. Oversized numerals, monospace type, dials and bars over decoration. Sharp and snappy — never soft or wellness-y.</div>
+  </div>
+
+  <!-- section helper bar -->
+  <div style="display:flex;flex-direction:column;gap:0">
+
+  <!-- ============ 01 PALETTE ============ -->
+  <div style="padding:64px 72px;border-bottom:1px solid #16242C">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:36px">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1px;color:#FE7F2D">01</div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:-0.5px">PALETTE</div>
+      <div style="font-size:12px;font-weight:500;letter-spacing:0.5px;color:rgba(234,236,240,0.4)">Four cores carry every screen. Everything else is a tint of slate.</div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(234,236,240,0.4);margin-bottom:16px">CORE</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px">
+      <sc-for list="{{ coreColors }}" as="c" hint-placeholder-count="4">
+        <div style="border:1px solid #16242C;border-radius:14px;overflow:hidden">
+          <div style="height:120px;background:{{ c.hex }};border-bottom:1px solid #16242C"></div>
+          <div style="padding:15px 16px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:0.5px">{{ c.name }}</div>
+            <div style="font-size:13px;font-weight:600;letter-spacing:1px;color:#FE7F2D;margin-top:5px">{{ c.hex }}</div>
+            <div style="font-size:10.5px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.4);margin-top:8px;line-height:1.5">{{ c.use }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(234,236,240,0.4);margin-bottom:16px">EXTENDED · surfaces, borders, muted text</div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px">
+      <sc-for list="{{ extColors }}" as="c" hint-placeholder-count="8">
+        <div>
+          <div style="height:66px;border-radius:10px;background:{{ c.hex }};border:1px solid rgba(234,236,240,0.08)"></div>
+          <div style="font-size:11px;font-weight:700;margin-top:9px">{{ c.name }}</div>
+          <div style="font-size:10.5px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.45);margin-top:3px">{{ c.hex }}</div>
+          <div style="font-size:9.5px;font-weight:500;color:rgba(234,236,240,0.35);margin-top:4px">{{ c.use }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- ============ 02 ALERTNESS SCALE ============ -->
+  <div style="padding:64px 72px;border-bottom:1px solid #16242C">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:36px">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1px;color:#FE7F2D">02</div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:-0.5px">DATA ENCODING SCALE</div>
+      <div style="font-size:12px;font-weight:500;letter-spacing:0.5px;color:rgba(234,236,240,0.4)">Intensity ramps orange → slate. Used for bars, dots, and any "level" metric.</div>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:14px">
+      <sc-for list="{{ scale }}" as="s" hint-placeholder-count="5">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:14px">
+          <div style="width:100%;height:{{ s.h }};background:{{ s.hex }};border-radius:4px 4px 0 0"></div>
+          <div style="text-align:center">
+            <div style="font-size:11.5px;font-weight:700;letter-spacing:1px">{{ s.name }}</div>
+            <div style="font-size:10px;font-weight:600;color:rgba(234,236,240,0.45);margin-top:4px">{{ s.hex }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- ============ 03 TYPOGRAPHY ============ -->
+  <div style="padding:64px 72px;border-bottom:1px solid #16242C">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:36px">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1px;color:#FE7F2D">03</div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:-0.5px">TYPOGRAPHY</div>
+      <div style="font-size:12px;font-weight:500;letter-spacing:0.5px;color:rgba(234,236,240,0.4)">One family. Azeret Mono — technical, monospace, engineered.</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+      <div>
+        <div style="border:1px solid #16242C;border-radius:14px;padding:30px 32px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(234,236,240,0.4);margin-bottom:20px">SPECIMEN</div>
+          <div style="font-size:90px;font-weight:800;color:#FE7F2D;line-height:0.8;letter-spacing:-4px">8.1</div>
+          <div style="font-size:13px;font-weight:600;letter-spacing:2px;color:#5E7280;margin-top:18px">0123456789 · ABCDEFG</div>
+          <div style="font-size:12px;font-weight:500;color:rgba(234,236,240,0.5);margin-top:8px">The quick brown fox · tabular nums</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="6">
+          <div style="display:flex;align-items:baseline;gap:18px;padding:15px 0;border-bottom:1px solid #111E25">
+            <div style="width:128px;flex-shrink:0;font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(234,236,240,0.4)">{{ t.role }}</div>
+            <div style="flex:1;color:{{ t.color }};font-size:{{ t.size }};font-weight:{{ t.weight }};letter-spacing:{{ t.ls }}">{{ t.sample }}</div>
+            <div style="font-size:10px;font-weight:600;color:#5E7280;white-space:nowrap">{{ t.spec }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 04 COMPONENTS ============ -->
+  <div style="padding:64px 72px 24px">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1px;color:#FE7F2D">04</div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:-0.5px">COMPONENT LIBRARY</div>
+      <div style="font-size:12px;font-weight:500;letter-spacing:0.5px;color:rgba(234,236,240,0.4)">Reusable across every screen. Built inline — no external CSS.</div>
+    </div>
+  </div>
+
+  <div style="padding:0 72px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+    <!-- oversized score -->
+    <div style="border:1px solid #16242C;border-radius:16px;padding:28px 30px;background:#070F13">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FE7F2D;margin-bottom:6px">OVERSIZED SCORE</div>
+      <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.4);margin-bottom:24px">The focal number on any detail screen.</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div style="display:flex;align-items:flex-start">
+          <span style="font-size:96px;font-weight:800;color:#FE7F2D;line-height:0.78;letter-spacing:-5px">8.1</span>
+          <span style="font-size:24px;font-weight:600;color:#5E7280;margin-top:7px;margin-left:5px">/10</span>
+        </div>
+        <div style="border:1.5px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:2.5px;margin-bottom:10px">FAIR</div>
+      </div>
+    </div>
+
+    <!-- status pills -->
+    <div style="border:1px solid #16242C;border-radius:16px;padding:28px 30px;background:#070F13">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FE7F2D;margin-bottom:6px">CLASSIFICATION / STATUS PILLS</div>
+      <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.4);margin-bottom:24px">Outlined for class, filled for primary action.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <div style="border:1.5px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:2px">GOOD</div>
+        <div style="border:1.5px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:2px">FAIR</div>
+        <div style="border:1.5px solid #5E7280;color:#5E7280;border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:2px">LOW</div>
+        <div style="background:#FE7F2D;color:#000;border-radius:999px;padding:7px 18px;font-size:12px;font-weight:800;letter-spacing:2px">ACTIVE</div>
+        <div style="display:flex;align-items:center;gap:6px;color:#FE7F2D;font-size:11px;font-weight:700;letter-spacing:1.5px"><span style="width:6px;height:6px;border-radius:999px;background:#FE7F2D"></span>SYNCING</div>
+      </div>
+    </div>
+
+    <!-- hourly bar strip -->
+    <div style="border:1px solid #16242C;border-radius:16px;padding:28px 30px;background:#070F13;grid-column:1 / -1">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FE7F2D;margin-bottom:6px">HOURLY BAR STRIP + TIMELINE MARKERS</div>
+      <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.4);margin-bottom:22px">Signature viz. Height + color encode level; gate band, sleep-window line and wake node ride the timeline. Bars draw in left-to-right.</div>
+      <div style="position:relative;height:120px">
+        <div style="position:absolute;top:-5px;bottom:0;left:84%;width:6%;background:rgba(254,127,45,0.12);border-left:1px dashed rgba(254,127,45,0.6);border-right:1px dashed rgba(254,127,45,0.6)"></div>
+        <div style="display:flex;align-items:flex-end;gap:4px;height:100%;position:relative;z-index:1">
+          <sc-for list="{{ stripBars }}" as="b" hint-placeholder-count="19">
+            <div style="{{ b.style }}"></div>
+          </sc-for>
+        </div>
+        <div style="position:absolute;left:84%;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,#FE7F2D,rgba(254,127,45,0));border-radius:2px;z-index:2"></div>
+        <div style="position:absolute;left:82.5%;bottom:-4px;width:10px;height:10px;border-radius:999px;background:#FE7F2D;border:2px solid #000;z-index:3"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:9px;font-weight:600;letter-spacing:1px;color:rgba(234,236,240,0.35)">
+        <span>WAKE 10:12</span><span>GATE 02:00–02:30 ▸</span>
+      </div>
+    </div>
+
+    <!-- stat row -->
+    <div style="border:1px solid #16242C;border-radius:16px;padding:28px 30px;background:#070F13">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FE7F2D;margin-bottom:6px">SECONDARY STAT ROW</div>
+      <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.4);margin-bottom:22px">Divided cells. First value accents orange.</div>
+      <div style="display:flex">
+        <div style="flex:1;border-right:1px solid #16242C;padding-right:10px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">INERTIA</div>
+          <div style="font-size:19px;font-weight:700;margin-top:6px;color:#FE7F2D">MILD</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 10px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">DURATION</div>
+          <div style="font-size:19px;font-weight:700;margin-top:6px">7<span style="font-size:12px;color:#5E7280">H</span>19<span style="font-size:12px;color:#5E7280">M</span></div>
+        </div>
+        <div style="flex:1.2;padding-left:10px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">BLOCK</div>
+          <div style="font-size:15px;font-weight:700;margin-top:8px">02:53<span style="color:#5E7280">–</span>10:12</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- trend mini chart -->
+    <div style="border:1px solid #16242C;border-radius:16px;padding:28px 30px;background:#070F13">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FE7F2D;margin-bottom:6px">TREND MINI-CHART</div>
+      <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.4);margin-bottom:22px">Sparkline of bars; peaks ≥ target turn orange.</div>
+      <div style="background:#0E1B22;border:1px solid #16242C;border-radius:12px;padding:14px 16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">28-DAY</div>
+          <div style="font-size:10px;font-weight:700;color:#5E7280">AVG <span style="color:#EAECF0">7.4</span></div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:46px">
+          <sc-for list="{{ trend }}" as="t" hint-placeholder-count="28">
+            <div style="{{ t.style }}"></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <!-- pill CTA -->
+    <div style="border:1px solid #16242C;border-radius:16px;padding:28px 30px;background:#070F13">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FE7F2D;margin-bottom:6px">PRIMARY PILL CTA</div>
+      <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.4);margin-bottom:22px">56–58px tall, full-width, orange fill, black label.</div>
+      <div style="background:#FE7F2D;color:#000;border-radius:999px;height:56px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;font-weight:800;letter-spacing:2px">
+        CONNECT POLAR
+        <svg width="16" height="13" viewBox="0 0 16 13" fill="none"><path d="M1 6.5h13M9 1.5l5 5-5 5" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="border:1px solid #233D4D;color:#EAECF0;border-radius:999px;height:48px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;letter-spacing:2px;margin-top:12px">SECONDARY · OUTLINE</div>
+    </div>
+
+    <!-- data domain item -->
+    <div style="border:1px solid #16242C;border-radius:16px;padding:28px 30px;background:#070F13">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FE7F2D;margin-bottom:6px">DATA-DOMAIN LIST ITEM</div>
+      <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.4);margin-bottom:22px">Slate card · glyph tile · label + sublabel · state.</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:13px;background:#0E1B22;border:1px solid #1B2D38;border-radius:13px;padding:13px 15px">
+          <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#FE7F2D">Z</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:700">SLEEP</div><div style="font-size:9.5px;font-weight:500;color:rgba(234,236,240,0.4);margin-top:2px">Stages, duration, SleepWise</div></div>
+          <div style="width:20px;height:20px;border-radius:999px;background:#FE7F2D;display:flex;align-items:center;justify-content:center"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5 4 7.5 10 1" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:13px;background:#0E1B22;border:1px solid #1B2D38;border-radius:13px;padding:13px 15px">
+          <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#FE7F2D">H</div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:700">HEART RATE</div><div style="font-size:9.5px;font-weight:500;color:rgba(234,236,240,0.4);margin-top:2px">Continuous + resting HR</div></div>
+          <div style="width:20px;height:20px;border-radius:999px;background:#FE7F2D;display:flex;align-items:center;justify-content:center"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5 4 7.5 10 1" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- terminal progress -->
+    <div style="border:1px solid #16242C;border-radius:16px;padding:28px 30px;background:#070F13">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FE7F2D;margin-bottom:6px">TERMINAL PROGRESS READOUT</div>
+      <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.4);margin-bottom:22px">The only loading pattern allowed. No spinners.</div>
+      <div style="display:flex;align-items:flex-end;gap:5px;margin-bottom:10px">
+        <span style="font-size:46px;font-weight:800;color:#FE7F2D;line-height:0.8;letter-spacing:-2px">68</span>
+        <span style="font-size:18px;font-weight:700;color:#5E7280;margin-bottom:5px">%</span>
+      </div>
+      <div style="height:7px;border-radius:999px;background:#16242C;overflow:hidden;margin-bottom:18px"><div style="width:68%;height:100%;background:#FE7F2D;border-radius:999px"></div></div>
+      <sc-for list="{{ termRows }}" as="r" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:11px;padding:7px 0;border-bottom:1px solid #111E25">
+          <div style="width:8px;height:8px;border-radius:2px;background:{{ r.dot }}"></div>
+          <div style="width:90px;font-size:11px;font-weight:700;letter-spacing:1px;color:{{ r.nameColor }}">{{ r.name }}</div>
+          <div style="flex:1;font-size:10px;font-weight:600;letter-spacing:1px;color:#3A5160">{{ r.ticks }}</div>
+          <div style="font-size:11px;font-weight:700;color:{{ r.statColor }}">{{ r.stat }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- header + toggle -->
+    <div style="border:1px solid #16242C;border-radius:16px;padding:28px 30px;background:#070F13">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#FE7F2D;margin-bottom:6px">SCREEN HEADER + DAY/WEEK TOGGLE</div>
+      <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.4);margin-bottom:22px">Back chevron · centered title + date · segmented range toggle.</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center"><svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div style="flex:1;text-align:center"><div style="font-size:13px;font-weight:700;letter-spacing:2.5px">BOOST FROM SLEEP</div><div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">YESTERDAY · WED 23</div></div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:10px;font-weight:700;letter-spacing:1px"><div style="padding:7px 11px;background:#FE7F2D;color:#000">DAY</div><div style="padding:7px 11px;color:rgba(234,236,240,0.5)">WK</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ 05 MOTION ============ -->
+  <div style="padding:64px 72px 0">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:36px">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1px;color:#FE7F2D">05</div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:-0.5px">MOTION</div>
+      <div style="font-size:12px;font-weight:500;letter-spacing:0.5px;color:rgba(234,236,240,0.4)">Fast, crisp, mechanical. Never slow or lazy. No fade-only transitions.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      <sc-for list="{{ motion }}" as="m" hint-placeholder-count="6">
+        <div style="border:1px solid #16242C;border-radius:14px;padding:22px 24px;background:#070F13">
+          <div style="font-size:13px;font-weight:700;letter-spacing:0.5px;color:#FE7F2D">{{ m.name }}</div>
+          <div style="font-size:11.5px;font-weight:500;color:rgba(234,236,240,0.5);margin-top:8px;line-height:1.5">{{ m.desc }}</div>
+          <div style="font-size:10px;font-weight:600;letter-spacing:0.5px;color:#5E7280;margin-top:12px">{{ m.spec }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- ============ 06 PRINCIPLES ============ -->
+  <div style="padding:64px 72px 0">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:36px">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1px;color:#FE7F2D">06</div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:-0.5px">PRINCIPLES</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 48px">
+      <sc-for list="{{ principles }}" as="p" hint-placeholder-count="6">
+        <div style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #111E25">
+          <div style="font-size:13px;font-weight:800;color:#FE7F2D;flex-shrink:0">{{ p.n }}</div>
+          <div style="font-size:13.5px;font-weight:600;letter-spacing:0.2px;line-height:1.45">{{ p.text }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const coreColors = [
+      { name: 'BACKGROUND', hex: '#000000', use: 'Near-black canvas. Every screen sits on pure black.' },
+      { name: 'ACCENT', hex: '#FE7F2D', use: 'Orange. Key numbers, active states, highlights, primary CTAs.' },
+      { name: 'SECONDARY', hex: '#233D4D', use: 'Slate. Cards, glyph tiles, secondary surfaces and borders.' },
+      { name: 'TEXT', hex: '#EAECF0', use: 'Off-white. All primary copy and large numerals on dark.' },
+    ];
+    const extColors = [
+      { name: 'CARD', hex: '#0E1B22', use: 'Raised panel fill' },
+      { name: 'CARD ALT', hex: '#0B141A', use: 'Modal / sheet fill' },
+      { name: 'HAIRLINE', hex: '#16242C', use: 'Section dividers' },
+      { name: 'BORDER', hex: '#1B2D38', use: 'Card outlines' },
+      { name: 'MUTED', hex: '#5E7280', use: 'Labels, units, /10' },
+      { name: 'FAINT', hex: '#3A5160', use: 'Disabled / empty' },
+    ];
+    const scale = [
+      { name: 'HIGH', hex: '#FE7F2D', h: '110px' },
+      { name: 'MED', hex: '#E0793A', h: '84px' },
+      { name: 'LOW', hex: '#5E7280', h: '58px' },
+      { name: 'VERY_LOW', hex: '#3A5160', h: '40px' },
+      { name: 'MINIMAL', hex: '#2A4253', h: '26px' },
+    ];
+    const typeScale = [
+      { role: 'HERO NUMERAL', sample: '8.1', size: '46px', weight: 800, ls: '-2px', color: '#FE7F2D', spec: '800 · -2px' },
+      { role: 'DISPLAY', sample: 'GRANT ACCESS', size: '24px', weight: 800, ls: '-0.5px', color: '#EAECF0', spec: '800 · -0.5px' },
+      { role: 'TITLE', sample: 'BOOST FROM SLEEP', size: '14px', weight: 700, ls: '2.5px', color: '#EAECF0', spec: '700 · +2.5px' },
+      { role: 'LABEL', sample: 'INERTIA · DURATION', size: '11px', weight: 600, ls: '1.5px', color: 'rgba(234,236,240,0.5)', spec: '600 · +1.5px' },
+      { role: 'BODY', sample: 'Decent rest, steady day ahead.', size: '12.5px', weight: 500, ls: '0.3px', color: 'rgba(234,236,240,0.6)', spec: '500 · +0.3px' },
+      { role: 'CAPTION', sample: 'SECURE OAUTH · ~30S', size: '10px', weight: 600, ls: '1.5px', color: '#5E7280', spec: '600 · +1.5px' },
+    ];
+
+    // strip bars (static, instant draw)
+    const lv = { HIGH:{c:'#FE7F2D',h:92}, MED:{c:'#E0793A',h:64}, LOW:{c:'#5E7280',h:46}, VERY_LOW:{c:'#3A5160',h:32}, MINIMAL:{c:'#2A4253',h:20} };
+    const pat = ['LOW','MED','HIGH','HIGH','HIGH','MED','MED','LOW','MED','MED','HIGH','HIGH','HIGH','MED','LOW','VERY_LOW','MINIMAL','MINIMAL','MINIMAL'];
+    const stripBars = pat.map((k, i) => {
+      const m = lv[k];
+      return { style: { flex: 1, height: m.h + '%', background: m.c, borderRadius: '2px 2px 0 0', transformOrigin: 'bottom', animation: 'grow .5s cubic-bezier(.16,.84,.3,1) both', animationDelay: (i * 0.04).toFixed(3) + 's' } };
+    });
+
+    const trendH = [7.2,6.8,7.5,8.0,7.1,6.5,7.8,8.2,7.9,7.0,6.6,7.3,8.1,7.7,7.4,6.9,7.6,8.3,7.2,6.8,7.0,7.9,8.1,7.5,7.1,6.7,7.8,8.1];
+    const trend = trendH.map((v) => ({ style: { flex: 1, height: Math.round((v/10)*100) + '%', background: v >= 8 ? '#FE7F2D' : '#2E4E61', borderRadius: '1px' } }));
+
+    const termRows = [
+      { name: 'SLEEP', ticks: '[||||||||||]', stat: '28', dot: '#FE7F2D', nameColor: '#EAECF0', statColor: '#EAECF0' },
+      { name: 'ACTIVITY', ticks: '[||||||    ]', stat: '17', dot: '#FE7F2D', nameColor: '#EAECF0', statColor: '#FE7F2D' },
+      { name: 'WORKOUTS', ticks: '[          ]', stat: '—', dot: '#233D4D', nameColor: '#3A5160', statColor: '#3A5160' },
+    ];
+
+    const motion = [
+      { name: 'BARS DRAW IN', desc: 'Each bar scales up from the baseline, staggered left-to-right across the strip.', spec: 'grow · 0.5s · +40ms/bar' },
+      { name: 'COUNT UP', desc: 'Hero numbers tick from 0 to target on a cubic ease-out — never appear static.', spec: 'rAF · ~1.1s · ease-out cubic' },
+      { name: 'MARKER SLIDE-IN', desc: 'Gate band and window node drop in once the strip finishes drawing.', spec: 'gateIn · 0.5s · after bars' },
+      { name: 'SNAP IN', desc: 'Onboarding elements translate up and settle sharply, top of stack first.', spec: 'snapIn · 0.4–0.5s · staggered' },
+      { name: 'SHEET SLIDE-UP', desc: 'Web-auth modal rises over a dimmed, blurred backdrop.', spec: 'slideUp · 0.45s · cubic' },
+      { name: 'TERMINAL FILL', desc: 'Progress bars fill L-to-R, percentages race up, domains light up top-down. Snaps to dashboard at 100%.', spec: 'rAF · 2.6s · ease-out' },
+    ];
+
+    const principles = [
+      { n: '01', text: 'Precision instrument, not a wellness app. Engineered, sharp, high-contrast — never soft or rounded-cute.' },
+      { n: '02', text: 'Numbers are the hero. Oversize the one figure that matters; everything else is a label around it.' },
+      { n: '03', text: 'Loading happens once. Syncing is permitted only at onboarding — never a spinner anywhere else.' },
+      { n: '04', text: 'Orange is a spotlight. Reserve the accent for the live, the active, the important. Slate carries the rest.' },
+      { n: '05', text: 'Monospace everywhere. Tabular figures keep numbers from jittering as they animate.' },
+      { n: '06', text: 'Generous negative space. Let the black breathe; density comes from data, not chrome.' },
+    ];
+
+    return { coreColors, extColors, scale, typeScale, stripBars, trend, termRows, motion, principles };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+/* ============================================================
+   RADIUS — Hercules Telemetry
+   Sharp instrument geometry. Pills for actions/status; soft-square
+   for cards; tight radii for bars and glyph tiles. Never round-cute.
+   ============================================================ */
+:root {
+  --hc-radius-bar:    2px;  /* viz bars (top corners only in use) */
+  --hc-radius-chip:   4px;  /* small swatches / encoding cells */
+  --hc-radius-tile:   9px;  /* glyph tiles */
+  --hc-radius-well:   10px; /* inset wells / extended swatches */
+  --hc-radius-row:    13px; /* list rows */
+  --hc-radius-panel:  14px; /* specimen panels */
+  --hc-radius-card:   16px; /* component cards */
+  --hc-radius-cover:  26px; /* logo mark / cover tile */
+  --hc-radius-pill:   999px;/* CTAs, status pills, toggles, dots */
+
+  /* ---- SEMANTIC ---- */
+  --radius-card: var(--hc-radius-card);
+  --radius-pill: var(--hc-radius-pill);
+}

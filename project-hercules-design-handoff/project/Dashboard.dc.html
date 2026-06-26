@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes drawLine{to{stroke-dashoffset:0}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes snapUp{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.28;transform:scale(.72)}}
+  @keyframes livePulse{0%{transform:scale(1);opacity:.55}70%,100%{transform:scale(2.6);opacity:0}}
+  @keyframes dimIn{from{opacity:0}to{opacity:1}}
+  ::-webkit-scrollbar{width:0;height:0}
+</style>
+<meta name="design_doc_mode" content="canvas">
+</helmet>
+
+<!-- ============ FRAME 1 — HOME DASHBOARD ============ -->
+<div style="position:absolute;left:0;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">01 · HOME</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Dashboard" style="position:relative;height:100%;background:#000;overflow:hidden;font-family:'Azeret Mono',monospace">
+
+      <!-- pull-to-refresh terminal affordance (revealed above the fold) -->
+      <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:center;gap:8px;color:rgba(234,236,240,0.32);font-size:9px;font-weight:600;letter-spacing:2px;border-bottom:1px solid #0c1418">
+        <span style="width:5px;height:5px;border-radius:999px;background:#FE7F2D;animation:pulseDot 1.6s ease-in-out infinite"></span>PULL TO SYNC
+      </div>
+
+      <!-- SCROLL AREA -->
+      <div style="position:absolute;top:54px;left:0;right:0;bottom:0;overflow-y:auto;padding:18px 16px 96px;display:flex;flex-direction:column;gap:12px;color:#EAECF0">
+
+        <!-- GLOBAL HEADER -->
+        <div style="order:0;display:flex;align-items:center;gap:12px;margin-bottom:2px">
+          <div style="width:38px;height:38px;border-radius:11px;background:#233D4D;display:flex;align-items:flex-end;justify-content:center;gap:2.5px;padding:9px 8px;flex-shrink:0;position:relative">
+            <span style="width:3px;height:8px;background:#5E7280;border-radius:1px"></span>
+            <span style="width:3px;height:13px;background:#FE7F2D;border-radius:1px"></span>
+            <span style="width:3px;height:6px;background:#5E7280;border-radius:1px"></span>
+            <span style="width:3px;height:11px;background:#FE7F2D;border-radius:1px"></span>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:700;letter-spacing:2.5px">TODAY</div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:3px">WED · 26 JUN</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:7px;border:1px solid #1B2D38;border-radius:999px;padding:7px 12px 7px 10px">
+            <span style="width:5px;height:5px;border-radius:999px;background:#FE7F2D;animation:pulseDot 1.6s ease-in-out infinite"></span>
+            <span style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.5)">SYNCED 2M AGO</span>
+          </div>
+        </div>
+
+        <!-- CARD 1 — ACTIVITY -->
+        <div onClick="{{ noop }}" style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px;cursor:pointer;order:{{ oActivity }};animation:snapUp .5s cubic-bezier(.16,.84,.3,1) .04s both" style-active="transform:scale(.985)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#FE7F2D">A</div>
+            <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.45)">DAILY ACTIVITY</div>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="flex:1">
+              <div style="display:flex;align-items:baseline;gap:5px">
+                <span style="font-size:30px;font-weight:800;letter-spacing:-1.5px;color:#EAECF0;font-variant-numeric:tabular-nums">{{ steps }}</span>
+                <span style="font-size:11px;font-weight:600;color:#5E7280">STEPS</span>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:7px;font-size:9px;font-weight:600;letter-spacing:1px;color:rgba(234,236,240,0.45)">
+                <span><span style="color:#EAECF0">187</span> ACTIVE MIN</span><span style="color:#1B2D38">·</span><span><span style="color:#EAECF0">3,174</span> KCAL</span>
+              </div>
+            </div>
+            <div style="flex-shrink:0">{{ activityRing }}</div>
+          </div>
+          <div style="margin-top:14px">{{ zoneBar }}</div>
+        </div>
+
+        <!-- CARD 2 — SLEEP -->
+        <div onClick="{{ noop }}" style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px;cursor:pointer;order:{{ oSleep }};animation:snapUp .5s cubic-bezier(.16,.84,.3,1) .09s both" style-active="transform:scale(.985)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#FE7F2D">Z</div>
+            <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.45)">SLEEP</div>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:13px">
+            <div style="display:flex;align-items:baseline;gap:4px">
+              <span style="font-size:34px;font-weight:800;letter-spacing:-2px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ sleepScore }}</span>
+              <span style="font-size:13px;font-weight:600;color:#5E7280">/10</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="text-align:right"><div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">DURATION</div><div style="font-size:14px;font-weight:700;margin-top:3px">6<span style="font-size:10px;color:#5E7280">H</span>41<span style="font-size:10px;color:#5E7280">M</span></div></div>
+              <div style="border:1.3px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:5px 12px;font-size:9.5px;font-weight:700;letter-spacing:1.5px">FAIR</div>
+            </div>
+          </div>
+          {{ hypno }}
+        </div>
+
+        <!-- CARD 3 — NIGHTLY RECHARGE -->
+        <div onClick="{{ noop }}" style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px;cursor:pointer;order:{{ oRecharge }};animation:snapUp .5s cubic-bezier(.16,.84,.3,1) .14s both" style-active="transform:scale(.985)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#FE7F2D">R</div>
+            <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.45)">NIGHTLY RECHARGE</div>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="flex:1">
+              <div style="font-size:24px;font-weight:800;letter-spacing:-0.5px;color:#EAECF0">GOOD</div>
+              <div style="display:flex;gap:6px;margin-top:9px;font-size:9px;font-weight:600;letter-spacing:1px;color:rgba(234,236,240,0.45)">
+                <span>ANS CHARGE <span style="color:#FE7F2D">+12</span></span>
+              </div>
+              <div style="margin-top:12px"><span style="border:1.3px solid #233D4D;color:rgba(234,236,240,0.6);border-radius:999px;padding:5px 12px;font-size:9px;font-weight:700;letter-spacing:1.5px">STATUS 5/6</span></div>
+            </div>
+            <div style="flex-shrink:0">{{ rechargeGauge }}</div>
+          </div>
+        </div>
+
+        <!-- CARD 4 — CARDIO LOAD -->
+        <div onClick="{{ noop }}" style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px;cursor:pointer;order:{{ oCardio }};animation:snapUp .5s cubic-bezier(.16,.84,.3,1) .19s both" style-active="transform:scale(.985)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#FE7F2D">C</div>
+            <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.45)">CARDIO LOAD</div>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="background:#FE7F2D;color:#000;border-radius:999px;padding:6px 13px;font-size:10px;font-weight:800;letter-spacing:1.5px">PRODUCTIVE</span>
+              <span style="font-size:9px;font-weight:600;letter-spacing:1px;color:rgba(234,236,240,0.45)">STRAIN <span style="color:#EAECF0">1.2</span></span>
+            </div>
+            <div style="display:flex;gap:11px;font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.5)">
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:2px;background:#FE7F2D;border-radius:2px"></span>STRAIN</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:2px;background:#5E7280;border-radius:2px"></span>TOLER.</span>
+            </div>
+          </div>
+          {{ cardioTrend }}
+        </div>
+
+        <!-- CARD 5 — BOOST FROM SLEEP -->
+        <div onClick="{{ noop }}" style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px;cursor:pointer;order:{{ oBoost }};animation:snapUp .5s cubic-bezier(.16,.84,.3,1) .24s both" style-active="transform:scale(.985)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#FE7F2D">B</div>
+            <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.45)">BOOST FROM SLEEP</div>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:13px">
+            <div style="display:flex;align-items:baseline;gap:4px">
+              <span style="font-size:34px;font-weight:800;letter-spacing:-2px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ boostScore }}</span>
+              <span style="font-size:13px;font-weight:600;color:#5E7280">/10</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:9px;font-weight:500;letter-spacing:0.5px;color:rgba(234,236,240,0.4);text-align:right">DECENT REST,<br>STEADY DAY</span>
+              <div style="border:1.3px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:5px 12px;font-size:9.5px;font-weight:700;letter-spacing:1.5px">FAIR</div>
+            </div>
+          </div>
+          {{ boostStrip }}
+        </div>
+
+        <!-- CARD 6 — CONTINUOUS HR (phase 2 live) -->
+        <div onClick="{{ noop }}" style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px;cursor:pointer;order:{{ oHr }};animation:snapUp .5s cubic-bezier(.16,.84,.3,1) .29s both" style-active="transform:scale(.985)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#FE7F2D">H</div>
+            <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.45)">CONTINUOUS HR</div>
+            <div style="display:flex;align-items:center;gap:6px;border:1px solid rgba(254,127,45,0.4);border-radius:999px;padding:4px 10px 4px 8px">
+              <span style="position:relative;width:6px;height:6px"><span style="position:absolute;inset:0;border-radius:999px;background:#FE7F2D;animation:pulseDot 1.1s ease-in-out infinite"></span></span>
+              <span style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:#FE7F2D">LIVE</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="flex-shrink:0">
+              <div style="display:flex;align-items:baseline;gap:4px">
+                <span style="font-size:32px;font-weight:800;letter-spacing:-1.5px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ hrCurrent }}</span>
+                <span style="font-size:11px;font-weight:600;color:#5E7280">BPM</span>
+              </div>
+              <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:rgba(234,236,240,0.45);margin-top:7px">RESTING <span style="color:#EAECF0">48</span></div>
+            </div>
+            <div style="flex:1">{{ hrCurve }}</div>
+          </div>
+        </div>
+
+        <!-- CARD 7 — LATEST WORKOUT -->
+        <div onClick="{{ noop }}" style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px;cursor:pointer;order:{{ oWorkout }};animation:snapUp .5s cubic-bezier(.16,.84,.3,1) .34s both" style-active="transform:scale(.985)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#FE7F2D">W</div>
+            <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.45)">LATEST WORKOUT</div>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="width:44px;height:44px;border-radius:12px;background:#FE7F2D;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M4 5v6M12 5v6M2 6.5v3M14 6.5v3" stroke="#000" stroke-width="1.7" stroke-linecap="round"></path></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:16px;font-weight:800;letter-spacing:-0.3px">STRENGTH</div>
+              <div style="display:flex;gap:7px;margin-top:5px;font-size:9.5px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.5)">
+                <span><span style="color:#EAECF0">42</span> MIN</span><span style="color:#1B2D38">·</span><span><span style="color:#EAECF0">312</span> KCAL</span><span style="color:#1B2D38">·</span><span>YDAY 18:05</span>
+              </div>
+            </div>
+            <span style="border:1.3px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:5px 11px;font-size:9px;font-weight:700;letter-spacing:1px;flex-shrink:0">TEMPO+</span>
+          </div>
+        </div>
+
+        <!-- CARD 8 — DEVICE GLANCE (compact) -->
+        <div onClick="{{ noop }}" style="background:#070F13;border:1px solid #16242C;border-radius:16px;padding:14px 17px;cursor:pointer;order:{{ oDevice }};display:flex;align-items:center;gap:13px;animation:snapUp .5s cubic-bezier(.16,.84,.3,1) .39s both" style-active="transform:scale(.985)">
+          <div style="width:30px;height:30px;border-radius:8px;border:1px solid #233D4D;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#5E7280" stroke-width="1.5"></circle><circle cx="8" cy="8" r="1.6" fill="#FE7F2D"></circle></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.5px">POLAR LOOP GEN 2</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:4px"><span style="width:5px;height:5px;border-radius:999px;background:#FE7F2D"></span><span style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.5)">CONNECTED</span></div>
+          </div>
+          {{ deviceBattery }}
+        </div>
+
+      </div>
+
+      <!-- BOTTOM TAB BAR -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:74px;background:#000;border-top:1px solid #16242C;display:flex;align-items:flex-start;padding:11px 8px 0;z-index:20">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px">
+          <div style="width:30px;height:30px;border-radius:8px;background:#FE7F2D;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000">H</div>
+          <span style="font-size:8px;font-weight:700;letter-spacing:1px;color:#FE7F2D">HOME</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;opacity:0.55">
+          <div style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#5E7280">T</div>
+          <span style="font-size:8px;font-weight:700;letter-spacing:1px;color:#5E7280">TRENDS</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;opacity:0.55">
+          <div style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#5E7280">W</div>
+          <span style="font-size:8px;font-weight:700;letter-spacing:1px;color:#5E7280">WORKOUTS</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;opacity:0.55">
+          <div style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#5E7280">P</div>
+          <span style="font-size:8px;font-weight:700;letter-spacing:1px;color:#5E7280">PROFILE</span>
+        </div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 2 — CARD STATES ============ -->
+<div style="position:absolute;left:482px;top:0;width:392px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">02 · CARD STATES</div>
+  <div style="background:#000;border:1px solid #16242C;border-radius:20px;padding:24px 20px;display:flex;flex-direction:column;gap:18px;font-family:'Azeret Mono',monospace;color:#EAECF0">
+
+    <!-- A — POPULATED -->
+    <div>
+      <div style="font-size:8.5px;font-weight:700;letter-spacing:2px;color:#5E7280;margin-bottom:9px">A · POPULATED</div>
+      <div style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:17px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:34px;height:34px;border-radius:9px;background:#233D4D;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#FE7F2D">W</div>
+          <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.45)">LATEST WORKOUT</div>
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:13px">
+          <div style="width:44px;height:44px;border-radius:12px;background:#FE7F2D;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M4 5v6M12 5v6M2 6.5v3M14 6.5v3" stroke="#000" stroke-width="1.7" stroke-linecap="round"></path></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:800;letter-spacing:-0.3px">STRENGTH</div>
+            <div style="display:flex;gap:7px;margin-top:5px;font-size:9.5px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.5)"><span><span style="color:#EAECF0">42</span> MIN</span><span style="color:#1B2D38">·</span><span><span style="color:#EAECF0">312</span> KCAL</span></div>
+          </div>
+          <span style="border:1.3px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:5px 11px;font-size:9px;font-weight:700;letter-spacing:1px;flex-shrink:0">TEMPO+</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- B — STALE -->
+    <div>
+      <div style="font-size:8.5px;font-weight:700;letter-spacing:2px;color:#5E7280;margin-bottom:9px">B · STALE DATA</div>
+      <div style="background:#0E1B22;border:1px solid #16242C;border-radius:16px;padding:17px;position:relative">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:34px;height:34px;border-radius:9px;background:#16242C;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#5E7280">W</div>
+          <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">LATEST WORKOUT</div>
+          <div style="display:flex;align-items:center;gap:6px;border:1px solid #2E4E61;border-radius:999px;padding:4px 9px"><svg width="9" height="9" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.6" stroke="#5E7280" stroke-width="1.3"></circle><path d="M6 3.6V6l1.7 1" stroke="#5E7280" stroke-width="1.3" stroke-linecap="round"></path></svg><span style="font-size:8px;font-weight:700;letter-spacing:1px;color:#5E7280">SYNCED 3H AGO</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:13px;opacity:0.5;filter:saturate(0.4)">
+          <div style="width:44px;height:44px;border-radius:12px;background:#5E7280;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M4 5v6M12 5v6M2 6.5v3M14 6.5v3" stroke="#000" stroke-width="1.7" stroke-linecap="round"></path></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:800;letter-spacing:-0.3px">STRENGTH</div>
+            <div style="display:flex;gap:7px;margin-top:5px;font-size:9.5px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.5)"><span><span style="color:#EAECF0">42</span> MIN</span><span style="color:#1B2D38">·</span><span><span style="color:#EAECF0">312</span> KCAL</span></div>
+          </div>
+          <span style="border:1.3px solid #5E7280;color:#5E7280;border-radius:999px;padding:5px 11px;font-size:9px;font-weight:700;letter-spacing:1px;flex-shrink:0">TEMPO+</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- C — EMPTY -->
+    <div>
+      <div style="font-size:8.5px;font-weight:700;letter-spacing:2px;color:#5E7280;margin-bottom:9px">C · EMPTY / NO DATA</div>
+      <div style="background:#0E1B22;border:1px solid #16242C;border-radius:16px;padding:17px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:34px;height:34px;border-radius:9px;background:#16242C;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#3A5160">W</div>
+          <div style="flex:1;font-size:9.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">LATEST WORKOUT</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:13px">
+          <div style="width:44px;height:44px;border-radius:12px;border:1.5px dashed #233D4D;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span style="font-size:22px;font-weight:300;color:#3A5160;line-height:1">—</span>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:800;letter-spacing:-0.3px;color:#5E7280">NO WORKOUT TODAY</div>
+            <div style="display:flex;gap:7px;margin-top:5px;font-size:9.5px;font-weight:600;letter-spacing:0.5px;color:#3A5160"><span>— MIN</span><span style="color:#16242C">·</span><span>— KCAL</span></div>
+          </div>
+          <span style="border:1px solid #233D4D;color:rgba(234,236,240,0.55);border-radius:999px;padding:6px 13px;font-size:9px;font-weight:700;letter-spacing:1px;flex-shrink:0">START</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ FRAME 3 — CUSTOMIZE FEED ============ -->
+<div style="position:absolute;left:914px;top:0;width:392px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">03 · CUSTOMIZE FEED</div>
+  <div style="background:#000;border:1px solid #16242C;border-radius:20px;padding:22px 18px;font-family:'Azeret Mono',monospace;color:#EAECF0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">REORDER FEED</div>
+      <span style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#FE7F2D">DONE</span>
+    </div>
+    <div style="font-size:9px;font-weight:500;letter-spacing:0.5px;color:rgba(234,236,240,0.4);margin-bottom:16px">Drag a block to set its position in the dashboard feed.</div>
+    {{ reorderList }}
+    <div style="margin-top:14px;font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:#3A5160;text-align:center">ORDER PRESET · {{ orderName }}</div>
+  </div>
+</div></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;cardOrder&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;DEFAULT&quot;,&quot;RECOVERY FIRST&quot;,&quot;ACTIVITY FIRST&quot;,&quot;WORKOUT FIRST&quot;],&quot;default&quot;:&quot;DEFAULT&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { p: 0 };
+
+  componentDidMount() {
+    cancelAnimationFrame(this._raf);
+    const dur = 1100, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      this.setState({ p: e });
+      if (p < 1) this._raf = requestAnimationFrame(tick);
+    };
+    this._raf = requestAnimationFrame(tick);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this._raf); }
+
+  renderVals() {
+    const h = React.createElement;
+    const p = this.state.p;
+    const fmtInt = (v) => Math.round(v).toLocaleString('en-US');
+
+    // ---- card order (tweakable) ----
+    const ORDERS = {
+      'DEFAULT':        ['activity','sleep','recharge','cardio','boost','hr','workout','device'],
+      'RECOVERY FIRST': ['sleep','recharge','boost','hr','activity','cardio','workout','device'],
+      'ACTIVITY FIRST': ['activity','cardio','workout','hr','sleep','recharge','boost','device'],
+      'WORKOUT FIRST':  ['workout','cardio','hr','activity','sleep','recharge','boost','device'],
+    };
+    const seq = ORDERS[this.props.cardOrder] || ORDERS['DEFAULT'];
+    const om = {}; seq.forEach((k, i) => { om[k] = i + 1; });
+    const LV = ['#2A4253', '#3A5160', '#5E7280', '#E0793A', '#FE7F2D'];
+
+    // ---- ACTIVITY RING (goal %) ----
+    const R = 24, C = 2 * Math.PI * R, pct = Math.round(90 * p);
+    const activityRing = h('svg', { width: 60, height: 60, viewBox: '0 0 60 60' },
+      h('circle', { cx: 30, cy: 30, r: R, fill: 'none', stroke: '#16242C', strokeWidth: 5 }),
+      h('circle', { cx: 30, cy: 30, r: R, fill: 'none', stroke: '#FE7F2D', strokeWidth: 5, strokeLinecap: 'round',
+        strokeDasharray: C, strokeDashoffset: C * (1 - Math.min(100, 90 * p) / 100),
+        transform: 'rotate(-90 30 30)' }),
+      h('text', { x: 30, y: 33, textAnchor: 'middle', style: { fontFamily: "'Azeret Mono',monospace", fontSize: 13, fontWeight: 800, fill: '#EAECF0', fontVariantNumeric: 'tabular-nums' } }, pct),
+      h('text', { x: 30, y: 42, textAnchor: 'middle', style: { fontFamily: "'Azeret Mono',monospace", fontSize: 6.5, fontWeight: 600, fill: '#5E7280', letterSpacing: '0.5px' } }, 'GOAL'));
+
+    // ---- ZONE BAR (intensity zones) ----
+    const zw = [120, 320, 470, 160, 70];
+    const zoneBar = h('div', { style: { display: 'flex', gap: 2, height: 10 } },
+      zw.map((w, i) => h('div', { key: i, style: { flex: w, background: LV[i], borderRadius: 1, transformOrigin: 'left', animation: 'growX .5s cubic-bezier(.16,.84,.3,1) both', animationDelay: (0.15 + i * 0.06) + 's' } })));
+
+    // ---- HYPNOGRAM block-band ----
+    // stage: 0 awake,1 rem,2 light,3 deep ; color + height encode
+    const stageDef = [
+      { c: '#5E7280', hgt: 0.4 }, // awake
+      { c: '#E0793A', hgt: 0.62 }, // rem
+      { c: '#3A5160', hgt: 0.8 }, // light
+      { c: '#FE7F2D', hgt: 1.0 }, // deep
+    ];
+    const hypSeq = [0,2,3,3,2,1,2,3,3,2,2,1,0,2,3,2,1,1,2,2,3,2,1,2,2,1,0,2,2,3,2,1,1,2,2,0];
+    const hypno = h('div', { style: { display: 'flex', alignItems: 'flex-end', gap: 1.5, height: 34 } },
+      hypSeq.map((s, i) => {
+        const d = stageDef[s];
+        return h('div', { key: i, style: { flex: 1, height: (d.hgt * 100) + '%', background: d.c, borderRadius: 1, transformOrigin: 'bottom', animation: 'grow .5s cubic-bezier(.16,.84,.3,1) both', animationDelay: (i * 0.018).toFixed(3) + 's' } });
+      }));
+
+    // ---- RECHARGE GAUGE (semicircle) ----
+    const gw = 96, gA = Math.PI; // half
+    const cgx = 48, cgy = 46, gr = 38;
+    const arcPt = (frac) => { const a = Math.PI - frac * Math.PI; return [cgx + gr * Math.cos(a), cgy - gr * Math.sin(a)]; };
+    const semiPath = (frac) => {
+      const [x0, y0] = arcPt(0), [x1, y1] = arcPt(frac);
+      const large = 0; const sweep = 1;
+      return `M ${x0.toFixed(1)} ${y0.toFixed(1)} A ${gr} ${gr} 0 ${large} ${sweep} ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+    };
+    const gFrac = 0.72 * p;
+    const rechargeGauge = h('svg', { width: 96, height: 56, viewBox: '0 0 96 56' },
+      h('path', { d: semiPath(1), fill: 'none', stroke: '#16242C', strokeWidth: 6, strokeLinecap: 'round' }),
+      h('path', { d: semiPath(Math.max(0.001, gFrac)), fill: 'none', stroke: '#FE7F2D', strokeWidth: 6, strokeLinecap: 'round' }),
+      h('text', { x: 48, y: 42, textAnchor: 'middle', style: { fontFamily: "'Azeret Mono',monospace", fontSize: 16, fontWeight: 800, fill: '#EAECF0', letterSpacing: '-1px', fontVariantNumeric: 'tabular-nums' } }, Math.round(72 * p)),
+      h('text', { x: 48, y: 52, textAnchor: 'middle', style: { fontFamily: "'Azeret Mono',monospace", fontSize: 6.5, fontWeight: 600, fill: '#5E7280', letterSpacing: '1px' } }, 'CHARGE'));
+
+    // ---- CARDIO TREND (dual line) ----
+    const W = 150, Ht = 46;
+    const strain = [38, 42, 50, 46, 58, 64, 60, 72, 68, 74];
+    const toler = [55, 56, 58, 57, 60, 62, 63, 65, 66, 68];
+    const mapPts = (arr) => arr.map((v, i) => `${(i / (arr.length - 1) * W).toFixed(1)},${(Ht - (v / 90) * Ht).toFixed(1)}`).join(' ');
+    const sLen = 460, tLen = 460;
+    const cardioTrend = h('svg', { width: '100%', height: Ht, viewBox: `0 0 ${W} ${Ht}`, preserveAspectRatio: 'none', style: { overflow: 'visible' } },
+      h('polyline', { points: mapPts(toler), fill: 'none', stroke: '#5E7280', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', strokeDasharray: tLen, strokeDashoffset: tLen, style: { animation: 'drawLine 1s ease .15s both' } }),
+      h('polyline', { points: mapPts(strain), fill: 'none', stroke: '#FE7F2D', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', strokeDasharray: sLen, strokeDashoffset: sLen, style: { animation: 'drawLine 1s ease .3s both' } }));
+
+    // ---- BOOST STRIP ----
+    const boostLv = ['LOW','MED','HIGH','HIGH','MED','MED','LOW','MED','HIGH','HIGH','MED','LOW','VERY_LOW','MINIMAL'];
+    const map = { HIGH:{c:'#FE7F2D',h:100}, MED:{c:'#E0793A',h:66}, LOW:{c:'#5E7280',h:44}, VERY_LOW:{c:'#3A5160',h:30}, MINIMAL:{c:'#2A4253',h:20} };
+    const boostStrip = h('div', { style: { display: 'flex', alignItems: 'flex-end', gap: 3, height: 40 } },
+      boostLv.map((lv, i) => { const m = map[lv]; return h('div', { key: i, style: { flex: 1, height: m.h + '%', background: m.c, borderRadius: '2px 2px 0 0', transformOrigin: 'bottom', animation: 'grow .5s cubic-bezier(.16,.84,.3,1) both', animationDelay: (i * 0.035).toFixed(3) + 's' } }); }));
+
+    // ---- HR 24h CURVE + live node ----
+    const hrW = 168, hrH = 46;
+    const hrData = [49,47,52,48,58,71,80,74,86,79,77,84,92,88,76,68,72];
+    const hMin = 40, hMax = 100;
+    const hrPts = hrData.map((v, i) => `${(i / (hrData.length - 1) * hrW).toFixed(1)},${(hrH - ((v - hMin) / (hMax - hMin)) * hrH).toFixed(1)}`);
+    const lastX = hrW, lastY = hrH - ((hrData[hrData.length - 1] - hMin) / (hMax - hMin)) * hrH;
+    const hrLineLen = 520;
+    const hrCurve = h('div', { style: { position: 'relative', width: '100%' } },
+      h('svg', { width: '100%', height: hrH, viewBox: `0 0 ${hrW} ${hrH}`, preserveAspectRatio: 'none', style: { display: 'block', overflow: 'visible' } },
+        h('polyline', { points: hrPts.join(' '), fill: 'none', stroke: '#FE7F2D', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', strokeDasharray: hrLineLen, strokeDashoffset: hrLineLen, style: { animation: 'drawLine 1.1s cubic-bezier(.4,0,.2,1) both' } })),
+      h('div', { style: { position: 'absolute', left: (lastX / hrW * 100) + '%', top: (lastY / hrH * 100) + '%', transform: 'translate(-50%,-50%)', width: 9, height: 9, opacity: 0, animation: 'dimIn .3s ease 1s forwards' } },
+        h('span', { style: { position: 'absolute', inset: 0, borderRadius: 999, background: '#FE7F2D', animation: 'livePulse 1.4s ease-out infinite' } }),
+        h('span', { style: { position: 'absolute', inset: '1.5px', borderRadius: 999, background: '#FE7F2D', border: '1.5px solid #000' } })));
+
+    // ---- DEVICE BATTERY ----
+    const segs = 5, lit = Math.round(0.68 * segs);
+    const deviceBattery = h('div', { style: { display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 } },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 2 } },
+        h('div', { style: { display: 'flex', gap: 2, padding: 2, border: '1px solid #233D4D', borderRadius: 3 } },
+          Array.from({ length: segs }).map((_, i) => h('div', { key: i, style: { width: 4, height: 11, borderRadius: 1, background: i < lit ? '#FE7F2D' : '#16242C' } }))),
+        h('div', { style: { width: 2, height: 6, background: '#233D4D', borderRadius: '0 1px 1px 0' } })),
+      h('span', { style: { fontSize: 12, fontWeight: 800, color: '#EAECF0', fontVariantNumeric: 'tabular-nums' } }, Math.round(68 * p) + '%'));
+
+    // ---- reorder list depiction (reflects active preset) ----
+    const META = {
+      activity:{g:'A',l:'DAILY ACTIVITY'}, sleep:{g:'Z',l:'SLEEP'}, recharge:{g:'R',l:'NIGHTLY RECHARGE'},
+      cardio:{g:'C',l:'CARDIO LOAD'}, boost:{g:'B',l:'BOOST FROM SLEEP'}, hr:{g:'H',l:'CONTINUOUS HR'},
+      workout:{g:'W',l:'LATEST WORKOUT'}, device:{g:'D',l:'DEVICE GLANCE'},
+    };
+    const reorderList = h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8 } },
+      seq.map((k, i) => {
+        const m = META[k];
+        const top = i === 0;
+        return h('div', { key: k, style: { display: 'flex', alignItems: 'center', gap: 11, background: top ? 'rgba(254,127,45,0.07)' : '#0E1B22', border: '1px solid ' + (top ? 'rgba(254,127,45,0.4)' : '#1B2D38'), borderRadius: 13, padding: '11px 13px', animation: 'fadeUp .4s cubic-bezier(.16,.84,.3,1) both', animationDelay: (i * 0.04).toFixed(2) + 's' } },
+          h('span', { style: { fontSize: 11, fontWeight: 800, color: top ? '#FE7F2D' : '#5E7280', width: 16, fontVariantNumeric: 'tabular-nums' } }, String(i + 1).padStart(2, '0')),
+          h('div', { style: { width: 30, height: 30, borderRadius: 8, background: '#233D4D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: '#FE7F2D', flexShrink: 0 } }, m.g),
+          h('span', { style: { flex: 1, fontSize: 10.5, fontWeight: 600, letterSpacing: '1px', color: '#EAECF0' } }, m.l),
+          h('div', { style: { display: 'flex', flexDirection: 'column', gap: 4 } },
+            [0, 1, 2].map((r) => h('span', { key: r, style: { width: 15, height: 1.8, borderRadius: 2, background: '#3A5160' } }))));
+      }));
+
+    return {
+      noop: () => {},
+      reorderList,
+      orderName: this.props.cardOrder || 'DEFAULT',
+      oActivity: om.activity, oSleep: om.sleep, oRecharge: om.recharge, oCardio: om.cardio,
+      oBoost: om.boost, oHr: om.hr, oWorkout: om.workout, oDevice: om.device,
+      steps: fmtInt(4068 * p),
+      sleepScore: (7.4 * p).toFixed(1),
+      boostScore: (8.1 * p).toFixed(1),
+      hrCurrent: Math.round(72 * p),
+      activityRing, zoneBar, hypno, rechargeGauge, cardioTrend, boostStrip, hrCurve, deviceBattery,
+    };
+  }
+}
+</script>
+</body>
+</html>

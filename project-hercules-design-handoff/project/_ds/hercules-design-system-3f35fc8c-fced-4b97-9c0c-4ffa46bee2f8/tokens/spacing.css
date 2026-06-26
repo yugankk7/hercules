@@ -1,0 +1,32 @@
+/* ============================================================
+   SPACING — Hercules Telemetry
+   8px-rooted scale. Generous negative space; let the black breathe.
+   ============================================================ */
+:root {
+  --hc-space-1:  4px;
+  --hc-space-2:  8px;
+  --hc-space-3:  10px;
+  --hc-space-4:  12px;
+  --hc-space-5:  14px;
+  --hc-space-6:  16px;
+  --hc-space-7:  20px;
+  --hc-space-8:  24px;
+  --hc-space-9:  28px;  /* card inner padding */
+  --hc-space-10: 30px;
+  --hc-space-12: 36px;
+  --hc-space-14: 48px;  /* column gap */
+  --hc-space-16: 56px;
+  --hc-space-18: 64px;  /* section vertical padding */
+  --hc-space-20: 72px;  /* screen / section horizontal padding */
+
+  /* ---- SEMANTIC ---- */
+  --space-card-pad:    var(--hc-space-9);
+  --space-section-y:   var(--hc-space-18);
+  --space-section-x:   var(--hc-space-20);
+  --space-stack:       var(--hc-space-3);  /* between list items */
+  --space-gap:         var(--hc-space-6);
+
+  /* ---- HIT TARGETS (iOS) ---- */
+  --hc-tap-min:    44px;
+  --hc-cta-height: 56px; /* primary pill CTA */
+}

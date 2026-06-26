@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xcodebuild -version)",
+      "Bash(swift --version)",
+      "Bash(xcode-select -p)",
+      "Bash(xcodebuild -project Hercules.xcodeproj -scheme Hercules -resolvePackageDependencies)",
+      "Bash(xcodebuild -project Hercules.xcodeproj -scheme Hercules -destination 'generic/platform=iOS Simulator' -derivedDataPath /private/tmp/claude-501/-Users-yugank-code-prac-hercules/8ee82ab4-ce9f-42da-a045-450ca20283d7/scratchpad/DerivedData build)"
+    ]
+  }
+}

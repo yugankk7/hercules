@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes gateIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes scoreIn{0%{opacity:0;filter:blur(18px);transform:translateY(16px) scale(1.16)}60%{opacity:1;filter:blur(0)}100%{opacity:1;filter:blur(0);transform:translateY(0) scale(1)}}
+  @keyframes revealUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes dashTrace{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+  @keyframes hrTrace{from{stroke-dashoffset:1400}to{stroke-dashoffset:0}}
+</style>
+<meta name="design_doc_mode" content="canvas">
+</helmet>
+
+<!-- ============ FRAME 1 — DAY VIEW ============ -->
+<div style="position:absolute;left:0;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">01 · DAY VIEW</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Sleep Detail — Day" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 40px;display:flex;flex-direction:column;gap:22px;overflow-y:auto">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">SLEEP DETAIL</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">TODAY · THU 25</div>
+        </div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:10px;font-weight:700;letter-spacing:1px">
+          <div style="padding:7px 12px;background:#FE7F2D;color:#000">DAY</div>
+          <div style="padding:7px 12px;color:rgba(234,236,240,0.5)">WK</div>
+        </div>
+      </div>
+
+      <!-- HERO SCORE -->
+      <div style="border-top:1px solid #16242C;padding-top:20px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between">
+          <div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:3px;color:rgba(234,236,240,0.45);margin-bottom:2px">SLEEP SCORE</div>
+            <div style="display:flex;align-items:flex-start">
+              <span style="font-size:104px;font-weight:800;color:#FE7F2D;line-height:0.78;letter-spacing:-5px;display:inline-block;transform-origin:left center;animation:scoreIn .9s cubic-bezier(.2,.9,.25,1) both">{{ score }}</span>
+              <span style="font-size:24px;font-weight:600;color:#5E7280;margin-top:10px;margin-left:5px;animation:revealUp .5s ease .55s both">/100</span>
+            </div>
+          </div>
+          <div style="border:1.5px solid #FE7F2D;color:#FE7F2D;border-radius:999px;padding:6px 15px;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:8px;animation:revealUp .5s ease .65s both">POOR SOLIDITY</div>
+        </div>
+        <!-- sleep block readout -->
+        <div style="display:flex;align-items:center;gap:9px;margin-top:18px;border:1px solid #1B2D38;border-radius:999px;padding:10px 16px;animation:revealUp .5s ease .8s both">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M11 7.2A4.6 4.6 0 1 1 5.8 2 3.6 3.6 0 0 0 11 7.2Z" stroke="#FE7F2D" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          <span style="font-size:13px;font-weight:700;letter-spacing:0.5px">3:23 AM</span>
+          <span style="color:#5E7280">→</span>
+          <span style="font-size:13px;font-weight:700;letter-spacing:0.5px">10:04 AM</span>
+          <span style="flex:1;text-align:right;font-size:13px;font-weight:700;color:#5E7280">6<span style="font-size:10px">H</span>41<span style="font-size:10px">M</span></span>
+        </div>
+        <!-- three classification chips -->
+        <div style="display:flex;gap:7px;margin-top:12px;animation:revealUp .5s ease .9s both">
+          <div style="flex:1;border:1px solid #1B2D38;border-radius:999px;padding:7px 4px;text-align:center;font-size:8.5px;font-weight:700;letter-spacing:0.8px"><span style="color:#5E7280">AMOUNT </span><span style="color:#EAECF0">MOD</span></div>
+          <div style="flex:1;border:1px solid #FE7F2D;border-radius:999px;padding:7px 4px;text-align:center;font-size:8.5px;font-weight:700;letter-spacing:0.8px"><span style="color:#5E7280">SOLIDITY </span><span style="color:#FE7F2D">POOR</span></div>
+          <div style="flex:1;border:1px solid #1B2D38;border-radius:999px;padding:7px 4px;text-align:center;font-size:8.5px;font-weight:700;letter-spacing:0.8px"><span style="color:#5E7280">REGEN </span><span style="color:#EAECF0">GOOD</span></div>
+        </div>
+      </div>
+
+      <!-- HYPNOGRAM BAND -->
+      <div style="border-top:1px solid #16242C;padding-top:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">HYPNOGRAM · 5 CYCLES</div>
+          <div style="display:flex;gap:9px;font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.5)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:#FE7F2D;border-radius:1px"></span>WAKE</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:#E0793A;border-radius:1px"></span>REM</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:#5E7280;border-radius:1px"></span>LIGHT</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;background:#2A4253;border-radius:1px"></span>DEEP</span>
+          </div>
+        </div>
+        <!-- HR readout label -->
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:8.5px;font-weight:600;letter-spacing:1px;color:rgba(234,236,240,0.4)">
+          <span style="width:14px;height:2px;background:#EAECF0;opacity:0.55;display:inline-block"></span>HEART RATE · 46–62 BPM
+        </div>
+        <!-- band -->
+        <div style="position:relative;height:130px">
+          <div style="position:absolute;inset:0;z-index:2;pointer-events:none">{{ hrLine }}</div>
+          <div style="display:flex;align-items:flex-end;gap:1px;height:100%;position:relative;z-index:1">
+            <sc-for list="{{ epochs }}" as="e" hint-placeholder-count="63">
+              <div style="{{ e.style }}"></div>
+            </sc-for>
+          </div>
+        </div>
+        <!-- time axis -->
+        <div style="display:flex;justify-content:space-between;margin-top:7px;font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.35)">
+          <span>3:23</span><span>5:00</span><span>6:40</span><span>8:20</span><span>10:04</span>
+        </div>
+      </div>
+
+      <!-- METRIC BREAKDOWN -->
+      <div style="border-top:1px solid #16242C;padding-top:18px;display:flex;flex-direction:column;gap:11px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">METRIC BREAKDOWN</div>
+
+        <!-- Amount tile -->
+        <div style="background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 17px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.42)">SLEEP AMOUNT</div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280">AVG 7H15M</div>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-top:7px">
+            <div style="font-size:30px;font-weight:800;letter-spacing:-1px;color:#FE7F2D">6<span style="font-size:15px;color:#5E7280">H</span>41<span style="font-size:15px;color:#5E7280">M</span></div>
+            <div style="font-size:9px;font-weight:700;letter-spacing:1px;color:#5E7280">MUCH BELOW USUAL</div>
+          </div>
+          <div style="margin-top:12px">{{ amountBracket }}</div>
+        </div>
+
+        <!-- Solidity + Regeneration row -->
+        <div style="display:flex;gap:11px">
+          <div style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 15px">
+            <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.42)">SOLIDITY</div>
+            <div style="display:flex;align-items:baseline;gap:4px;margin-top:7px">
+              <span style="font-size:30px;font-weight:800;letter-spacing:-1px;color:#FE7F2D">1.3</span>
+              <span style="font-size:13px;font-weight:600;color:#5E7280">/5</span>
+            </div>
+            <div style="font-size:8.5px;font-weight:600;letter-spacing:0.5px;color:#5E7280;margin-top:3px">CONTINUITY · AVG 2.0</div>
+            <div style="margin-top:12px">{{ solidityBracket }}</div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:13px;border-top:1px solid #16242C;padding-top:11px">
+              <span style="font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:rgba(234,236,240,0.42)">LONG INTERRUPTIONS</span>
+              <span style="font-size:14px;font-weight:700">25<span style="font-size:9px;color:#5E7280">MIN</span></span>
+            </div>
+          </div>
+          <div style="flex:1;background:#0E1B22;border:1px solid #1B2D38;border-radius:16px;padding:16px 15px">
+            <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.42)">REGENERATION</div>
+            <div style="margin-top:11px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <span style="font-size:8.5px;font-weight:700;letter-spacing:1px;color:#E0793A">REM</span>
+                <span style="font-size:18px;font-weight:800;letter-spacing:-0.5px">22<span style="font-size:9px;color:#5E7280">%</span></span>
+              </div>
+              <div style="font-size:8px;font-weight:600;color:#5E7280;margin-top:1px;text-align:right">AVG 20% · 1H28M</div>
+              <div style="margin-top:8px">{{ remBracket }}</div>
+            </div>
+            <div style="margin-top:14px;border-top:1px solid #16242C;padding-top:11px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <span style="font-size:8.5px;font-weight:700;letter-spacing:1px;color:#FE7F2D">DEEP</span>
+                <span style="font-size:18px;font-weight:800;letter-spacing:-0.5px">21<span style="font-size:9px;color:#5E7280">%</span></span>
+              </div>
+              <div style="font-size:8px;font-weight:600;color:#5E7280;margin-top:1px;text-align:right">AVG 15% · 1H26M</div>
+              <div style="margin-top:8px">{{ deepBracket }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RATE YOUR SLEEP -->
+      <div style="border-top:1px solid #16242C;padding-top:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">RATE YOUR SLEEP</div>
+          <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280">{{ rateLabel }}</div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:8px;height:46px">
+          <sc-for list="{{ rateScale }}" as="r" hint-placeholder-count="5">
+            <div onClick="{{ r.onClick }}" style="{{ r.wrap }}">
+              <div style="{{ r.bar }}"></div>
+            </div>
+          </sc-for>
+        </div>
+        <div onClick="{{ toggleAsk }}" style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;cursor:pointer">
+          <span style="font-size:11px;font-weight:600;letter-spacing:1px;color:rgba(234,236,240,0.7)">ASK FOR FEEDBACK</span>
+          <div style="{{ askTrack }}"><div style="{{ askKnob }}"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 2 — WEEK VIEW ============ -->
+<div style="position:absolute;left:482px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">02 · WEEK VIEW</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Sleep Detail — Week" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 40px;display:flex;flex-direction:column;gap:22px;overflow-y:auto">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">SLEEP DETAIL</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">THIS WEEK · JUN 22–28</div>
+        </div>
+        <div style="display:flex;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;overflow:hidden;font-size:10px;font-weight:700;letter-spacing:1px">
+          <div style="padding:7px 12px;color:rgba(234,236,240,0.5)">DAY</div>
+          <div style="padding:7px 12px;background:#FE7F2D;color:#000">WK</div>
+        </div>
+      </div>
+
+      <!-- WEEKLY MATRIX -->
+      <div style="border-top:1px solid #16242C;padding-top:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">SLEEP MATRIX</div>
+          <!-- overlay toggle -->
+          <div style="display:flex;border:1px solid #1B2D38;border-radius:999px;overflow:hidden;font-size:8.5px;font-weight:700;letter-spacing:0.8px">
+            <div onClick="{{ setStages }}" style="{{ tabStages }}">STAGES</div>
+            <div onClick="{{ setRhythm }}" style="{{ tabRhythm }}">RHYTHM</div>
+            <div onClick="{{ setBoost }}" style="{{ tabBoost }}">BOOST</div>
+          </div>
+        </div>
+        {{ matrixEl }}
+      </div>
+
+      <!-- WEEKLY TREND -->
+      <div style="border-top:1px solid #16242C;padding-top:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">TREND</div>
+          <div style="display:flex;border:1px solid #1B2D38;border-radius:999px;overflow:hidden;font-size:8.5px;font-weight:700;letter-spacing:0.8px">
+            <div onClick="{{ setTScore }}" style="{{ tabTScore }}">SLEEP</div>
+            <div onClick="{{ setTBoost }}" style="{{ tabTBoost }}">BOOST</div>
+          </div>
+        </div>
+        <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280;margin-bottom:10px">{{ trendCaption }}</div>
+        {{ trendEl }}
+      </div>
+
+      <!-- MACRO WHEEL -->
+      <div style="border-top:1px solid #16242C;padding-top:18px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45);margin-bottom:4px">WEEKLY CONSOLIDATION</div>
+        <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280;margin-bottom:14px">FULL CYCLES · WEEKLY AVG 5</div>
+        <div style="display:flex;align-items:center;gap:18px">
+          <div style="flex-shrink:0">{{ wheelEl }}</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:0">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #16242C">
+              <span style="display:flex;align-items:center;gap:7px;font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(234,236,240,0.6)"><span style="width:8px;height:8px;background:#5E7280;border-radius:1px"></span>LIGHT</span>
+              <span style="font-size:13px;font-weight:700">14<span style="font-size:9px;color:#5E7280">H</span>41<span style="font-size:9px;color:#5E7280">M</span></span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #16242C">
+              <span style="display:flex;align-items:center;gap:7px;font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(234,236,240,0.6)"><span style="width:8px;height:8px;background:#2A4253;border-radius:1px"></span>DEEP</span>
+              <span style="font-size:13px;font-weight:700">5<span style="font-size:9px;color:#5E7280">H</span>23<span style="font-size:9px;color:#5E7280">M</span></span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #16242C">
+              <span style="display:flex;align-items:center;gap:7px;font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(234,236,240,0.6)"><span style="width:8px;height:8px;background:#E0793A;border-radius:1px"></span>REM</span>
+              <span style="font-size:13px;font-weight:700">5<span style="font-size:9px;color:#5E7280">H</span>39<span style="font-size:9px;color:#5E7280">M</span></span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
+              <span style="display:flex;align-items:center;gap:7px;font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(234,236,240,0.6)"><span style="width:8px;height:8px;background:#FE7F2D;border-radius:1px"></span>INTERRUPT</span>
+              <span style="font-size:13px;font-weight:700">2<span style="font-size:9px;color:#5E7280">H</span>35<span style="font-size:9px;color:#5E7280">M</span></span>
+            </div>
+          </div>
+        </div>
+        <!-- aggregate footer -->
+        <div style="display:flex;border-top:1px solid #16242C;margin-top:16px;padding-top:15px">
+          <div style="flex:1;border-right:1px solid #16242C;padding-right:8px">
+            <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">AVG SLEEP</div>
+            <div style="font-size:17px;font-weight:700;margin-top:5px;color:#FE7F2D">7<span style="font-size:11px;color:#5E7280">H</span>04<span style="font-size:11px;color:#5E7280">M</span></div>
+          </div>
+          <div style="flex:1;border-right:1px solid #16242C;padding:0 8px">
+            <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">CONTINUITY</div>
+            <div style="font-size:17px;font-weight:700;margin-top:5px">1.9<span style="font-size:11px;color:#5E7280">/5</span></div>
+          </div>
+          <div style="flex:1;padding-left:8px">
+            <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">INTERRUPT</div>
+            <div style="font-size:17px;font-weight:700;margin-top:5px">18<span style="font-size:11px;color:#5E7280">MIN</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+
+<!-- ============ FRAME 3 — NO DATA ============ -->
+<div style="position:absolute;left:964px;top:0;width:402px">
+  <div data-drags-parent="1" style="font-family:'Azeret Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1.5px;color:#8a8f96;margin-bottom:16px">03 · NO TELEMETRY</div>
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Sleep Detail — No Data" style="height:100%;background:#000;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:60px 22px 40px;display:flex;flex-direction:column;overflow:hidden">
+
+      <!-- HEADER -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">SLEEP DETAIL</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">FRI 26 · NO RECORD</div>
+        </div>
+        <div style="width:34px;height:34px;flex-shrink:0"></div>
+      </div>
+
+      <!-- flatline placeholder -->
+      <div style="border-top:1px solid #16242C;margin-top:22px;padding-top:30px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.4);margin-bottom:18px">HYPNOGRAM</div>
+        <div style="position:relative;height:90px;display:flex;align-items:center">
+          <div style="width:100%;border-top:1.5px dashed #1B2D38"></div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#000;padding:0 14px;font-size:10px;font-weight:700;letter-spacing:2.5px;color:#3A5160">NO TELEMETRY</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:7px;font-size:8px;font-weight:600;color:#3A5160">
+          <span>22:00</span><span>02:00</span><span>06:00</span><span>10:00</span>
+        </div>
+      </div>
+
+      <!-- empty score -->
+      <div style="border-top:1px solid #16242C;margin-top:26px;padding-top:24px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:3px;color:rgba(234,236,240,0.4);margin-bottom:6px">SLEEP SCORE</div>
+        <div style="display:flex;align-items:flex-start">
+          <span style="font-size:104px;font-weight:800;color:#3A5160;line-height:0.78;letter-spacing:-5px">—</span>
+          <span style="font-size:24px;font-weight:600;color:#3A5160;margin-top:10px;margin-left:8px">/100</span>
+        </div>
+      </div>
+
+      <!-- empty stat row -->
+      <div style="display:flex;border-top:1px solid #16242C;margin-top:26px;padding-top:18px">
+        <div style="flex:1;border-right:1px solid #16242C;padding-right:8px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">AMOUNT</div>
+          <div style="font-size:22px;font-weight:700;margin-top:6px;color:#3A5160">—</div>
+        </div>
+        <div style="flex:1;border-right:1px solid #16242C;padding:0 8px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">SOLIDITY</div>
+          <div style="font-size:22px;font-weight:700;margin-top:6px;color:#3A5160">—</div>
+        </div>
+        <div style="flex:1;padding-left:8px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.4)">REGEN</div>
+          <div style="font-size:22px;font-weight:700;margin-top:6px;color:#3A5160">—</div>
+        </div>
+      </div>
+
+      <!-- empty CTA -->
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:14px">
+        <div style="font-size:12px;font-weight:500;letter-spacing:0.3px;color:rgba(234,236,240,0.5);line-height:1.6;text-align:center">Band wasn't worn Friday night. Wear it to sleep to record your hypnogram and sleep score.</div>
+        <div style="background:#FE7F2D;color:#000;border-radius:999px;height:56px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;letter-spacing:2px">SYNC BAND</div>
+      </div>
+
+    </div>
+  </x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { score: 0, overlay: 'stages', trend: 'score', ask: true, rate: 4 };
+
+  componentDidMount() {
+    const target = 53, dur = 1150, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      this.setState({ score: Math.round(target * e) });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  renderVals() {
+    const h = React.createElement;
+    const C = {
+      deep: '#2A4253', light: '#5E7280', rem: '#E0793A', wake: '#FE7F2D',
+      accent: '#FE7F2D', med: '#E0793A', muted: '#5E7280', faint: '#3A5160',
+      text: '#EAECF0', card: '#0E1B22', hair: '#16242C', border: '#1B2D38', track: '#16242C',
+    };
+
+    // ---------- HYPNOGRAM (day) ----------
+    const stageMeta = {
+      D: { c: C.deep, hgt: 20 }, L: { c: C.light, hgt: 46 },
+      R: { c: C.rem, hgt: 72 }, W: { c: C.wake, hgt: 96 },
+    };
+    const runs = [
+      ['L',3],['D',5],['L',2],['R',2],['L',2],['W',1],
+      ['L',3],['D',4],['L',2],['R',3],['L',1],['W',1],
+      ['L',2],['D',3],['L',2],['R',3],['L',2],['W',1],
+      ['L',2],['D',2],['L',2],['R',4],['L',1],['W',1],
+      ['L',2],['R',4],['L',1],['W',2],
+    ];
+    const seq = [];
+    runs.forEach((r) => { for (let i = 0; i < r[1]; i++) seq.push(r[0]); });
+    const epochs = seq.map((s, i) => {
+      const m = stageMeta[s];
+      return { style: {
+        flex: 1, height: m.hgt + '%', background: m.c, borderRadius: '1px 1px 0 0',
+        transformOrigin: 'bottom', animation: 'grow .5s cubic-bezier(.16,.84,.3,1) both',
+        animationDelay: (i * 0.013).toFixed(3) + 's',
+      } };
+    });
+
+    // HR sparkline overlay (off-white thin line over band)
+    const N = seq.length;
+    const hrBase = { D: 47, L: 51, R: 58, W: 62 };
+    const hrVals = seq.map((s, i) => hrBase[s] + (((i * 7) % 5) - 2));
+    const W = 340, Hh = 130, mn = 44, mx = 64;
+    const pts = hrVals.map((v, i) => {
+      const x = (i / (N - 1)) * W;
+      const y = Hh * 0.10 + (1 - (v - mn) / (mx - mn)) * (Hh * 0.42);
+      return x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' ');
+    const hrLine = h('svg', { viewBox: '0 0 ' + W + ' ' + Hh, preserveAspectRatio: 'none', width: '100%', height: '100%' },
+      h('polyline', { points: pts, fill: 'none', stroke: C.text, strokeOpacity: 0.55, strokeWidth: 1.4,
+        strokeLinejoin: 'round', strokeLinecap: 'round',
+        style: { strokeDasharray: 1400, animation: 'hrTrace 1.2s ease .3s both' } }));
+
+    // ---------- bracket helper ----------
+    const bracket = (fillPct, avgPct, optStart, color) => h('div', { style: { animation: 'fadeUp .5s ease both' } },
+      h('div', { style: { position: 'relative', height: 6, borderRadius: 999, background: C.track, overflow: 'visible' } },
+        // optimal zone
+        h('div', { style: { position: 'absolute', left: optStart + '%', right: 0, top: 0, bottom: 0,
+          background: 'rgba(254,127,45,0.10)', borderLeft: '1px dashed rgba(254,127,45,0.5)', borderRadius: '0 999px 999px 0' } }),
+        // fill
+        h('div', { style: { position: 'absolute', left: 0, top: 0, bottom: 0, width: fillPct + '%',
+          background: color, borderRadius: 999, transformOrigin: 'left', animation: 'growX .6s cubic-bezier(.16,.84,.3,1) .2s both' } }),
+        // avg marker
+        h('div', { style: { position: 'absolute', left: avgPct + '%', top: -2, width: 2, height: 10,
+          background: C.text, opacity: 0.7 } })),
+      h('div', { style: { display: 'flex', justifyContent: 'space-between', marginTop: 6,
+        fontSize: 7.5, fontWeight: 600, letterSpacing: '0.8px', color: C.muted } },
+        h('span', null, 'USUAL'), h('span', { style: { color: C.accent } }, 'OPTIMAL')));
+
+    const amountBracket = bracket(70, 78, 80, C.accent);
+    const solidityBracket = bracket(26, 40, 70, C.accent);
+    const remBracket = bracket(73, 67, 60, C.med);
+    const deepBracket = bracket(70, 50, 55, C.accent);
+
+    // ---------- rate scale ----------
+    const rateLabels = ['VERY POOR', 'POOR', 'FAIR', 'GOOD', 'EXCELLENT'];
+    const rateScale = [0, 1, 2, 3, 4].map((i) => {
+      const active = i === this.state.rate;
+      const ht = 30 + i * 9;
+      return {
+        onClick: () => this.setState({ rate: i }),
+        wrap: { flex: 1, height: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', cursor: 'pointer' },
+        bar: { width: '100%', height: ht + '%', borderRadius: '3px 3px 0 0',
+          background: active ? C.accent : C.card, border: '1px solid ' + (active ? C.accent : C.border),
+          transition: 'background .15s, border-color .15s' },
+      };
+    });
+    const rateLabel = rateLabels[this.state.rate];
+    const ask = this.state.ask;
+    const toggleAsk = () => this.setState((s) => ({ ask: !s.ask }));
+    const askTrack = { width: 42, height: 24, borderRadius: 999, background: ask ? C.accent : C.border,
+      position: 'relative', transition: 'background .2s', flexShrink: 0 };
+    const askKnob = { position: 'absolute', top: 3, left: ask ? 21 : 3, width: 18, height: 18, borderRadius: 999,
+      background: ask ? '#000' : C.muted, transition: 'left .2s' };
+
+    // ---------- WEEK matrix ----------
+    const ov = this.state.overlay;
+    const seg = (txt) => txt;
+    const setStages = () => this.setState({ overlay: 'stages' });
+    const setRhythm = () => this.setState({ overlay: 'rhythm' });
+    const setBoost = () => this.setState({ overlay: 'boost' });
+    const tab = (on) => ({ padding: '6px 11px', cursor: 'pointer', transition: 'background .15s,color .15s',
+      background: on ? C.accent : 'transparent', color: on ? '#000' : C.muted });
+    const tabStages = tab(ov === 'stages');
+    const tabRhythm = tab(ov === 'rhythm');
+    const tabBoost = tab(ov === 'boost');
+
+    const dayLabels = [['M','22'],['T','23'],['W','24'],['T','25'],['F','26'],['S','27'],['S','28']];
+    const todayIdx = 3;
+
+    // stage minutes per day
+    const stageData = [
+      { light: 242, deep: 70, rem: 88, intr: 26 },
+      { light: 250, deep: 60, rem: 95, intr: 34 },
+      { light: 240, deep: 90, rem: 100, intr: 2 },
+      { light: 182, deep: 86, rem: 88, intr: 45 },
+      null, null, null,
+    ];
+    const totLabel = (m) => {
+      const hh = Math.floor(m / 60), mm = m % 60;
+      return hh + 'H' + String(mm).padStart(2, '0') + 'M';
+    };
+    const MAXM = 480; // 8h scale
+    const rowLabel = (i, hl) => h('div', { style: { width: 36, flexShrink: 0, fontSize: 9.5, fontWeight: 700,
+      letterSpacing: '0.5px', color: hl ? C.text : C.muted } },
+      h('span', null, dayLabels[i][0] + ' '), h('span', { style: { color: hl ? C.accent : C.faint } }, dayLabels[i][1]));
+
+    let matrixEl;
+    if (ov === 'stages') {
+      const avgX = (435 / MAXM) * 100;
+      matrixEl = h('div', { style: { animation: 'fadeUp .3s ease both' } },
+        // avg line context
+        h('div', { style: { display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', marginBottom: 4, paddingLeft: 36 } },
+          h('div', { style: { position: 'relative', flex: 1, height: 10 } },
+            h('div', { style: { position: 'absolute', left: avgX + '%', top: 0, fontSize: 7.5, fontWeight: 700, color: C.muted, transform: 'translateX(-50%)' } }, 'AVG'))),
+        stageData.map((d, i) => {
+          const hl = i === todayIdx;
+          const inner = d
+            ? h('div', { style: { position: 'relative', flex: 1, height: 14, borderRadius: 2, background: C.card, overflow: 'hidden' } },
+                h('div', { style: { display: 'flex', height: '100%', width: ((d.light + d.deep + d.rem + d.intr) / MAXM * 100) + '%',
+                  transformOrigin: 'left', animation: 'growX .45s cubic-bezier(.16,.84,.3,1) both', animationDelay: (i * 0.05).toFixed(2) + 's' } },
+                  h('div', { style: { width: (d.light / (d.light + d.deep + d.rem + d.intr) * 100) + '%', background: C.light } }),
+                  h('div', { style: { width: (d.deep / (d.light + d.deep + d.rem + d.intr) * 100) + '%', background: C.deep } }),
+                  h('div', { style: { width: (d.rem / (d.light + d.deep + d.rem + d.intr) * 100) + '%', background: C.rem } }),
+                  h('div', { style: { width: (d.intr / (d.light + d.deep + d.rem + d.intr) * 100) + '%', background: C.wake } })),
+                h('div', { style: { position: 'absolute', left: avgX + '%', top: -1, bottom: -1, width: 1, background: 'rgba(234,236,240,0.35)' } }))
+            : h('div', { style: { flex: 1, height: 14, borderRadius: 2, background: C.card, border: '1px dashed ' + C.border } });
+          return h('div', { key: i, style: { display: 'flex', alignItems: 'center', gap: 10, padding: '5px 0',
+            borderRadius: 6, background: hl ? 'rgba(254,127,45,0.05)' : 'transparent' } },
+            rowLabel(i, hl), inner,
+            h('div', { style: { width: 52, flexShrink: 0, textAlign: 'right', fontSize: 9.5, fontWeight: 700,
+              color: d ? C.text : C.faint } }, d ? totLabel(d.light + d.deep + d.rem + d.intr) : '—'));
+        }),
+        // legend
+        h('div', { style: { display: 'flex', gap: 12, marginTop: 12, paddingLeft: 36, fontSize: 8, fontWeight: 600, letterSpacing: '0.5px', color: 'rgba(234,236,240,0.55)' } },
+          [['LIGHT', C.light], ['DEEP', C.deep], ['REM', C.rem], ['INTERRUPT', C.wake]].map((l, i) =>
+            h('span', { key: i, style: { display: 'flex', alignItems: 'center', gap: 4 } },
+              h('span', { style: { width: 7, height: 7, background: l[1], borderRadius: 1 } }), l[0]))));
+    } else if (ov === 'rhythm') {
+      // timeline 0..14 hours from 22:00; gate + window
+      const rhythm = [
+        { onset: 1.83, wake: 9.10 }, { onset: 2.33, wake: 9.65 },
+        { onset: 1.67, wake: 9.20 }, { onset: 5.38, wake: 12.07 },
+        null, null, null,
+      ];
+      const TMAX = 14;
+      const gateX = (5.38 - 0.5) / TMAX * 100, wakeX = 12.07 / TMAX * 100;
+      matrixEl = h('div', { style: { animation: 'fadeUp .3s ease both' } },
+        // gate/window guide markers
+        h('div', { style: { display: 'flex', marginBottom: 6, paddingLeft: 36 } },
+          h('div', { style: { position: 'relative', flex: 1, height: 12, fontSize: 7.5, fontWeight: 700, letterSpacing: '0.5px' } },
+            h('div', { style: { position: 'absolute', left: gateX + '%', top: 0, color: C.accent, transform: 'translateX(-50%)' } }, 'GATE 03:23'),
+            h('div', { style: { position: 'absolute', left: wakeX + '%', top: 0, color: C.muted, transform: 'translateX(-50%)' } }, 'WAKE 10:04'))),
+        h('div', { style: { position: 'relative', paddingLeft: 36 } },
+          // vertical guide lines
+          h('div', { style: { position: 'absolute', left: 'calc(36px + ' + gateX + '% * (100% - 36px)/100)', top: 0, bottom: 18, width: 1, borderLeft: '1px dashed rgba(254,127,45,0.35)' } }),
+          rhythm.map((d, i) => {
+            const hl = i === todayIdx;
+            let inner;
+            if (d) {
+              const L = d.onset / TMAX * 100, R = d.wake / TMAX * 100;
+              inner = h('div', { style: { position: 'relative', flex: 1, height: 16 } },
+                // gate box
+                h('div', { style: { position: 'absolute', left: (L - 4) + '%', top: 1, bottom: 1, width: '4%',
+                  border: '1px dashed ' + C.accent, background: 'rgba(254,127,45,0.12)', borderRadius: 2 } }),
+                // sleep window bar
+                h('div', { style: { position: 'absolute', left: L + '%', width: (R - L) + '%', top: 4, height: 8, borderRadius: 999,
+                  background: 'linear-gradient(90deg,' + C.deep + ',' + C.rem + ')',
+                  transformOrigin: 'left', animation: 'growX .45s cubic-bezier(.16,.84,.3,1) both', animationDelay: (i * 0.05).toFixed(2) + 's' } }),
+                // wake node
+                h('div', { style: { position: 'absolute', left: R + '%', top: 2, width: 11, height: 11, borderRadius: 999,
+                  background: C.accent, border: '2px solid #000', transform: 'translateX(-50%)' } }));
+            } else {
+              inner = h('div', { style: { flex: 1, height: 16, display: 'flex', alignItems: 'center' } },
+                h('div', { style: { width: '100%', borderTop: '1px dashed ' + C.border } }));
+            }
+            return h('div', { key: i, style: { display: 'flex', alignItems: 'center', gap: 10, padding: '5px 0', marginLeft: -36, paddingLeft: 0,
+              background: hl ? 'rgba(254,127,45,0.05)' : 'transparent', borderRadius: 6 } },
+              rowLabel(i, hl), inner);
+          }),
+          // axis
+          h('div', { style: { display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 7.5, fontWeight: 600, color: C.faint } },
+            ['22','01','04','07','10','12'].map((t, i) => h('span', { key: i }, t)))),
+        h('div', { style: { display: 'flex', gap: 14, marginTop: 12, paddingLeft: 36, fontSize: 8, fontWeight: 600, letterSpacing: '0.5px', color: 'rgba(234,236,240,0.55)' } },
+          h('span', { style: { display: 'flex', alignItems: 'center', gap: 4 } }, h('span', { style: { width: 12, height: 6, borderRadius: 999, background: 'linear-gradient(90deg,' + C.deep + ',' + C.rem + ')' } }), 'SLEEP WINDOW'),
+          h('span', { style: { display: 'flex', alignItems: 'center', gap: 4 } }, h('span', { style: { width: 8, height: 8, border: '1px dashed ' + C.accent, borderRadius: 2 } }), 'SLEEP GATE')));
+    } else {
+      // boost levels: sleep block (slate) + daytime boost blocks (orange scale)
+      const lvscale = { 3: C.wake, 2: C.med, 1: C.muted, 0: C.faint };
+      const boostRows = [
+        { sleep: [0, 8.6], day: [3,3,2,2,2,1,1,1,2,2,3,3,3,2,1,1] },
+        { sleep: [0.3, 9.0], day: [3,3,3,2,2,1,2,2,2,3,3,3,2,2,1,1] },
+        { sleep: [0, 8.2], day: [3,3,3,3,2,2,2,2,3,3,3,2,2,1,1,1] },
+        { sleep: [5.4, 12.1], day: [2,2,1,1,1,1,0,0,1,1,2,2,1,1,0,0] },
+        null, null, null,
+      ];
+      const TMAX2 = 24, sleepScaleStart = 22; // sleep onset measured from 22:00
+      matrixEl = h('div', { style: { animation: 'fadeUp .3s ease both' } },
+        h('div', { style: { fontSize: 8.5, fontWeight: 600, letterSpacing: '0.5px', color: C.muted, marginBottom: 8, paddingLeft: 36 } }, 'SLEEP BLOCK vs DAYTIME BOOST'),
+        boostRows.map((d, i) => {
+          const hl = i === todayIdx;
+          let inner;
+          if (d) {
+            inner = h('div', { style: { display: 'flex', flex: 1, gap: 2, alignItems: 'center' } },
+              // sleep bar
+              h('div', { style: { width: 78, height: 9, borderRadius: 999, background: C.deep, position: 'relative', flexShrink: 0 } },
+                h('div', { style: { position: 'absolute', inset: 0, borderRadius: 999, border: '1px solid ' + C.border } })),
+              // boost blocks
+              h('div', { style: { display: 'flex', gap: 2, flex: 1 } },
+                d.day.map((lv, j) => h('div', { key: j, style: { flex: 1, height: 9, borderRadius: 1, background: lvscale[lv],
+                  transformOrigin: 'bottom', animation: 'fadeUp .3s ease both', animationDelay: (i * 0.05 + j * 0.01).toFixed(2) + 's' } }))));
+          } else {
+            inner = h('div', { style: { flex: 1, display: 'flex', alignItems: 'center' } },
+              h('div', { style: { width: '100%', borderTop: '1px dashed ' + C.border } }));
+          }
+          return h('div', { key: i, style: { display: 'flex', alignItems: 'center', gap: 10, padding: '5px 0',
+            background: hl ? 'rgba(254,127,45,0.05)' : 'transparent', borderRadius: 6 } }, rowLabel(i, hl), inner);
+        }),
+        h('div', { style: { display: 'flex', gap: 14, marginTop: 12, paddingLeft: 36, fontSize: 8, fontWeight: 600, letterSpacing: '0.5px', color: 'rgba(234,236,240,0.55)' } },
+          h('span', { style: { display: 'flex', alignItems: 'center', gap: 4 } }, h('span', { style: { width: 12, height: 7, borderRadius: 999, background: C.deep } }), 'SLEEP'),
+          h('span', { style: { display: 'flex', alignItems: 'center', gap: 4 } }, h('span', { style: { width: 7, height: 7, background: C.wake, borderRadius: 1 } }), 'HIGH BOOST'),
+          h('span', { style: { display: 'flex', alignItems: 'center', gap: 4 } }, h('span', { style: { width: 7, height: 7, background: C.faint, borderRadius: 1 } }), 'LOW')));
+    }
+
+    // ---------- TREND ----------
+    const tmode = this.state.trend;
+    const setTScore = () => this.setState({ trend: 'score' });
+    const setTBoost = () => this.setState({ trend: 'boost' });
+    const tabTScore = tab(tmode === 'score');
+    const tabTBoost = tab(tmode === 'boost');
+    const trendCaption = tmode === 'score' ? 'SLEEP SCORE · 0–100' : 'BOOST FROM SLEEP · 0.0–10.0';
+
+    const scoreData = [72, 67, 63, 53, null, null, null];
+    const boostData = [8.3, 8.1, 7.7, 6.9, null, null, null];
+    const data = tmode === 'score' ? scoreData : boostData;
+    const dom = tmode === 'score' ? [40, 100] : [4, 10];
+    const tiers = tmode === 'score'
+      ? [['EXCELLENT', 85], ['GOOD', 70], ['FAIR', 55], ['MODEST', 40]]
+      : [['EXCELLENT', 8.5], ['GOOD', 7], ['FAIR', 6], ['MODEST', 4]];
+    const tierColor = (v) => {
+      const t = tmode === 'score' ? [85, 70, 55] : [8.5, 7, 6];
+      if (v >= t[0]) return C.accent; if (v >= t[1]) return C.med; if (v >= t[2]) return C.muted; return C.faint;
+    };
+    const TW = 320, TH = 140, padL = 6, padR = 30, padT = 10, padB = 18;
+    const ix = (i) => padL + (i / 6) * (TW - padL - padR);
+    const iy = (v) => padT + (1 - (v - dom[0]) / (dom[1] - dom[0])) * (TH - padT - padB);
+    const linePts = data.map((v, i) => v == null ? null : ix(i) + ',' + iy(v).toFixed(1)).filter(Boolean).join(' ');
+    const avgVal = tmode === 'score' ? 63.75 : 7.75;
+    const trendEl = h('svg', { viewBox: '0 0 ' + TW + ' ' + TH, width: '100%', style: { display: 'block' } },
+      // tier gridlines + labels
+      tiers.map((t, i) => h('g', { key: i },
+        h('line', { x1: padL, y1: iy(t[1]), x2: TW - padR, y2: iy(t[1]), stroke: C.hair, strokeWidth: 1, strokeDasharray: '2 3' }),
+        h('text', { x: TW - padR + 4, y: iy(t[1]) + 3, fill: C.faint, fontSize: 6.5, fontWeight: 700, fontFamily: 'Azeret Mono', letterSpacing: '0.5' }, t[0]))),
+      // week average
+      h('line', { x1: padL, y1: iy(avgVal), x2: TW - padR, y2: iy(avgVal), stroke: C.muted, strokeWidth: 1, strokeDasharray: '5 4', opacity: 0.6 }),
+      // trend line
+      h('polyline', { points: linePts, fill: 'none', stroke: C.accent, strokeWidth: 2, strokeLinejoin: 'round', strokeLinecap: 'round',
+        style: { '--len': 600, strokeDasharray: 600, animation: 'dashTrace 1s ease .2s both' } }),
+      // dots + values
+      data.map((v, i) => v == null ? null : h('g', { key: i },
+        h('circle', { cx: ix(i), cy: iy(v), r: 4, fill: tierColor(v), stroke: '#000', strokeWidth: 1.5 }),
+        h('text', { x: ix(i), y: iy(v) + (v >= avgVal ? 16 : -9), fill: C.text, fontSize: 7.5, fontWeight: 700, fontFamily: 'Azeret Mono', textAnchor: 'middle' },
+          tmode === 'score' ? String(v) : v.toFixed(1)))),
+      // x labels
+      dayLabels.map((dl, i) => h('text', { key: 'x' + i, x: ix(i), y: TH - 4, fill: i === todayIdx ? C.accent : C.faint,
+        fontSize: 7, fontWeight: 700, fontFamily: 'Azeret Mono', textAnchor: 'middle' }, dl[0] + dl[1])));
+
+    // ---------- WHEEL ----------
+    const wparts = [['light', 52, C.light], ['deep', 19, C.deep], ['rem', 20, C.rem], ['intr', 9, C.wake]];
+    const r = 42, cx = 56, cy = 56, circ = 2 * Math.PI * r;
+    let acc = 0;
+    const wheelEl = h('svg', { width: 112, height: 112, viewBox: '0 0 112 112' },
+      h('circle', { cx, cy, r, fill: 'none', stroke: C.card, strokeWidth: 14 }),
+      wparts.map((p, i) => {
+        const dash = (p[1] / 100) * circ;
+        const off = circ - acc;
+        acc += dash;
+        return h('circle', { key: i, cx, cy, r, fill: 'none', stroke: p[2], strokeWidth: 14,
+          strokeDasharray: dash + ' ' + (circ - dash), strokeDashoffset: off,
+          transform: 'rotate(-90 ' + cx + ' ' + cy + ')' });
+      }),
+      h('text', { x: cx, y: cy - 1, fill: C.text, fontSize: 21, fontWeight: 800, fontFamily: 'Azeret Mono', textAnchor: 'middle', letterSpacing: '-0.5' }, '52%'),
+      h('text', { x: cx, y: cy + 13, fill: C.muted, fontSize: 7, fontWeight: 700, fontFamily: 'Azeret Mono', textAnchor: 'middle', letterSpacing: '0.5' }, 'LIGHT'));
+
+    return {
+      score: this.state.score, epochs, hrLine,
+      amountBracket, solidityBracket, remBracket, deepBracket,
+      rateScale, rateLabel, toggleAsk, askTrack, askKnob,
+      setStages, setRhythm, setBoost, tabStages, tabRhythm, tabBoost, matrixEl,
+      setTScore, setTBoost, tabTScore, tabTBoost, trendCaption, trendEl, wheelEl,
+    };
+  }
+}
+</script>
+</body>
+</html>

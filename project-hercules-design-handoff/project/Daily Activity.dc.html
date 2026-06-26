@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes drawLine{to{stroke-dashoffset:0}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes snapUp{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes morphIn{0%{opacity:0;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
+  @keyframes popIn{0%{opacity:0;transform:scale(.9) translateY(10px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+  @keyframes sheetUp{0%{transform:translateY(100%)}100%{transform:translateY(0)}}
+  @keyframes dimIn{0%{opacity:0}100%{opacity:1}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes mkPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+  ::-webkit-scrollbar{width:0;height:0}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#0b0c0e;display:flex;align-items:center;justify-content:center;padding:40px 0;font-family:'Azeret Mono',monospace">
+  <x-import component="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div data-screen-label="Daily Activity" style="position:relative;height:100%;background:#000;overflow:hidden">
+
+      <!-- SCROLL AREA -->
+      <div style="height:100%;overflow-y:auto;color:#EAECF0;font-family:'Azeret Mono',monospace;padding:56px 20px 40px;display:flex;flex-direction:column;gap:20px;touch-action:pan-y" onTouchStart="{{ onTouchStart }}" onTouchEnd="{{ onTouchEnd }}">
+
+        <!-- HEADER -->
+        <div style="display:flex;align-items:center;gap:10px">
+          <div onClick="{{ noop }}" style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer">
+            <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1.5 1.5 7.5l6 6" stroke="#EAECF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="flex:1;text-align:center">
+            <div style="font-size:13px;font-weight:700;letter-spacing:2.5px">{{ dayTitle }}</div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:1.5px;color:rgba(234,236,240,0.42);margin-top:4px">{{ dateLabel }}</div>
+          </div>
+          <div onClick="{{ toggleView }}" style="width:34px;height:34px;flex-shrink:0;border:1px solid #233D4D;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ toggleIcon }}</div>
+        </div>
+
+        <!-- INTENSITY ZONE BREAKDOWN -->
+        <div style="display:flex;flex-direction:column;gap:11px;animation:snapUp .5s cubic-bezier(.16,.84,.3,1) both">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">INTENSITY ZONES</div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280">{{ awakeTotal }} AWAKE</div>
+          </div>
+          {{ zoneBarEl }}
+          <div style="display:flex">
+            <sc-for list="{{ zones }}" as="z" hint-placeholder-count="5">
+              <div style="flex:1;text-align:center;border-right:1px solid #16242C;padding:0 2px">
+                <div style="display:flex;align-items:center;justify-content:center;gap:4px">
+                  <span style="{{ z.dotStyle }}"></span>
+                  <span style="font-size:8px;font-weight:600;letter-spacing:0.5px;color:rgba(234,236,240,0.4)">{{ z.name }}</span>
+                </div>
+                <div style="{{ z.timeStyle }}">{{ z.time }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- SIGNATURE VIZ (linear | clock) -->
+        <div style="border-top:1px solid #16242C;padding-top:18px;min-height:300px">
+          {{ vizEl }}
+        </div>
+
+        <!-- DAILY GOAL STATUS -->
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(234,236,240,0.45)">DAILY GOAL</div>
+            <div style="display:flex;align-items:baseline;gap:5px"><span style="font-size:22px;font-weight:800;letter-spacing:-1px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ goalPct }}</span><span style="font-size:11px;font-weight:700;color:#5E7280">%</span></div>
+          </div>
+          <div style="position:relative;height:12px;background:#070F13;border:1px solid #16242C;border-radius:2px;overflow:hidden">
+            <div style="position:absolute;left:0;top:0;bottom:0;background:#FE7F2D;width:{{ goalWidth }}"></div>
+            <div style="position:absolute;left:83.3%;top:0;bottom:0;width:1px;background:rgba(234,236,240,0.18)"></div>
+          </div>
+          <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:#5E7280">{{ goalCaption }}</div>
+        </div>
+
+        <!-- PRIMARY STAT GRID -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+          <sc-for list="{{ statGrid }}" as="s" hint-placeholder-count="4">
+            <div style="background:#0E1B22;border:1px solid #1B2D38;border-radius:13px;padding:16px 16px 15px;display:flex;flex-direction:column;gap:11px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="width:30px;height:30px">{{ s.icon }}</div>
+                <span style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.38)">{{ s.label }}</span>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:1px">
+                <span style="font-size:27px;font-weight:800;letter-spacing:-1.5px;color:#EAECF0;font-variant-numeric:tabular-nums">{{ s.value }}</span>
+                <span style="font-size:11px;font-weight:600;color:#5E7280">{{ s.unit }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- SECONDARY STAT ROWS -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div onClick="{{ openInactivityList }}" style="background:#0E1B22;border:1px solid #1B2D38;border-radius:13px;padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer">
+            <div style="width:30px;height:30px;flex-shrink:0">{{ iconInactive }}</div>
+            <div style="flex:1">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.38)">INACTIVITY STAMPS</div>
+              <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.5);margin-top:3px">Tap to review prompts</div>
+            </div>
+            <span style="font-size:26px;font-weight:800;letter-spacing:-1px;color:#FE7F2D;font-variant-numeric:tabular-nums">{{ inactivityCount }}</span>
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none" style="margin-left:2px"><path d="M1 1l5 5-5 5" stroke="#5E7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <div style="background:#0E1B22;border:1px solid #1B2D38;border-radius:13px;padding:14px 18px;display:flex;align-items:center;gap:14px">
+            <div style="width:30px;height:30px;flex-shrink:0">{{ iconSleep }}</div>
+            <div style="flex:1">
+              <div style="font-size:8.5px;font-weight:600;letter-spacing:1.5px;color:rgba(234,236,240,0.38)">NIGHT SLEEP</div>
+              <div style="font-size:11px;font-weight:500;color:rgba(234,236,240,0.5);margin-top:3px">Carried into today</div>
+            </div>
+            <span style="font-size:22px;font-weight:800;letter-spacing:-1px;color:#EAECF0;font-variant-numeric:tabular-nums">{{ nightSleep }}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- POPUP OVERLAY -->
+      {{ popupEl }}
+
+    </div>
+  </x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { view: 'linear', dayIndex: 0, p: 0, popup: null };
+
+  constructor(props) {
+    super(props);
+    this.C = { accent:'#FE7F2D', med:'#E0793A', low:'#5E7280', vlow:'#3A5160', min:'#2A4253', slate:'#233D4D', text:'#EAECF0', hair:'#16242C', card:'#0E1B22', border:'#1B2D38' };
+    this.LV = ['#2A4253','#3A5160','#5E7280','#E0793A','#FE7F2D'];
+    this.N = 144;                 // 10-min samples over 24h
+    this._vizKey = null; this._vizEl = null;
+
+    const lerp = (cps, off, amp) => {
+      const out = [];
+      for (let i = 0; i < this.N; i++) {
+        const hr = i / 6;
+        let a = cps[0], b = cps[cps.length-1];
+        for (let k=0;k<cps.length-1;k++){ if(hr>=cps[k][0]&&hr<=cps[k+1][0]){a=cps[k];b=cps[k+1];break;} }
+        const span=(b[0]-a[0])||1, f=(hr-a[0])/span;
+        const base=a[1]+(b[1]-a[1])*f;
+        const noise=(2.0*Math.sin(i*1.9)+1.1*Math.sin(i*0.7+1))*amp;
+        out.push(Math.round(base+off+noise));
+      }
+      return out;
+    };
+    const hrCps = [
+      [0,49],[2,45],[3.2,52],[4,47],[6,48],[6.8,58],[7.5,71],[9,80],[10.5,74],
+      [12,86],[13,79],[14,77],[15,80],[16.5,84],[18,92],[18.3,128],[18.6,96],
+      [19,108],[19.1,158],[19.4,118],[20,86],[21,74],[22,63],[23,55],[24,51],
+    ];
+    // intensity 0..4 across the day (resting/sit/low/med/high)
+    const intCps = [
+      [0,0],[6.1,0],[6.3,1],[8,2],[9,1],[11,2],[12,1],[13,1],[13.1,0],[14,1],[14.1,0],
+      [15,1],[15.1,0],[16,2],[17,2],[18,3],[18.3,4],[18.6,2],[19,3],[19.1,4],[19.4,2],[20,1],[22,1],[24,0],
+    ];
+    const intAt = (i) => {
+      const hr = i/6; let a=intCps[0],b=intCps[intCps.length-1];
+      for(let k=0;k<intCps.length-1;k++){ if(hr>=intCps[k][0]&&hr<=intCps[k+1][0]){a=intCps[k];b=intCps[k+1];break;} }
+      const span=(b[0]-a[0])||1, f=(hr-a[0])/span;
+      let v = a[1]+(b[1]-a[1])*f;
+      v += (Math.sin(i*2.3)+Math.sin(i*0.9))*0.55;
+      return Math.max(0, Math.min(4, Math.round(v)));
+    };
+
+    const sleep = [0, 6.18];   // night-sleep block carried past midnight
+    const events = {
+      sleep,
+      inactivity: [13.1, 14.1, 15.1],
+      workouts: [{ t:18.08, label:'STRENGTH', dur:'42 MIN', avg:131, kind:'strength' }],
+      cluster: { t:19.1, items:[
+        { time:'6:05 PM', tag:'WORKOUT', sub:'Strength · 42 min', kind:'workout' },
+        { time:'7:05 PM', tag:'MAX HR 158', sub:'Peak heart rate', kind:'hr' },
+        { time:'7:09 PM', tag:'WALK', sub:'Evening walk · 18 min', kind:'walk' },
+      ]},
+      peaks: [ { t:3.2, bpm:66, moon:true }, { t:7.0, bpm:70 }, { t:19.1, bpm:158, hot:true } ],
+    };
+
+    const mkDay = (cfg) => ({
+      title: cfg.title, date: cfg.date,
+      hr: lerp(hrCps, cfg.off||0, cfg.amp==null?1:cfg.amp),
+      intAt,
+      zones: cfg.zones, awake: cfg.awake,
+      stats: cfg.stats, goal: cfg.goal, inactivity: cfg.inactivity, nightSleep: cfg.nightSleep,
+      events,
+    });
+
+    this.days = [
+      mkDay({ title:'TODAY', date:'WED · JUN 25', off:0, amp:1,
+        zones:[0,399,594,83,54], awake:'18H50M',
+        stats:{ steps:4068, dist:2.66, active:187, cal:3174 }, goal:90, inactivity:3, nightSleep:'6H41M' }),
+      mkDay({ title:'TUE', date:'TUE · JUN 24', off:4, amp:1.2,
+        zones:[0,288,612,176,118], awake:'19H06M',
+        stats:{ steps:8120, dist:5.41, active:246, cal:3540 }, goal:118, inactivity:1, nightSleep:'7H12M' }),
+      mkDay({ title:'MON', date:'MON · JUN 23', off:-3, amp:0.7,
+        zones:[12,486,540,72,30], awake:'18H40M',
+        stats:{ steps:5210, dist:3.12, active:150, cal:2980 }, goal:74, inactivity:4, nightSleep:'6H05M' }),
+    ];
+
+    // geometry — linear
+    this.LW = 358; this.padL = 4; this.padR = 4;
+    this.hrTop = 16; this.hrBase = 150; this.DMIN = 40; this.DMAX = 168;
+    this.bandTop = 158; this.bandBot = 192;
+    // geometry — clock
+    this.cx = 160; this.cy = 160; this.rDial = 86; this.rSpikeIn = 118; this.rSpikeMax = 30; this.rEdge = 150; this.rSleep = 104;
+  }
+
+  componentDidMount(){ this.animateIn(); }
+  componentWillUnmount(){ cancelAnimationFrame(this._raf); }
+
+  animateIn(){
+    cancelAnimationFrame(this._raf);
+    const dur = 1150, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      this.setState({ p: e });
+      if (p < 1) this._raf = requestAnimationFrame(tick);
+    };
+    this._raf = requestAnimationFrame(tick);
+  }
+
+  toggleView(){ this.setState(s => ({ view: s.view === 'linear' ? 'clock' : 'linear' })); }
+  changeDay(dir){
+    this.setState(s => {
+      const ni = Math.max(0, Math.min(this.days.length-1, s.dayIndex + dir));
+      if (ni === s.dayIndex) return null;
+      return { dayIndex: ni, p: 0, popup: null };
+    }, () => this.animateIn());
+  }
+  onTouchStart(e){ this._tx = e.touches[0].clientX; this._ty = e.touches[0].clientY; }
+  onTouchEnd(e){
+    if (this._tx == null) return;
+    const dx = e.changedTouches[0].clientX - this._tx;
+    const dy = e.changedTouches[0].clientY - this._ty;
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)*1.4) this.changeDay(dx < 0 ? 1 : -1);
+    this._tx = null;
+  }
+
+  // ---- geometry helpers
+  xT(t){ return this.padL + (t/24) * (this.LW - this.padL - this.padR); }
+  xPct(t){ return this.xT(t) / this.LW * 100; }
+  yHR(v){ return this.hrTop + (1 - (v - this.DMIN)/(this.DMAX - this.DMIN)) * (this.hrBase - this.hrTop); }
+  ang(t){ return (-90 - (t/24)*360) * Math.PI/180; }      // 00 top, 06 left, 12 bottom, 18 right
+  polar(t, r){ const a = this.ang(t); return [ this.cx + r*Math.cos(a), this.cy + r*Math.sin(a) ]; }
+
+  // ============ LINEAR VIZ ============
+  buildLinear(day){
+    const h = React.createElement, C = this.C, W = this.LW;
+    const hr = day.hr, ev = day.events;
+    const pts = hr.map((v,i)=> this.xT(i/6).toFixed(1)+','+this.yHR(v).toFixed(1)).join(' ');
+    // path length (approx) for draw-in
+    let L=0; for(let i=1;i<hr.length;i++){ L += Math.hypot(this.xT(i/6)-this.xT((i-1)/6), this.yHR(hr[i])-this.yHR(hr[i-1])); }
+    L = Math.ceil(L)+10;
+    const fillD = 'M '+this.xT(0).toFixed(1)+' '+this.hrBase + hr.map((v,i)=>' L '+this.xT(i/6).toFixed(1)+' '+this.yHR(v).toFixed(1)).join('') + ' L '+this.xT(24).toFixed(1)+' '+this.hrBase+' Z';
+
+    const svgCh = [];
+    svgCh.push(h('defs',{key:'d'}, h('linearGradient',{id:'hrgrad',x1:0,y1:0,x2:0,y2:1},
+      h('stop',{offset:'0%',stopColor:'#FE7F2D',stopOpacity:0.18}), h('stop',{offset:'100%',stopColor:'#FE7F2D',stopOpacity:0}))));
+    // gridlines every 6h
+    [0,6,12,18,24].forEach((t,i)=> svgCh.push(h('line',{key:'g'+i,x1:this.xT(t),y1:this.hrTop-4,x2:this.xT(t),y2:this.bandBot,stroke:'#10202850'!==''?'#13232B':'',strokeWidth:1})));
+    // intensity band (density lines)
+    for(let i=0;i<this.N;i++){
+      const lv = day.intAt(i); if(lv===0) continue;
+      const x = this.xT(i/6), hgt = ((lv)/4)*(this.bandBot-this.bandTop);
+      svgCh.push(h('line',{key:'bd'+i, x1:x, x2:x, y1:this.bandBot, y2:this.bandBot-hgt, stroke:this.LV[lv], strokeWidth:1.4, opacity:0.9,
+        style:{ transformBox:'fill-box', transformOrigin:'bottom', animation:'grow .5s cubic-bezier(.16,.84,.3,1) both', animationDelay:(0.3 + (i/this.N)*0.5).toFixed(2)+'s' } }));
+    }
+    // sleep band marker on band area
+    const sx1=this.xT(ev.sleep[0]), sx2=this.xT(ev.sleep[1]);
+    svgCh.push(h('rect',{key:'slp',x:sx1,y:this.bandTop-1,width:sx2-sx1,height:this.bandBot-this.bandTop+2,rx:2,fill:'rgba(35,61,77,0.55)',stroke:'#2C4B5E',strokeWidth:1}));
+    // HR fill + line
+    svgCh.push(h('path',{key:'fill',d:fillD,fill:'url(#hrgrad)',stroke:'none',style:{opacity:0,animation:'dimIn .6s ease .5s forwards'}}));
+    svgCh.push(h('polyline',{key:'line',points:pts,fill:'none',stroke:C.accent,strokeWidth:2,strokeLinejoin:'round',strokeLinecap:'round',
+      style:{strokeDasharray:L,strokeDashoffset:L,animation:'drawLine 1.15s cubic-bezier(.4,0,.2,1) both'}}));
+
+    const svg = h('svg',{viewBox:'0 0 '+W+' 200',preserveAspectRatio:'none',style:{position:'absolute',inset:0,width:'100%',height:'200px',overflow:'visible'}},svgCh);
+
+    // HR inspect bubbles (HTML overlay)
+    const bubbles = ev.peaks.map((pk,i)=>{
+      const left = this.xPct(pk.t), top = this.yHR(pk.bpm);
+      return h('div',{key:'pk'+i,style:{position:'absolute',left:left+'%',top:0,height:'200px',pointerEvents:'none'}},
+        h('div',{style:{position:'absolute',top:top+'px',left:0,width:1,height:(200-top)+'px',borderLeft:'1px dashed rgba(234,236,240,0.22)'}}),
+        h('div',{style:{position:'absolute',top:(top-30)+'px',left:0,transform:'translateX(-50%)',background:pk.hot?'#FE7F2D':'#1B2D38',color:pk.hot?'#000':'#EAECF0',borderRadius:999,padding:'4px 9px',display:'flex',alignItems:'center',gap:4,opacity:0,animation:'fadeUp .4s ease '+(1.0+i*0.12)+'s both'}},
+          pk.moon? h('svg',{width:8,height:8,viewBox:'0 0 8 8'},h('path',{d:'M6.2 4.2A3 3 0 1 1 3.8 1.8 2.3 2.3 0 0 0 6.2 4.2Z',fill:'#9FB0BC'})) : null,
+          h('span',{style:{fontSize:11,fontWeight:800,letterSpacing:'-0.5px',fontVariantNumeric:'tabular-nums'}},String(pk.bpm))));
+    });
+
+    // axis row
+    const axis = h('div',{style:{position:'relative',height:14,marginTop:2}},
+      ['12 AM','6 AM','12 PM','6 PM','12 AM'].map((lb,i)=> h('div',{key:i,style:{position:'absolute',left:this.xPct(i*6)+'%',transform:i===0?'translateX(0)':(i===4?'translateX(-100%)':'translateX(-50%)'),fontSize:8,fontWeight:600,letterSpacing:'0.5px',color:'rgba(234,236,240,0.35)'}},lb)));
+
+    // event track (HTML, tappable)
+    const mk = (left, node, onClick, key, delay) => h('div',{key,onClick,style:{position:'absolute',left:left+'%',top:'50%',transform:'translate(-50%,-50%)',cursor:onClick?'pointer':'default',opacity:0,animation:'mkPop .4s cubic-bezier(.2,.9,.3,1) '+delay+'s both'}},node);
+    const triNode = h('div',{style:{width:30,height:30,borderRadius:999,border:'1.5px solid #FE7F2D',background:'#000',display:'flex',alignItems:'center',justifyContent:'center'}},
+      h('svg',{width:15,height:13,viewBox:'0 0 15 13',fill:'none'},h('path',{d:'M7.5 2 13.5 11.5 1.5 11.5Z',stroke:'#FE7F2D',strokeWidth:1.5,strokeLinejoin:'round'})));
+    const workNode = h('div',{style:{width:32,height:32,borderRadius:999,background:'#FE7F2D',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 0 4px rgba(254,127,45,0.12)'}},
+      h('svg',{width:16,height:16,viewBox:'0 0 16 16',fill:'none'},h('path',{d:'M2 8h12M4 5v6M12 5v6M2 6.5v3M14 6.5v3',stroke:'#000',strokeWidth:1.6,strokeLinecap:'round'})));
+    const clusterNode = h('div',{style:{position:'relative',width:34,height:32}},
+      h('div',{style:{position:'absolute',right:0,top:0,width:30,height:30,borderRadius:999,background:'#233D4D',border:'1px solid #000'}}),
+      h('div',{style:{position:'absolute',left:0,bottom:0,width:32,height:32,borderRadius:999,background:'#FE7F2D',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 0 4px rgba(254,127,45,0.12)'}},
+        h('span',{style:{fontSize:11,fontWeight:800,color:'#000'}},'+3')));
+
+    const markers = [];
+    ev.inactivity.forEach((t,i)=> markers.push(mk(this.xPct(t), triNode, ()=>this.setState({popup:{type:'inactivity'}}), 'ina'+i, 1.2+i*0.08)));
+    ev.workouts.forEach((w,i)=> markers.push(mk(this.xPct(w.t), workNode, ()=>this.setState({popup:{type:'workout',w}}), 'wk'+i, 1.4)));
+    markers.push(mk(this.xPct(ev.cluster.t), clusterNode, ()=>this.setState({popup:{type:'cluster'}}), 'cl', 1.5));
+
+    const track = h('div',{style:{position:'relative',height:54,marginTop:6}},
+      h('div',{style:{position:'absolute',left:0,right:0,top:'50%',height:1,background:'#16242C'}}),
+      ...markers);
+
+    return h('div',{key:'lin',style:{animation:'morphIn .45s cubic-bezier(.2,.9,.3,1) both'}},
+      h('div',{style:{position:'relative',height:200}}, svg, ...bubbles),
+      axis, track);
+  }
+
+  // ============ CLOCK VIZ ============
+  buildClock(day){
+    const h = React.createElement, C = this.C, ev = day.events;
+    const S = 320, ch = [];
+    // outer faint rings
+    ch.push(h('circle',{key:'o1',cx:this.cx,cy:this.cy,r:this.rEdge,fill:'none',stroke:'#13232B',strokeWidth:1}));
+    ch.push(h('circle',{key:'o2',cx:this.cx,cy:this.cy,r:this.rSpikeIn-3,fill:'none',stroke:'#13232B',strokeWidth:1}));
+    // hour ticks (every 1h)
+    for(let t=0;t<24;t++){
+      const major = t%6===0;
+      const [x1,y1]=this.polar(t,this.rSpikeIn-3), [x2,y2]=this.polar(t,this.rSpikeIn-3-(major?8:4));
+      ch.push(h('line',{key:'tk'+t,x1,y1,x2,y2,stroke:major?'#3A5160':'#1B2D38',strokeWidth:major?1.4:1}));
+    }
+    // dial face
+    ch.push(h('circle',{key:'face',cx:this.cx,cy:this.cy,r:this.rDial,fill:'rgba(35,61,77,0.16)',stroke:'#1B2D38',strokeWidth:1}));
+    // face hour numbers
+    [['00',0],['06',6],['12',12],['18',18]].forEach(([lb,t])=>{
+      const [x,y]=this.polar(t,this.rDial-15);
+      ch.push(h('text',{key:'hn'+t,x,y:y+4,textAnchor:'middle',style:{fontFamily:"'Azeret Mono',monospace",fontSize:13,fontWeight:800,fill:'#EAECF0',letterSpacing:'-0.5px'}},lb));
+    });
+    [3,9,15,21].forEach(t=>{ const [x,y]=this.polar(t,this.rDial-15); ch.push(h('text',{key:'hm'+t,x,y:y+3,textAnchor:'middle',style:{fontFamily:"'Azeret Mono',monospace",fontSize:9,fontWeight:600,fill:'#5E7280'}},String(t).padStart(2,'0'))); });
+    // moon (near 00) + sun (near 12)
+    ch.push(h('path',{key:'moon',d:'M'+(this.cx+5)+' '+(this.cy-34)+'a8 8 0 1 1 -6 -6 6.2 6.2 0 0 0 6 6Z',fill:'#5E7280'}));
+    ch.push(h('g',{key:'sun'}, h('circle',{cx:this.cx,cy:this.cy+38,r:5,fill:'#5E7280'}),
+      ...[0,45,90,135,180,225,270,315].map((d,i)=>{const a=d*Math.PI/180;return h('line',{key:'sr'+i,x1:this.cx+8*Math.cos(a),y1:this.cy+38+8*Math.sin(a),x2:this.cx+11*Math.cos(a),y2:this.cy+38+11*Math.sin(a),stroke:'#5E7280',strokeWidth:1.3,strokeLinecap:'round'})})));
+
+    // sleep window ring band
+    const sStep = 0.08; const sleepPts=[];
+    for(let t=ev.sleep[0]; t<=ev.sleep[1]; t+=sStep){ const [x,y]=this.polar(t,this.rSleep); sleepPts.push(x.toFixed(1)+','+y.toFixed(1)); }
+    ch.push(h('polyline',{key:'sleepband',points:sleepPts.join(' '),fill:'none',stroke:'#233D4D',strokeWidth:13,strokeLinecap:'round',opacity:0.9,style:{animation:'dimIn .6s ease .4s both'}}));
+
+    // intensity spikes (radial)
+    for(let i=0;i<this.N;i++){
+      const lv = day.intAt(i); if(lv===0) continue;
+      const t=i/6, len=this.rSpikeIn + (lv/4)*this.rSpikeMax;
+      const [x1,y1]=this.polar(t,this.rSpikeIn), [x2,y2]=this.polar(t,len);
+      ch.push(h('line',{key:'sp'+i,x1,y1,x2,y2,stroke:this.LV[lv],strokeWidth:1.5,strokeLinecap:'round',opacity:0,
+        style:{animation:'dimIn .5s ease '+(0.3+(i/this.N)*0.6).toFixed(2)+'s forwards'}}));
+    }
+    // now needle (8:22pm = 20.37)
+    const now=20.37, [nx,ny]=this.polar(now,this.rEdge+2);
+    ch.push(h('line',{key:'needle',x1:this.cx,y1:this.cy,x2:nx,y2:ny,stroke:'#EAECF0',strokeWidth:1.4,strokeLinecap:'round',opacity:0.85}));
+    ch.push(h('circle',{key:'nhub',cx:this.cx,cy:this.cy,r:3,fill:'#EAECF0'}));
+
+    const svg = h('svg',{viewBox:'0 0 '+S+' '+S,style:{position:'absolute',inset:0,width:'100%',height:'100%',overflow:'visible'}},ch);
+
+    // edge markers (HTML, tappable)
+    const place = (t, node, onClick, key, delay) => {
+      const [x,y]=this.polar(t,this.rEdge);
+      return h('div',{key,onClick,style:{position:'absolute',left:(x/S*100)+'%',top:(y/S*100)+'%',transform:'translate(-50%,-50%)',cursor:onClick?'pointer':'default',opacity:0,animation:'mkPop .4s cubic-bezier(.2,.9,.3,1) '+delay+'s both'}},node);
+    };
+    const triNode = h('div',{style:{width:30,height:30,borderRadius:999,border:'1.5px solid #FE7F2D',background:'#000',display:'flex',alignItems:'center',justifyContent:'center'}},
+      h('svg',{width:14,height:12,viewBox:'0 0 15 13',fill:'none'},h('path',{d:'M7.5 2 13.5 11.5 1.5 11.5Z',stroke:'#FE7F2D',strokeWidth:1.5,strokeLinejoin:'round'})));
+    const workNode = h('div',{style:{width:32,height:32,borderRadius:999,background:'#FE7F2D',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 0 4px rgba(254,127,45,0.12)'}},
+      h('svg',{width:16,height:16,viewBox:'0 0 16 16',fill:'none'},h('path',{d:'M2 8h12M4 5v6M12 5v6M2 6.5v3M14 6.5v3',stroke:'#000',strokeWidth:1.6,strokeLinecap:'round'})));
+    const peakNode = h('div',{style:{minWidth:34,height:30,padding:'0 9px',borderRadius:999,background:'#1B2D38',border:'1px solid #000',display:'flex',alignItems:'center',justifyContent:'center'}},
+      h('span',{style:{fontSize:12,fontWeight:800,color:'#EAECF0',fontVariantNumeric:'tabular-nums'}},'158'));
+    const dotNode = (n)=> h('div',{style:{minWidth:30,height:26,padding:'0 8px',borderRadius:999,background:'#0E1B22',border:'1px solid #233D4D',display:'flex',alignItems:'center',justifyContent:'center'}},
+      h('span',{style:{fontSize:11,fontWeight:700,color:'#9FB0BC',fontVariantNumeric:'tabular-nums'}},String(n)));
+
+    const markers = [
+      place(ev.inactivity[1], triNode, ()=>this.setState({popup:{type:'inactivity'}}), 'cina', 0.7),
+      place(ev.workouts[0].t, workNode, ()=>this.setState({popup:{type:'workout',w:ev.workouts[0]}}), 'cwk', 0.85),
+      place(ev.cluster.t, peakNode, ()=>this.setState({popup:{type:'cluster'}}), 'cpk', 0.95),
+      place(7.0, dotNode(70), null, 'cd1', 1.05),
+    ];
+
+    return h('div',{key:'clk',style:{position:'relative',width:'100%',paddingBottom:'2px',animation:'morphIn .45s cubic-bezier(.2,.9,.3,1) both'}},
+      h('div',{style:{position:'relative',width:'100%',maxWidth:320,margin:'0 auto',aspectRatio:'1 / 1'}}, svg, ...markers));
+  }
+
+  vizFor(day){
+    const key = this.state.view + '_' + this.state.dayIndex;
+    if (this._vizKey !== key){
+      this._vizKey = key;
+      this._vizEl = this.state.view === 'linear' ? this.buildLinear(day) : this.buildClock(day);
+    }
+    return this._vizEl;
+  }
+
+  // ---- zone stacked bar
+  zoneBar(day){
+    const h = React.createElement;
+    const total = day.zones.reduce((a,b)=>a+b,0) || 1;
+    const cols = ['#2A4253','#3A5160','#5E7280','#E0793A','#FE7F2D'];
+    const segs = day.zones.map((m,i)=> m>0 ? h('div',{key:i,style:{flex:m,background:cols[i],borderRadius:1,transformOrigin:'left',animation:'growX .5s cubic-bezier(.16,.84,.3,1) both',animationDelay:(0.15+i*0.07)+'s'}}) : null).filter(Boolean);
+    return h('div',{style:{display:'flex',gap:2,height:12}}, segs);
+  }
+
+  // ---- popup overlay
+  popupView(){
+    const h = React.createElement, p = this.state.popup;
+    if (!p) return null;
+    const close = () => this.setState({ popup: null });
+    const backdrop = (child, sheet) => h('div',{onClick:close,style:{position:'absolute',inset:0,zIndex:50,background:'rgba(0,0,0,0.62)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',display:'flex',alignItems:sheet?'flex-end':'center',justifyContent:'center',padding:sheet?0:'0 26px',animation:'dimIn .25s ease both'}}, child);
+    const stop = (e)=> e.stopPropagation();
+
+    if (p.type === 'inactivity'){
+      const card = h('div',{onClick:stop,style:{background:'#0B141A',border:'1px solid #1B2D38',borderRadius:18,padding:'26px 24px 24px',maxWidth:320,animation:'popIn .35s cubic-bezier(.2,.9,.3,1) both'}},
+        h('div',{style:{width:46,height:46,borderRadius:999,border:'1.5px solid #FE7F2D',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:18}},
+          h('svg',{width:22,height:19,viewBox:'0 0 15 13',fill:'none'},h('path',{d:'M7.5 2 13.5 11.5 1.5 11.5Z',stroke:'#FE7F2D',strokeWidth:1.5,strokeLinejoin:'round'}))),
+        h('div',{style:{fontSize:16,fontWeight:800,letterSpacing:'-0.3px',lineHeight:1.25,color:'#EAECF0'}},"YOU DIDN'T MOVE MUCH FOR 1 HOUR"),
+        h('div',{style:{fontSize:12.5,fontWeight:500,lineHeight:1.6,color:'rgba(234,236,240,0.55)',marginTop:14}},'No matter how active you were earlier, regular breaks from sitting support healthy blood flow in the legs — and add to daily energy expenditure.'),
+        h('div',{style:{display:'flex',gap:16,marginTop:20,paddingTop:16,borderTop:'1px solid #16242C'}},
+          h('div',{style:{flex:1}}, h('div',{style:{fontSize:8.5,fontWeight:600,letterSpacing:'1.5px',color:'rgba(234,236,240,0.4)'}},'WINDOW'), h('div',{style:{fontSize:14,fontWeight:800,color:'#EAECF0',marginTop:4}},'2:00–3:00 PM')),
+          h('div',{style:{flex:1}}, h('div',{style:{fontSize:8.5,fontWeight:600,letterSpacing:'1.5px',color:'rgba(234,236,240,0.4)'}},'TODAY'), h('div',{style:{fontSize:14,fontWeight:800,color:'#FE7F2D',marginTop:4}},'3 STAMPS'))),
+        h('div',{onClick:close,style:{marginTop:20,height:50,borderRadius:999,background:'#FE7F2D',color:'#000',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:800,letterSpacing:'2px',cursor:'pointer'}},'GOT IT'));
+      return backdrop(card, false);
+    }
+
+    if (p.type === 'workout'){
+      const w = p.w;
+      const card = h('div',{onClick:stop,style:{width:'100%',background:'#0B141A',borderTop:'1px solid #1B2D38',borderTopLeftRadius:22,borderTopRightRadius:22,padding:'12px 24px 34px',animation:'sheetUp .4s cubic-bezier(.2,.9,.3,1) both'}},
+        h('div',{style:{width:38,height:4,borderRadius:999,background:'#233D4D',margin:'0 auto 22px'}}),
+        h('div',{style:{display:'flex',alignItems:'center',gap:14}},
+          h('div',{style:{width:44,height:44,borderRadius:999,background:'#FE7F2D',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}},
+            h('svg',{width:22,height:22,viewBox:'0 0 16 16',fill:'none'},h('path',{d:'M2 8h12M4 5v6M12 5v6M2 6.5v3M14 6.5v3',stroke:'#000',strokeWidth:1.6,strokeLinecap:'round'}))),
+          h('div',{style:{flex:1}}, h('div',{style:{fontSize:18,fontWeight:800,letterSpacing:'-0.3px'}},w.label), h('div',{style:{fontSize:10,fontWeight:600,letterSpacing:'1px',color:'#5E7280',marginTop:3}},'STARTED 6:05 PM · '+w.dur))),
+        h('div',{style:{display:'flex',borderTop:'1px solid #16242C',borderBottom:'1px solid #16242C',padding:'16px 0',margin:'20px 0'}},
+          [['AVG HR',w.avg+'',true],['DURATION','42M',false],['LOAD','64',false]].map((c,i)=> h('div',{key:i,style:{flex:1,borderRight:i<2?'1px solid #16242C':'none',textAlign:'center'}},
+            h('div',{style:{fontSize:8.5,fontWeight:600,letterSpacing:'1.5px',color:'rgba(234,236,240,0.4)'}},c[0]),
+            h('div',{style:{fontSize:22,fontWeight:800,letterSpacing:'-1px',marginTop:5,color:c[2]?'#FE7F2D':'#EAECF0'}},c[1])))),
+        h('div',{onClick:close,style:{height:56,borderRadius:999,background:'#FE7F2D',color:'#000',display:'flex',alignItems:'center',justifyContent:'center',gap:8,fontSize:12,fontWeight:800,letterSpacing:'2px',cursor:'pointer'}},
+          'OPEN WORKOUT', h('svg',{width:13,height:13,viewBox:'0 0 13 13',fill:'none'},h('path',{d:'M2 6.5h8M6.5 3l3.5 3.5L6.5 10',stroke:'#000',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round'}))));
+      return backdrop(card, true);
+    }
+
+    if (p.type === 'cluster' || p.type === 'inactivityList'){
+      const isCluster = p.type === 'cluster';
+      const items = isCluster ? this.days[this.state.dayIndex].events.cluster.items : [
+        { time:'1:05 PM', tag:'INACTIVITY', sub:'No movement · 1 hour', kind:'inactivity' },
+        { time:'2:05 PM', tag:'INACTIVITY', sub:'No movement · 1 hour', kind:'inactivity' },
+        { time:'3:05 PM', tag:'INACTIVITY', sub:'No movement · 1 hour', kind:'inactivity' },
+      ];
+      const glyph = (k) => {
+        if (k==='inactivity' || k==='workout' || k==='walk') return h('div',{style:{width:34,height:34,borderRadius:999,background:k==='inactivity'?'#000':'#FE7F2D',border:k==='inactivity'?'1.5px solid #FE7F2D':'none',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}},
+          k==='inactivity' ? h('svg',{width:15,height:13,viewBox:'0 0 15 13',fill:'none'},h('path',{d:'M7.5 2 13.5 11.5 1.5 11.5Z',stroke:'#FE7F2D',strokeWidth:1.5,strokeLinejoin:'round'}))
+          : h('svg',{width:16,height:16,viewBox:'0 0 16 16',fill:'none'},h('path',{d:'M2 8h12M4 5v6M12 5v6',stroke:'#000',strokeWidth:1.6,strokeLinecap:'round'})));
+        return h('div',{style:{width:34,height:34,borderRadius:999,background:'#1B2D38',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}},
+          h('span',{style:{fontSize:10,fontWeight:800,color:'#EAECF0'}},'♥'));
+      };
+      const rows = items.map((it,i)=> h('div',{key:i,onClick: it.kind==='workout'?(()=>this.setState({popup:{type:'workout',w:{label:'STRENGTH',dur:'42 MIN',avg:131}}})):null,
+        style:{display:'flex',alignItems:'center',gap:13,padding:'13px 0',borderTop:i?'1px solid #16242C':'none',cursor:it.kind==='workout'?'pointer':'default'}},
+        glyph(it.kind),
+        h('div',{style:{flex:1}}, h('div',{style:{fontSize:12,fontWeight:700,letterSpacing:'0.5px',color:'#EAECF0'}},it.tag), h('div',{style:{fontSize:10,fontWeight:500,color:'rgba(234,236,240,0.45)',marginTop:3}},it.sub)),
+        h('div',{style:{fontSize:13,fontWeight:800,color:'#FE7F2D',letterSpacing:'-0.3px',fontVariantNumeric:'tabular-nums'}},it.time)));
+      const card = h('div',{onClick:stop,style:{background:'#0B141A',border:'1px solid #1B2D38',borderRadius:18,padding:'22px 22px 14px',maxWidth:330,width:'100%',animation:'popIn .35s cubic-bezier(.2,.9,.3,1) both'}},
+        h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}},
+          h('div',{style:{fontSize:11,fontWeight:700,letterSpacing:'2px',color:'rgba(234,236,240,0.55)'}}, isCluster?'EVENING · 3 EVENTS':'INACTIVITY PROMPTS'),
+          h('div',{onClick:close,style:{width:26,height:26,borderRadius:999,border:'1px solid #233D4D',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}},
+            h('svg',{width:10,height:10,viewBox:'0 0 10 10',fill:'none'},h('path',{d:'M1 1l8 8M9 1l-8 8',stroke:'#5E7280',strokeWidth:1.5,strokeLinecap:'round'})))),
+        ...rows);
+      return backdrop(card, false);
+    }
+    return null;
+  }
+
+  renderVals(){
+    const h = React.createElement;
+    const day = this.days[this.state.dayIndex];
+    const p = this.state.p;
+    const round = (v) => Math.round(v);
+    const fmtInt = (v) => round(v).toLocaleString('en-US');
+    const fmtActive = (mins) => { const m=round(mins); return Math.floor(m/60)+'H'+String(m%60).padStart(2,'0'); };
+
+    // zones legend
+    const zNames = ['REST','SIT','LOW','MED','HIGH'];
+    const zCols = ['#2A4253','#3A5160','#5E7280','#E0793A','#FE7F2D'];
+    const fmtZone = (m) => { const hh=Math.floor(m/60), mm=m%60; return hh+'H'+(mm)+'M'; };
+    const zones = day.zones.map((m,i)=>({
+      name: zNames[i], time: fmtZone(m),
+      dotStyle: `width:7px;height:7px;border-radius:2px;background:${zCols[i]};display:inline-block`,
+      timeStyle: `font-size:9.5px;font-weight:700;letter-spacing:-0.3px;margin-top:5px;color:${i>=3?'#EAECF0':'rgba(234,236,240,0.55)'};font-variant-numeric:tabular-nums`,
+    }));
+
+    // stat grid with count-up
+    const stroke = '#5E7280';
+    const ic = (paths) => h('svg',{width:30,height:30,viewBox:'0 0 24 24',fill:'none'}, paths);
+    const iconSteps = ic([h('path',{key:1,d:'M8 21c-1.5 0-2.5-1.2-2.5-3 0-2 1-3.5 1-5.5C6.5 9 5.5 8 5.5 6 5.5 4 6.8 3 8 3s2 1.4 2 3.2c0 2.2-.6 3.3-.6 5.3 0 1.6.6 2.4.6 4.5 0 3.5-.6 5-2 5Z',stroke,strokeWidth:1.5,strokeLinejoin:'round'}),h('path',{key:2,d:'M16 22c1.4 0 2-1.5 2-4.5 0-2.1.6-2.9.6-4.5 0-2-.6-3.1-.6-5.3C18 5.9 17.2 4.5 16 4.5s-2 1.4-2 3.2c0 2 .5 3 .5 5C14.5 15 13.5 16 13.5 18c0 2.8 1 4 2.5 4Z',stroke,strokeWidth:1.5,strokeLinejoin:'round',opacity:0.55})]);
+    const iconDist = ic([h('circle',{key:1,cx:5,cy:8,r:2,stroke,strokeWidth:1.5}),h('circle',{key:2,cx:19,cy:16,r:2,stroke,strokeWidth:1.5}),h('path',{key:3,d:'M7 8h6a3 3 0 0 1 0 6H8a3 3 0 0 0 0 6h3',stroke,strokeWidth:1.5,strokeLinecap:'round',strokeDasharray:'1 3'})]);
+    const iconActive = ic([h('path',{key:1,d:'M12 4a8 8 0 1 1-7 4',stroke:'#FE7F2D',strokeWidth:1.6,strokeLinecap:'round'}),h('path',{key:2,d:'M12 8a4 4 0 1 1-3.4 1.9',stroke,strokeWidth:1.5,strokeLinecap:'round'})]);
+    const iconCal = ic([h('path',{key:1,d:'M12 3c1 3-1.5 4-1.5 6.5A2.2 2.2 0 0 0 12 12c.5-1 .3-2 .3-2 1.7 1 3.2 2.6 3.2 5.3a3.5 3.5 0 0 1-7 0c0-2 1-3 1-4.5 0-1.6-1-2.3-1-3.8 0-2 2-3.5 3.5-4Z',stroke,strokeWidth:1.5,strokeLinejoin:'round'})]);
+
+    const statGrid = [
+      { icon:iconSteps, label:'STEPS', value:fmtInt(day.stats.steps * p), unit:'' },
+      { icon:iconDist, label:'DISTANCE', value:(day.stats.dist*p).toFixed(2), unit:'km' },
+      { icon:iconActive, label:'ACTIVE TIME', value:fmtActive(day.stats.active*p), unit:'' },
+      { icon:iconCal, label:'CALORIES', value:fmtInt(day.stats.cal * p), unit:'kcal' },
+    ];
+
+    const iconInactive = h('svg',{width:30,height:30,viewBox:'0 0 24 24',fill:'none'},h('path',{d:'M12 4 21 19H3Z',stroke:'#FE7F2D',strokeWidth:1.6,strokeLinejoin:'round'}),h('path',{d:'M12 10v4',stroke:'#FE7F2D',strokeWidth:1.6,strokeLinecap:'round'}),h('circle',{cx:12,cy:16.5,r:0.9,fill:'#FE7F2D'}));
+    const iconSleep = h('svg',{width:30,height:30,viewBox:'0 0 24 24',fill:'none'},h('path',{d:'M20 14.5A8 8 0 1 1 9.5 4 6.3 6.3 0 0 0 20 14.5Z',stroke:'#5E7280',strokeWidth:1.6,strokeLinejoin:'round'}));
+
+    const toggleIcon = this.state.view === 'linear'
+      ? h('svg',{width:17,height:17,viewBox:'0 0 18 18',fill:'none'},h('circle',{cx:9,cy:9,r:7,stroke:'#FE7F2D',strokeWidth:1.5}),h('path',{d:'M9 5v4l2.5 2',stroke:'#FE7F2D',strokeWidth:1.5,strokeLinecap:'round',strokeLinejoin:'round'}))
+      : h('svg',{width:17,height:14,viewBox:'0 0 18 14',fill:'none'},h('path',{d:'M1 11l4-5 3 3 4-7 5 9',stroke:'#FE7F2D',strokeWidth:1.6,strokeLinecap:'round',strokeLinejoin:'round'}));
+
+    const goalAnim = round(day.goal * p);
+
+    return {
+      noop: () => {},
+      dayTitle: day.title, dateLabel: day.date,
+      toggleView: () => this.toggleView(),
+      toggleIcon,
+      onTouchStart: (e)=>this.onTouchStart(e), onTouchEnd: (e)=>this.onTouchEnd(e),
+      awakeTotal: day.awake,
+      zones, zoneBarEl: this.zoneBar(day),
+      vizEl: this.vizFor(day),
+      goalPct: String(goalAnim),
+      goalWidth: Math.min(100, goalAnim) + '%',
+      goalCaption: goalAnim>=100 ? 'TARGET EXCEEDED · '+(goalAnim-100)+'% OVER' : 'ON TRACK · '+(100-goalAnim)+'% TO GO',
+      statGrid,
+      openInactivityList: () => this.setState({ popup:{ type:'inactivityList' } }),
+      iconInactive, iconSleep,
+      inactivityCount: String(day.inactivity), nightSleep: day.nightSleep,
+      popupEl: this.popupView(),
+    };
+  }
+}
+</script>
+</body>
+</html>

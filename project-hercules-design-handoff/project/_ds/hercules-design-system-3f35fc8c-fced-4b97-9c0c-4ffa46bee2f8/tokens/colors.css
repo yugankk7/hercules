@@ -1,0 +1,55 @@
+/* ============================================================
+   COLORS — Hercules Telemetry
+   Four cores carry every screen; everything else is a tint of slate.
+   ============================================================ */
+:root {
+  /* ---- CORE ---- */
+  --hc-background:   #000000; /* Near-black canvas. Every screen sits on pure black. */
+  --hc-accent:       #FE7F2D; /* Orange. Key numbers, active states, highlights, primary CTAs. */
+  --hc-secondary:    #233D4D; /* Slate. Cards, glyph tiles, secondary surfaces & borders. */
+  --hc-text:         #EAECF0; /* Off-white. Primary copy and large numerals on dark. */
+
+  /* ---- EXTENDED · surfaces, borders, muted text ---- */
+  --hc-surface-card:     #0E1B22; /* Raised panel fill */
+  --hc-surface-card-alt: #0B141A; /* Modal / sheet fill */
+  --hc-surface-deep:     #070F13; /* Deepest inset panel (component wells) */
+  --hc-hairline:         #16242C; /* Section dividers */
+  --hc-hairline-faint:   #111E25; /* Faint row dividers */
+  --hc-border:           #1B2D38; /* Card outlines */
+  --hc-muted:            #5E7280; /* Labels, units, /10 */
+  --hc-faint:            #3A5160; /* Disabled / empty */
+
+  /* ---- ACCENT TINTS ---- */
+  --hc-accent-med:    #E0793A; /* Mid orange — secondary intensity */
+  --hc-accent-wash:   rgba(254,127,45,0.12); /* Gate band / highlight fill */
+  --hc-accent-line:   rgba(254,127,45,0.60); /* Dashed marker lines */
+
+  /* ---- DATA ENCODING SCALE (intensity ramps orange → slate) ---- */
+  --hc-level-high:     #FE7F2D;
+  --hc-level-med:      #E0793A;
+  --hc-level-low:      #5E7280;
+  --hc-level-very-low: #3A5160;
+  --hc-level-minimal:  #2A4253;
+  --hc-level-track:    #2E4E61; /* unmet trend bars */
+
+  /* ---- TEXT ALPHA TIERS (off-white over black) ---- */
+  --hc-text-strong:  #EAECF0;
+  --hc-text-70:      rgba(234,236,240,0.70);
+  --hc-text-60:      rgba(234,236,240,0.60);
+  --hc-text-50:      rgba(234,236,240,0.50);
+  --hc-text-45:      rgba(234,236,240,0.45);
+  --hc-text-40:      rgba(234,236,240,0.40);
+  --hc-text-35:      rgba(234,236,240,0.35);
+
+  /* ---- SEMANTIC ALIASES ---- */
+  --text-body:       var(--hc-text-60);
+  --text-heading:    var(--hc-text-strong);
+  --text-label:      var(--hc-text-50);
+  --text-caption:    var(--hc-muted);
+  --surface-canvas:  var(--hc-background);
+  --surface-card:    var(--hc-surface-card);
+  --surface-well:    var(--hc-surface-deep);
+  --border-card:     var(--hc-border);
+  --border-hairline: var(--hc-hairline);
+  --accent:          var(--hc-accent);
+}
