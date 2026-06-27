@@ -1,9 +1,13 @@
 import SwiftUI
 import HerculesUI
+import PolarProtocol
 import PolarStore
 
 @main
 struct HerculesApp: App {
+
+    /// The app-wide auth/connection state. Routes onboarding vs. dashboard.
+    @State private var auth = AuthManager.live()
 
     init() {
         // HERC-002 sanity check: confirm the GRDB store wires up at launch.
@@ -15,12 +19,21 @@ struct HerculesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HerculesRootView()
-                // HERC-001: hercules://oauth/callback opens the app.
-                // The OAuth flow (EPIC 1) consumes this; for now we just log it.
-                .onOpenURL { url in
-                    print("[Hercules] opened via URL: \(url.absoluteString)")
+            Group {
+                switch auth.state {
+                case .connected:
+                    // EPIC 0 dashboard placeholder — real screens land in later epics.
+                    HerculesRootView()
+                default:
+                    OnboardingFlowView(manager: auth)
                 }
+            }
+            .task { auth.bootstrap() }
+            // HERC-001 fallback: ASWebAuthenticationSession captures the callback
+            // directly; this remains as a safety net if that path is ever bypassed.
+            .onOpenURL { url in
+                print("[Hercules] opened via URL: \(url.absoluteString)")
+            }
         }
     }
 }

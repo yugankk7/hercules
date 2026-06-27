@@ -12,5 +12,10 @@ xcuserdata/
 .swiftpm/
 Package.resolved
 
+# Secrets — HERC-010: client_id/client_secret/member-id seed the Keychain on
+# first run. Never commit the real secret. Commit Secrets.example.plist instead.
+Secrets.plist
+App/Secrets.plist
+
 # macOS
 .DS_Store
