@@ -9,7 +9,8 @@
       "Bash(grep -v '^ *$')",
       "Bash(set -o pipefail)",
       "Bash(xcodebuild -project Hercules.xcodeproj -scheme Hercules -destination 'generic/platform=iOS Simulator' -derivedDataPath /private/tmp/claude-501/-Users-yugank-code-prac-hercules/3c77c099-c1ec-4cdc-85c3-097f0f7d53d6/scratchpad/DD build)",
-      "Bash(xcrun simctl *)"
+      "Bash(xcrun simctl *)",
+      "Bash(xcodebuild -project Hercules.xcodeproj -scheme Hercules -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -configuration Debug build)"
     ]
   }
 }

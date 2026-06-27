@@ -9,6 +9,10 @@ struct HerculesApp: App {
     /// The app-wide auth/connection state. Routes onboarding vs. dashboard.
     @State private var auth = AuthManager.live()
 
+    /// The connected-state dashboard view-model (stub-backed this slice — a
+    /// `PolarStore`-backed provider and the real sync engine drop in later).
+    @State private var dashboard = DashboardModel()
+
     init() {
         // HERC-002 sanity check: confirm the GRDB store wires up at launch.
         #if DEBUG
@@ -22,8 +26,8 @@ struct HerculesApp: App {
             Group {
                 switch auth.state {
                 case .connected:
-                    // EPIC 0 dashboard placeholder — real screens land in later epics.
-                    HerculesRootView()
+                    // HERC-065: the navigable dashboard shell + bottom-tab nav.
+                    RootTabView(auth: auth, dashboard: dashboard)
                 default:
                     OnboardingFlowView(manager: auth)
                 }
