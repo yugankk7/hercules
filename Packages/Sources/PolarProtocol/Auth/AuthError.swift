@@ -19,4 +19,9 @@ public enum AuthError: Error, Equatable, Sendable {
     case registrationFailed(Int)
     /// The authorize round granted fewer scopes than requested.
     case scopeDenied([String])
+    /// A data request returned a non-2xx status; carries only the status code.
+    case httpStatus(Int)
+    /// A response body failed to decode; carries a redaction-safe summary only —
+    /// **never** the raw body.
+    case decoding(String)
 }
