@@ -12,7 +12,10 @@
       "Bash(xcrun simctl *)",
       "Bash(xcodebuild -project Hercules.xcodeproj -scheme Hercules -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -configuration Debug build)",
       "Bash(awk -F/ '{print $1\"/\"$2}')",
-      "Bash(swift build *)"
+      "Bash(swift build *)",
+      "Bash(xcodebuild -list -project Hercules.xcodeproj)",
+      "Bash(xcodebuild build *)",
+      "Bash(xcodebuild test *)"
     ]
   }
 }

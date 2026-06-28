@@ -35,5 +35,10 @@ let package = Package(
             name: "HerculesUI",
             dependencies: ["PolarProtocol"]
         ),
+        // HERC-040/041/042 acceptance tests: schema, idempotency, round-trip.
+        .testTarget(
+            name: "PolarStoreTests",
+            dependencies: ["PolarStore", "PolarProtocol"]
+        ),
     ]
 )

@@ -88,7 +88,9 @@ The single hardest bug of the build. v4 endpoints split into **two incompatible 
 
 > Since activity moved to v3 (§2), the only v4 endpoint we call with a date range is **training-sessions/list** — and it needs the **naive datetime** form. v3 endpoints all take plain `YYYY-MM-DD`. So in practice: **v3 → plain date, v4 training-sessions → naive datetime.**
 
-**The trap:** every zoned format (`...Z`, `...+00:00`, `...000Z`, epoch) is rejected by the datetime endpoints — they expect a `LocalDateTime` with no zone info. Note that the API *emits* zoned timestamps (`2026-06-17T12:52:51.000Z`) in responses but **does not accept that format on input.**
+**The trap:** every zoned format (`...Z`, `...+00:00`, `...000Z`, epoch) is rejected by the datetime endpoints — they expect a `LocalDateTime` with no zone info. Note that the API *emits* zoned timestamps in responses but **does not accept that format on input.**
+
+> **Response-side reality (verified 2026-06-28).** The two dialects above govern what we **send**. What the API **emits** is messier — **five** timestamp formats appear across responses: zoned-offset (`2026-05-31T03:23:07+05:30`, sleep/activity), zoned-`Z` (`2026-05-28T08:50:19Z`, device registration), naive-seconds (`2026-05-29T18:07:39`, training sessions), naive-minute (`2026-06-21T00:00`, activity samples), and **time-only** (`00:25:21`, continuous-HR `sample_time` — pair with the day's `date`). `PolarDateParser` (`Networking/JSONDecoder+Polar.swift`) handles all five. Several sample series are JSON **objects keyed by `"HH:MM"`**, not arrays (see §7).
 
 ```swift
 // Date-only endpoints
@@ -153,13 +155,13 @@ Returns the user profile (201). Note: profile `weight` may be stale vs. the band
 ### v3 endpoints (date format: `YYYY-MM-DD`)
 | Endpoint | Response key | Notes |
 |---|---|---|
-| `GET /v3/users/sleep` | `nights` | Minute-level `hypnogram` (0/1/3/4 = wake/REM/light/deep), 5-min `heart_rate_samples`, stage totals, `sleep_score`, `continuity`, `sleep_cycles`, `sleep_charge`. ~25 nights. |
-| `GET /v3/users/nightly-recharge` | `recharges` | `ans_charge`, status fields, HR/HRV/breathing averages, 5-min `hrv_samples` + `breathing_samples`. Baselines self-computed from history. |
-| `GET /v3/users/cardio-load` | — | strain/tolerance/ratio/status, 28 days. |
-| `GET /v3/users/continuous-heart-rate?from=&to=` | — | ~5-sec samples. ≈16 MB / 28 days. **Bucket to per-minute before storing.** |
-| `GET /v3/users/activities/{date}` (and `/activities?from=&to=`) | — | **Computed daily totals** (the Image 2 tiles): `steps`, `calories`, `active_calories`, `active_duration`/`inactive_duration` (ISO-8601 durations), `daily_activity` score, `inactivity_alert_count`, `distance_from_steps`. Backfillable. **Primary activity source.** |
-| `GET /v3/users/activities/samples/{date}` | — | Per-minute `steps` (`interval_ms:60000`, `total_steps`, `samples[]`), **`activity_zones`** (the intensity-zone bar), `inactivity_stamps`. No MET derivation needed. |
-| `GET /v3/users/sleep/available` | `available` | Manifest of nights that have data (date + start/end). Use in sync to fetch only existing nights. |
+| `GET /v3/users/sleep` | `nights` | ✅ `hypnogram` & `heart_rate_samples` are **objects keyed by `"HH:MM"`** (stage 0/1/3/4 = wake/REM/light/deep; HR 5-min), **not arrays**. Flat fields: `light_sleep`/`deep_sleep`/`rem_sleep`/`total_interruption_duration` (sec), `sleep_score`, `sleep_charge`, `sleep_cycles`, `continuity` (Double), `continuity_class`, `sleep_start_time`/`sleep_end_time`. 28 nights seen. |
+| `GET /v3/users/nightly-recharge` | `recharges` | ✅ **`ans_charge` is a signed Double** (e.g. `-1.5`); `ans_charge_status` & `nightly_recharge_status` are **Int codes**; averages `heart_rate_avg`/`heart_rate_variability_avg`/`breathing_rate_avg`/`beat_to_beat_avg`; `hrv_samples` & `breathing_samples` are **objects keyed by `"HH:MM"`**. |
+| `GET /v3/users/cardio-load` | _(top-level array)_ | ✅ Per day: `strain`, `tolerance`, `cardio_load_ratio`, `cardio_load`, `cardio_load_status` (`MAINTAINING`/`PRODUCTIVE`/…), `cardio_load_level{very_low…very_high}`. 28 days. **No envelope.** |
+| `GET /v3/users/continuous-heart-rate?from=&to=` | `heart_rates` | ✅ Grouped **per day** (`heart_rates[].date` + `heart_rate_samples[]{heart_rate, sample_time}`); **`sample_time` is time-only `HH:mm:ss`** — pair with the day's `date`. ~5-sec, ≈16 MB/28 d. **Bucket to per-minute before storing.** |
+| `GET /v3/users/activities/{date}` (and `/activities?from=&to=`) | _(range = top-level array)_ | ✅ **No `date` field** — derive from `start_time`/`end_time` (naive-minute). Computed totals: `steps`, `calories`, `active_calories`, `active_duration`/`inactive_duration` (ISO-8601 dur), `daily_activity`, `inactivity_alert_count`, `distance_from_steps`. **Primary activity source.** |
+| `GET /v3/users/activities/samples/{date}` | — | ✅ `steps.samples[]` = `{steps, timestamp}` (`interval_ms:60000`, `total_steps`); `activity_zones.samples[]` = per-minute `{timestamp, zone}` labels (`SEDENTARY`/`SLEEP`/`LIGHT`/`MODERATE`/`VIGOROUS`/`NON_WEAR`); `inactivity_stamps.samples[].stamp`. No MET derivation. |
+| `GET /v3/users/sleep/available` | `available` | ✅ `{date, start_time, end_time}`. Use in sync to fetch only existing nights. |
 | `GET /v3/users/sleepwise/alertness/date?from=&to=` | — | **Boost from sleep.** `grade` (Boost score), `grade_classification`, `sleep_inertia`, `hourly_data[].alertness_level` (HIGH/LOW/VERY_LOW/MINIMAL = the hourly bars). Confirmed with live data. Also a 28-day variant (no date params). |
 | `GET /v3/users/sleepwise/circadian-bedtime/date?from=&to=` | — | **Sleep gate + sleep window** (the bedtime markers). `quality` = gate recognizability (e.g. `CLEARLY_RECOGNIZABLE` = 3/3). Confirmed with live data. |
 | Elixir Biosensing (body temp, skin temp, SpO2) | — | Exists in v3, **but Loop Gen 2 returns 204 / empty** — no such sensors. Parked. Not available via BLE on this band either (untested but unlikely). |
@@ -167,9 +169,9 @@ Returns the user profile (201). Note: profile `weight` may be stale vs. the band
 ### v4 endpoints (only three are used — v3 covers the rest)
 | Endpoint | Date dialect | Scope | Notes |
 |---|---|---|---|
-| `GET /training-sessions/list?from=&to=` | **naive datetime** | `training_sessions:read` | **USED.** Rich inline (see §8). No `features` support. Backfills workout history (v3 exercises is transactional). |
-| `GET /user-devices` | none | `devices:read` | **USED.** Firmware, UUID, color, registration, `deviceSettings`. **No battery.** |
-| `GET /sports/list` | none | `sports:read` | **USED.** `{id:{id}, name, modified}` — sport id → name. **Cache, refresh rarely.** |
+| `GET /training-sessions/list?from=&to=` | **naive datetime** | `training_sessions:read` | **USED.** ✅ Envelope `trainingSessions[]`. `identifier.id` (uuid); **`sport.id` & `recoveryTimeMillis` are strings**; `startTime`/`stopTime` naive-seconds; `startTrigger` = `TRAINING_START_AUTOMATIC_TRAINING_DETECTION` (auto-detected); `exercises[]{fat/carbo/proteinPercentage}`. Rich inline (§8), no `features`. |
+| `GET /user-devices` | _(`devicesData` + `userDevicesData`)_ | `devices:read` | **USED.** ✅ Split across `devicesData[]` (firmware/`productVariant.productColor`/hardware) + `userDevicesData.activeDevices[]` (`registered` + `deviceSettings[]{name,value}`), **joined by `deviceReference.uuid`**. **No battery.** |
+| `GET /sports/list` | _(top-level array)_ | `sports:read` | **USED.** ✅ `{id:{id}, name, localizedNames}` — `id.id` → `name` (`"RUNNING"`). 175 sports. **Cache, refresh rarely.** |
 | `GET /activity/list` | date-only | `activity:read` | ~~Superseded by v3 activities~~ (v3 gives computed totals + zones; v4 only gave raw samples + needed a per-day feature loop and MET→calorie derivation). |
 | `GET /ppi-samples`, `/skin-contacts` | date-only | — | Loop returns empty — no such data. |
 | `GET /nightly-recharge-results`, `/continuous-samples` | date-only | — | v4 twins of v3 endpoints we already use. Redundant. |
@@ -210,16 +212,17 @@ tests:read training_sessions:read training_targets:read user_subscription:read
 
 **Choice: GRDB over SwiftData.** The data shape is time-series sample tables; GRDB/SQLite handles these better, and the NOOP precedent (offline WHOOP app, same architecture) validates it.
 
-Indicative tables:
+Indicative tables (columns refined against **live captures, 2026-06-28** — full
+field-by-field mapping in [`API_RESPONSE_SHAPES.md`](API_RESPONSE_SHAPES.md)):
 - `hr_minute` (date, minute_ts, min, avg, max) — downsampled continuous HR
 - `activity_minute` (date, minute_ts, steps) — downsampled v3 step samples
-- `activity_day` (date, steps, calories, active_calories, active_dur, inactive_dur, daily_activity, distance, zones_json) — v3 computed totals + `activity_zones`
-- `sleep_night` (date, stages_json, score, hr_samples_json, …)
-- `recharge` (date, ans_charge, status, hrv_json, breathing_json, …)
-- `cardio_load` (date, strain, tolerance, ratio, status)
-- `training_session` (id, start, stop, sport_id, calories, hr_avg, hr_max, benefit, recovery_ms, macros_json, note, trigger)
-- `sport_ref` (id, name) — cached catalog
-- `device` (uuid, firmware, color, registered, settings_json)
+- `activity_day` (date ← `start_time`, steps, calories, active_calories, active_dur, inactive_dur, daily_activity, distance, zones_json) — v3 computed totals + per-minute zone labels
+- `sleep_night` (date, score, stages_json, hypnogram_json, hr_samples_json, continuity, continuity_class, charge, cycles, start_time, end_time) — `hypnogram`/`hr_samples` are `"HH:MM"`-keyed maps
+- `recharge` (date, ans_charge **REAL/signed**, ans_charge_status INT, nightly_recharge_status INT, hr_avg, hrv_avg, breathing_avg, hrv_json, breathing_json) — sample maps are `"HH:MM"`-keyed
+- `cardio_load` (date, strain, tolerance, ratio, cardio_load, status, level_json)
+- `training_session` (id ← `identifier.id`, start, stop, sport_id ← **string**, calories, hr_avg, hr_max, benefit, recovery_ms ← **string**, duration_ms, distance_m, macros_json, note, trigger)
+- `sport_ref` (id ← `id.id`, name) — cached catalog
+- `device` (uuid, firmware, color, description, hardware_id, registered, settings_json) — joined from `devicesData` + `activeDevices`
 - `sync_state` (domain, last_synced_at, last_window)
 
 Raw sample arrays are downsampled on ingest; only minute-resolution rows persist.
