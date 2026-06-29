@@ -20,8 +20,11 @@ struct HRMinuteRecord: Codable, FetchableRecord, PersistableRecord, Sendable {
         case min, avg, max
     }
 
-    init(date: String, minute: HeartRateMinute) {
-        self.date = date
+    /// `date` is derived from the minute's own UTC day (see `PolarDayKey`), not
+    /// from however the API grouped the batch — keeping `(date, minute_ts)` a
+    /// collision-free function of the minute itself.
+    init(minute: HeartRateMinute) {
+        self.date = PolarDayKey.utcDay(of: minute.minute)
         self.minuteTs = Int(minute.minute.timeIntervalSince1970)
         self.min = minute.min
         self.avg = minute.avg
@@ -51,8 +54,9 @@ struct ActivityMinuteRecord: Codable, FetchableRecord, PersistableRecord, Sendab
         case steps
     }
 
-    init(date: String, minute: StepMinute) {
-        self.date = date
+    /// See `HRMinuteRecord.init` — `date` is the minute's own UTC day.
+    init(minute: StepMinute) {
+        self.date = PolarDayKey.utcDay(of: minute.minute)
         self.minuteTs = Int(minute.minute.timeIntervalSince1970)
         self.steps = minute.steps
     }

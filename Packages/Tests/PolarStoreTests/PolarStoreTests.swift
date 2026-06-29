@@ -42,16 +42,53 @@ final class PolarStoreTests: XCTestCase {
         ]
         let interval = DateInterval(start: base.addingTimeInterval(-60), end: base.addingTimeInterval(600))
 
-        try db.upsertHeartRateMinutes(date: "2026-06-20", minutes)
+        try db.upsertHeartRateMinutes(minutes)
         let afterFirst = try db.heartRateMinutes(in: interval)
 
         // Re-sync the same window: row count and contents must not change.
-        try db.upsertHeartRateMinutes(date: "2026-06-20", minutes)
+        try db.upsertHeartRateMinutes(minutes)
         let afterSecond = try db.heartRateMinutes(in: interval)
 
         XCTAssertEqual(afterFirst.count, 3)
         XCTAssertEqual(afterFirst, afterSecond)
         XCTAssertEqual(afterSecond, minutes)
+    }
+
+    // MARK: B1 — minute `date` is derived from the minute's own UTC day
+
+    /// A window straddling UTC midnight must dedup on re-sync however the samples
+    /// are grouped. Because `date` is derived per-minute (not from a batch label),
+    /// the boundary minutes land under their correct UTC days and re-syncing the
+    /// overlapping window yields identical row counts. See `PolarDayKey` / B1.
+    func testMinuteDateDerivedFromUTCDayDedupsAcrossMidnight() throws {
+        let db = try PolarDatabase(inMemory: true)
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = .gmt
+        let midnight = utc.date(from: DateComponents(year: 2026, month: 6, day: 20))!
+
+        // Three minutes straddling midnight: 23:59 (day 19), 00:00, 00:01 (day 20).
+        let minutes = [
+            HeartRateMinute(minute: midnight.addingTimeInterval(-60), min: 50, avg: 60, max: 70),
+            HeartRateMinute(minute: midnight, min: 51, avg: 61, max: 71),
+            HeartRateMinute(minute: midnight.addingTimeInterval(60), min: 52, avg: 62, max: 72),
+        ]
+        let interval = DateInterval(start: midnight.addingTimeInterval(-120),
+                                    end: midnight.addingTimeInterval(120))
+
+        try db.upsertHeartRateMinutes(minutes)
+        let afterFirst = try db.heartRateMinutes(in: interval)
+        // Re-sync the same straddling window — must not create midnight twins.
+        try db.upsertHeartRateMinutes(minutes)
+        let afterSecond = try db.heartRateMinutes(in: interval)
+
+        XCTAssertEqual(afterFirst.count, 3)
+        XCTAssertEqual(afterFirst, afterSecond)
+
+        // The boundary samples are partitioned by their own UTC day, not one batch label.
+        let days = try db.dbWriter.read { db in
+            try String.fetchAll(db, sql: "SELECT date FROM hr_minute ORDER BY minute_ts")
+        }
+        XCTAssertEqual(days, ["2026-06-19", "2026-06-20", "2026-06-20"])
     }
 
     // MARK: HERC-041 — idempotent upsert (int key) + read-time name lookup
@@ -116,7 +153,7 @@ final class PolarStoreTests: XCTestCase {
     func testEmptyInputIsNoOp() throws {
         let db = try PolarDatabase(inMemory: true)
         XCTAssertNoThrow(try db.upsertSleep([]))
-        XCTAssertNoThrow(try db.upsertHeartRateMinutes(date: "2026-06-20", []))
+        XCTAssertNoThrow(try db.upsertHeartRateMinutes([]))
 
         let interval = DateInterval(start: .distantPast, end: .distantFuture)
         XCTAssertTrue(try db.heartRateMinutes(in: interval).isEmpty)

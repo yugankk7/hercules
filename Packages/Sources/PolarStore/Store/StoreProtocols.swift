@@ -5,8 +5,12 @@ import PolarProtocol
 /// `PolarDatabase`; the Epic 5 sync engine depends on this protocol, not the
 /// concrete records. Empty input is a no-op success (Safeguard 7).
 public protocol StoreWriting {
-    func upsertHeartRateMinutes(date: String, _ minutes: [HeartRateMinute]) throws
-    func upsertActivityMinutes(date: String, _ minutes: [StepMinute]) throws
+    /// Minute upserts key each row on `(date, minute_ts)` where `date` is derived
+    /// from the minute's *own UTC day* (see `PolarDayKey`). Callers pass minutes
+    /// directly — there is deliberately no batch `date` to get wrong, so a window
+    /// that crosses midnight dedups correctly however the API grouped it.
+    func upsertHeartRateMinutes(_ minutes: [HeartRateMinute]) throws
+    func upsertActivityMinutes(_ minutes: [StepMinute]) throws
     func upsertActivity(day: ActivityDay, zones: [ActivityZoneSample]) throws
     func upsertSleep(_ nights: [SleepNight]) throws
     func upsertRecharge(_ recharges: [NightlyRecharge]) throws

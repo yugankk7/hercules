@@ -16,15 +16,14 @@ final class ReadPerformanceTests: XCTestCase {
         let calendar = Calendar(identifier: .gregorian)
         var dayStart = Date(timeIntervalSince1970: 1_700_000_000)
 
-        for day in 0..<dayCount {
-            let dateKey = "2026-06-\(String(format: "%02d", day + 1))"
+        for _ in 0..<dayCount {
             var minutes: [HeartRateMinute] = []
             minutes.reserveCapacity(minutesPerDay)
             for m in 0..<minutesPerDay {
                 let ts = dayStart.addingTimeInterval(Double(m) * 60)
                 minutes.append(HeartRateMinute(minute: ts, min: 50, avg: 60, max: 70))
             }
-            try db.upsertHeartRateMinutes(date: dateKey, minutes)
+            try db.upsertHeartRateMinutes(minutes)
             dayStart = calendar.date(byAdding: .day, value: 1, to: dayStart)!
         }
 

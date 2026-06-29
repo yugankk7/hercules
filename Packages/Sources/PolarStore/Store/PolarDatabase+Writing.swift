@@ -7,20 +7,20 @@ import PolarProtocol
 /// re-syncing an overlapping window converges to identical rows (Safeguard 2).
 extension PolarDatabase: StoreWriting {
 
-    public func upsertHeartRateMinutes(date: String, _ minutes: [HeartRateMinute]) throws {
+    public func upsertHeartRateMinutes(_ minutes: [HeartRateMinute]) throws {
         guard !minutes.isEmpty else { return }
         try dbWriter.write { db in
             for minute in minutes {
-                try HRMinuteRecord(date: date, minute: minute).upsert(db)
+                try HRMinuteRecord(minute: minute).upsert(db)
             }
         }
     }
 
-    public func upsertActivityMinutes(date: String, _ minutes: [StepMinute]) throws {
+    public func upsertActivityMinutes(_ minutes: [StepMinute]) throws {
         guard !minutes.isEmpty else { return }
         try dbWriter.write { db in
             for minute in minutes {
-                try ActivityMinuteRecord(date: date, minute: minute).upsert(db)
+                try ActivityMinuteRecord(minute: minute).upsert(db)
             }
         }
     }
