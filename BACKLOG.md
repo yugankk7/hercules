@@ -132,6 +132,10 @@ Activity detail loops per day across the window (heaviest path), downsampling ea
 Clamp each domain's requested window to the API max (continuous-samples 30 d, recharge 28 d, calendar 90 d) and page if needed.
 - AC: requesting >cap auto-splits into valid sub-requests; no 400s from oversized ranges.
 
+**HERC-054 · Incremental sync ("just the new days")** · P1 — *in Epic 5 scope*
+A domain's first sync pulls the full lookback (the backfill that captures existing history); every later refresh fetches only what changed since the last *successful* sync, so routine refreshes stay cheap (the activity per-day loop shrinks from ~`lastDays` round-trips to just the recent days). Anchored on the existing `lastSync(domain:) -> Date?` read (no `last_window` parsing, no schema change): effective window = `[lastSync − overlap, now]`, with a small overlap (~2 d) so server-side corrections to recent days are re-pulled; idempotent upserts absorb the overlap. `recordSync` runs only on success, so a failed domain keeps its anchor. Windowless domains (sleep/recharge/cardio/sports/devices) are exempt — server-fixed set. Distinct from backfill (HERC-053 reaches *old* history; this avoids re-pulling *recent* history).
+- AC: a refresh shortly after a previous one fetches only the new/changed days (few round-trips), not the whole window; data remains identical to a full re-pull; a never-synced domain gets the full lookback.
+
 ---
 
 ## EPIC 6 — UI wiring (dashboard) `[ui]`
