@@ -180,7 +180,7 @@ AuthManager --> SyncDataClients : makeDataClients()
    - One `SyncDomainDescriptor` per metric, holding identity + `SyncPriority` +
      `SyncWindowPolicy` (windowless / windowed(lastDays,capDays) / perDay(lastDays)) + a
      `@Sendable (DateWindow?) async throws -> Void` action that closes over the right client
-     call and `upsert…`. `SyncRegistry.standard(clients:store:now:)` is the **single place**
+     call and `upsert…`. `SyncRegistry.standard(clients:store:)` is the **single place**
      windows/priorities/caps are written as literals — "change a window in one line."
    - The orchestrator stays generic; heterogeneity (windowless vs windowed vs per-day) is
      expressed by the policy, not by special-casing in the engine.
@@ -330,8 +330,11 @@ AuthManager --> SyncDataClients : makeDataClients()
    - `syncWindow(lastSync: Date?, lookbackDays: Int, overlapDays: Int, now: Date, calendar: Calendar = .current) -> DateWindow`
      - Logic (HERC-054): if `lastSync == nil`, return `recentWindow(days: lookbackDays, now: now, calendar:)`
        (full first-sync backfill); else return `DateWindow(from: startOfDay(lastSync) − overlapDays days, to: now)`.
-       Clamp `from` to not precede `recentWindow(lookbackDays).from` (never older than the
-       configured lookback). `overlapDays <= 0` means "since lastSync, no buffer".
+       Clamp `from` into `[recentWindow(lookbackDays).from, startOfDay(now)]` — never older
+       than the configured lookback, and never *after* today, so a future-dated / clock-skewed
+       `lastSync` can't yield `from > to` (an empty/inverted window the engine would treat as a
+       no-op success); worst case re-pulls today, absorbed by idempotent upserts.
+       `overlapDays <= 0` means "since lastSync, no buffer".
 3. Constraints: deterministic given `lastSync`+`now`+`calendar`; covered by unit tests
    (boundary counts, cap splitting, day enumeration, first-sync vs incremental window).
 
@@ -341,10 +344,10 @@ AuthManager --> SyncDataClients : makeDataClients()
 3. Constraints: the descriptor carries no client/store reference itself — those are captured
    in `action` by the registry.
 
-### Create Registry — `SyncRegistry.standard(clients:store:now:)` (PolarStore/Sync)
+### Create Registry — `SyncRegistry.standard(clients:store:)` (PolarStore/Sync)
 1. Responsibility: the **one-line-edit** config — bind each `SyncDomain` to its client call,
    `upsert…`, priority, policy, and caps.
-2. Signature: `static func standard(clients: SyncDataClients, store: any StoreWriting, now: @Sendable () -> Date) -> [SyncDomainDescriptor]`.
+2. Signature: `static func standard(clients: SyncDataClients, store: any StoreWriting) -> [SyncDomainDescriptor]`.
 3. Descriptors (priority/policy literals here — verified against `ARCHITECTURE.md` §7 caps):
    - `.sleep` · p1 · `.windowless` → `try store.upsertSleep(try await clients.v3.fetchSleep())`
    - `.recharge` · p1 · `.windowless` → `upsertRecharge(fetchNightlyRecharge())`
@@ -365,8 +368,8 @@ AuthManager --> SyncDataClients : makeDataClients()
    > and cannot reach earlier history regardless of lookback.
    - `.sports` · p2 · `.windowless` → `upsertSports(fetchSports())`
    - `.devices` · p2 · `.windowless` → `upsertDevice` for each / first device (`fetchDevices()` returns `[Device]`; upsert each)
-4. Constraints: windowless actions ignore the `DateWindow?` (it is `nil`); the `now` clock is
-   used by the engine for window planning, not inside the actions.
+4. Constraints: windowless actions ignore the `DateWindow?` (it is `nil`); window planning
+   (and its clock) lives entirely in the engine, so the registry takes no clock.
 
 ### Implement Orchestrator — `SyncEngine: RefreshCoordinating` (PolarStore/Sync)
 1. Stored: `let descriptors: [SyncDomainDescriptor]`, `let store: any SyncStore`,
@@ -395,7 +398,7 @@ AuthManager --> SyncDataClients : makeDataClients()
 ### Wire Composition Root — `App/HerculesApp.swift`
 1. Build order in `init()`: create `AuthManager.live()`; open `PolarDatabase.onDisk()`
    (already present, conforms to `SyncStore`); if the store opened, `let clients = auth.makeDataClients()`,
-   `let engine = SyncEngine(descriptors: SyncRegistry.standard(clients: clients, store: store, now: { Date() }), store: store, now: { Date() })`
+   `let engine = SyncEngine(descriptors: SyncRegistry.standard(clients: clients, store: store), store: store, now: { Date() })`
    (the same `store` instance is passed to the registry as the `StoreWriting` for upserts and
    to the engine as the `SyncStore` for `lastSync`/`recordSync`; `overlapDays` uses its default),
    and initialize `DashboardModel(coordinator: engine)`; else fall back to the default

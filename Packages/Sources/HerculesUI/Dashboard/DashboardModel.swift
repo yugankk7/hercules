@@ -13,6 +13,9 @@ public final class DashboardModel {
     public private(set) var freshness: SyncFreshness = .neverSynced
     public private(set) var isRefreshing = false
     public private(set) var lastRefreshFailed = false
+    /// Per-domain outcomes from the last refresh, exposed for Epic 6 to render
+    /// (no banner this slice).
+    public private(set) var lastOutcomes: [SyncOutcome] = []
 
     private let provider: any DashboardProviding
     private let coordinator: any RefreshCoordinating
@@ -32,17 +35,26 @@ public final class DashboardModel {
         freshness = snapshot.freshness
     }
 
-    /// Pull-to-refresh. Guards re-entrancy, runs the coordinator (no network in
-    /// the stub), then re-pulls the cards while keeping the just-set freshness.
-    /// A thrown error is non-fatal: it records `lastRefreshFailed` and preserves
-    /// the prior freshness (Approach 7 / Safeguard 6) — no banner this slice.
+    /// Pull-to-refresh. Guards re-entrancy, runs the coordinator, records the
+    /// per-domain outcomes, and advances freshness only on a real sync (keeping
+    /// the prior timestamp otherwise), then re-pulls the cards. Partial failure is
+    /// non-fatal — a domain failure surfaces via `lastOutcomes`/`lastRefreshFailed`;
+    /// a thrown error (total transport failure) preserves the prior freshness
+    /// (Approach 7 / Safeguard 6) — no banner this slice.
     public func refresh() async {
         guard !isRefreshing else { return }
         isRefreshing = true
         defer { isRefreshing = false }
         do {
-            freshness = try await coordinator.refresh()
-            lastRefreshFailed = false
+            let report = try await coordinator.refresh()
+            lastOutcomes = report.outcomes
+            if case .syncedAt = report.freshness {
+                freshness = report.freshness
+            }
+            lastRefreshFailed = report.outcomes.contains {
+                if case .failure = $0.result { return true }
+                return false
+            }
         } catch {
             lastRefreshFailed = true
         }

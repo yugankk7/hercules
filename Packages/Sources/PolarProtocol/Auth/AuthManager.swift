@@ -179,4 +179,17 @@ public extension AuthManager {
             )
         }
     }
+
+    /// Vend the authenticated v3/v4 data clients the Epic 5 sync engine fetches
+    /// through. Lives on `AuthManager` because the token `store`, `oauth`, and
+    /// `v4Config` are private — this seam keeps auth encapsulated while handing
+    /// out ready-to-use clients. The transports resolve the live token store on
+    /// each call, so the returned bundle survives refresh / re-auth.
+    func makeDataClients() -> SyncDataClients {
+        let v3 = V3DataClient(transport: V3Transport(store: store))
+        let v4 = V4DataClient(
+            transport: RefreshAwareV4Client(store: store, oauth: oauth, config: v4Config)
+        )
+        return SyncDataClients(v3: v3, v4: v4)
+    }
 }
