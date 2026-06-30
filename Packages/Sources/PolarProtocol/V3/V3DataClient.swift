@@ -79,9 +79,12 @@ public struct V3DataClient: Sendable {
         return try decode([ActivityDay].self, from: data)
     }
 
-    /// `GET /users/activities/{date}` → a single day's totals (bare object).
-    public func fetchDailyActivity(date: Date) async throws -> ActivityDay {
+    /// `GET /users/activities/{date}` → a single day's totals (bare object), or
+    /// `nil` when the day carries no data (empty `204` body) — days with no wear
+    /// are skipped silently by the caller rather than failing the sync.
+    public func fetchDailyActivity(date: Date) async throws -> ActivityDay? {
         let data = try await transport.get(path: "/users/activities/\(PolarDateFormat.dateOnly(date))")
+        guard !data.isEmpty else { return nil }
         return try decode(ActivityDay.self, from: data)
     }
 
@@ -91,6 +94,10 @@ public struct V3DataClient: Sendable {
     public func fetchActivitySamples(date: Date) async throws -> ActivitySamples {
         let dateString = PolarDateFormat.dateOnly(date)
         let data = try await transport.get(path: "/users/activities/samples/\(dateString)")
+        // No-sample day (empty `204`): return an empty set rather than failing decode.
+        guard !data.isEmpty else {
+            return ActivitySamples(date: dateString, steps: [], zones: [], inactivityStamps: [])
+        }
         let dto = try decode(ActivitySamplesDTO.self, from: data)
         let parse = PolarDateParser.shared
 

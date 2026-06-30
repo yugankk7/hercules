@@ -43,11 +43,15 @@ struct DashboardView: View {
                 .foregroundStyle(Theme.text)
 
             HStack {
-                Text(freshnessLabel)
+                Text(model.isRefreshing ? "SYNCING" : freshnessLabel)
                     .foregroundStyle(Theme.accent)
                 Spacer()
-                Text("PULL TO SYNC")
-                    .foregroundStyle(Theme.muted)
+                if model.isRefreshing {
+                    SyncIndicator()
+                } else {
+                    Text("PULL TO SYNC")
+                        .foregroundStyle(Theme.muted)
+                }
             }
             .font(Theme.mono(9, .semibold))
             .tracking(2)
@@ -76,5 +80,36 @@ struct DashboardView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEE · dd MMM"
         return formatter.string(from: Date()).uppercased()
+    }
+}
+
+/// A small in-scheme sync loader: three accent dots pulsing in sequence — the
+/// instrument-panel analogue of a spinner (Norm 4: no circular spinners). Shown
+/// in the dashboard header while `DashboardModel.isRefreshing`.
+private struct SyncIndicator: View {
+    @State private var phase = 0.0
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<3) { i in
+                Circle()
+                    .fill(Theme.accent)
+                    .frame(width: 4, height: 4)
+                    .opacity(opacity(for: i))
+            }
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: false)) {
+                phase = 3
+            }
+        }
+        .accessibilityLabel("Syncing")
+    }
+
+    /// Each dot leads the next by one slot, so the lit dot walks left→right.
+    private func opacity(for index: Int) -> Double {
+        let distance = (phase - Double(index)).truncatingRemainder(dividingBy: 3)
+        let wrapped = distance < 0 ? distance + 3 : distance
+        return 0.25 + 0.75 * max(0, 1 - wrapped)
     }
 }

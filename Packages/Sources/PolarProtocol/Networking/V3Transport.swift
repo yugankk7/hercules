@@ -47,7 +47,14 @@ public struct V3Transport: Sendable {
 
         let status = (response as? HTTPURLResponse)?.statusCode ?? -1
         guard (200..<300).contains(status) else {
+            #if DEBUG
+            // Surface the server's error body on failure — it carries the reason
+            // (e.g. range limits) and, on a non-2xx, no secrets or user data. DEBUG-only.
+            let body = String(data: data, encoding: .utf8) ?? "<non-utf8 \(data.count)B>"
+            print("[v3] \(path) failed: status=\(status) body=\(body)")
+            #else
             print("[v3] \(path) failed: status=\(status)")
+            #endif
             throw AuthError.httpStatus(status)
         }
         return data

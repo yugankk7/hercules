@@ -21,11 +21,20 @@ public enum WindowPlanner {
         return DateWindow(from: from, to: now)
     }
 
-    /// Page an over-cap window into consecutive `≤ capDays` sub-windows. A window
-    /// spanning `<= capDays` calendar days returns unchanged; otherwise it walks
-    /// from `window.from` in `capDays` strides, the final chunk clamped to
-    /// `window.to`. No gaps; touching/overlapping boundaries are acceptable
-    /// (idempotent upserts dedup — Norm 5).
+    /// Page an over-cap window into consecutive sub-windows each with a
+    /// `(to − from)` span of **at most `capDays` days** — the unit the API
+    /// enforces (e.g. continuous-heart-rate rejects ranges > 28 days with a
+    /// `400 BadRequestException: "Date range between from and to cannot be more
+    /// than 28 days"`). A window already within the cap returns unchanged;
+    /// otherwise it walks from `window.from` in `capDays` strides, the final chunk
+    /// clamped to `window.to`. No gaps; touching boundaries (a chunk's `to` equals
+    /// the next chunk's `from`) are fine — idempotent upserts dedup the shared day
+    /// (Norm 5).
+    ///
+    /// `capDays` is the **day delta** `to − from`, not an inclusive date count:
+    /// `dateOnlyParams` sends both ends inclusively, so a chunk `[d, d+capDays]`
+    /// covers `capDays + 1` calendar dates but a range the API measures as
+    /// `capDays` — matching how the limit is phrased.
     public static func split(
         _ window: DateWindow,
         capDays: Int,
@@ -34,19 +43,20 @@ public enum WindowPlanner {
         let cap = max(capDays, 1)
         let startDay = calendar.startOfDay(for: window.from)
         let endDay = calendar.startOfDay(for: window.to)
-        let spanDays = (calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0) + 1
-        guard spanDays > cap else { return [window] }
+        let rangeDays = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+        guard rangeDays > cap else { return [window] }
 
         var result: [DateWindow] = []
         var cursorFrom = window.from
         while cursorFrom < window.to {
-            let nextStart = calendar.date(
+            let chunkEnd = calendar.date(
                 byAdding: .day,
                 value: cap,
                 to: calendar.startOfDay(for: cursorFrom)
             ) ?? window.to
-            let cursorTo = min(nextStart, window.to)
+            let cursorTo = min(chunkEnd, window.to)
             result.append(DateWindow(from: cursorFrom, to: cursorTo))
+            if cursorTo >= window.to { break }
             cursorFrom = cursorTo
         }
         return result

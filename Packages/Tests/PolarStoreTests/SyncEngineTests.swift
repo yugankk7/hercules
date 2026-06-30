@@ -36,11 +36,18 @@ final class SyncEngineTests: XCTestCase {
 
     func testSplitPagesOverCapIntoGapFreeSubWindows() {
         let window = WindowPlanner.recentWindow(days: 40, now: now, calendar: cal)
-        let chunks = WindowPlanner.split(window, capDays: 30, calendar: cal)
+        // continuous-HR's real API limit: (to − from) ≤ 28 days.
+        let chunks = WindowPlanner.split(window, capDays: 28, calendar: cal)
         XCTAssertEqual(chunks.count, 2)
         XCTAssertEqual(chunks.first?.from, window.from)   // covers the whole window
         XCTAssertEqual(chunks.last?.to, window.to)        // last clamped to `to`
         XCTAssertEqual(chunks[0].to, chunks[1].from)      // no gap at the boundary
+        // Each sub-window's range must satisfy the API cap: capDays is the day
+        // delta (to − from), so inclusive dates ≤ capDays + 1 (29). A 30th date
+        // (29-day range) is the live 400.
+        for chunk in chunks {
+            XCTAssertLessThanOrEqual(inclusiveSpanDays(chunk), 29)
+        }
     }
 
     func testSplitWithinCapReturnsSingleWindow() {

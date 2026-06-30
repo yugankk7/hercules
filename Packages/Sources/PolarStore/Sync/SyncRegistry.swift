@@ -27,12 +27,14 @@ public enum SyncRegistry {
             SyncDomainDescriptor(domain: .cardioLoad, priority: .p1, policy: .windowless) { _ in
                 try store.upsertCardioLoad(try await clients.v3.fetchCardioLoad())
             },
-            // Continuous HR — GET /v3/users/continuous-heart-rate. Cap 30 d (§7);
+            // Continuous HR — GET /v3/users/continuous-heart-rate. API max range is
+            // **28 days** (to − from), verified live: a 29-day range 400s with
+            // "Date range between from and to cannot be more than 28 days". The
             // 40 d lookback pages into two sub-requests on first sync.
             SyncDomainDescriptor(
                 domain: .continuousHR,
                 priority: .p1,
-                policy: .windowed(lastDays: 40, capDays: 30)
+                policy: .windowed(lastDays: 40, capDays: 28)
             ) { window in
                 guard let window else { return }
                 try store.upsertHeartRateMinutes(
@@ -49,10 +51,18 @@ public enum SyncRegistry {
             ) { window in
                 guard let window else { return }
                 let date = window.from
-                let day = try await clients.v3.fetchDailyActivity(date: date)
-                let samples = try await clients.v3.fetchActivitySamples(date: date)
-                try store.upsertActivity(day: day, zones: samples.zones)
-                try store.upsertActivityMinutes(samples.steps)
+                do {
+                    // A day with no wear data has no record on the server. Skip it
+                    // silently (nil totals, or a 404) so one empty day doesn't fail
+                    // the whole domain and block its sync anchor — real errors
+                    // (auth/network/5xx/malformed) still propagate.
+                    guard let day = try await clients.v3.fetchDailyActivity(date: date) else { return }
+                    let samples = try await clients.v3.fetchActivitySamples(date: date)
+                    try store.upsertActivity(day: day, zones: samples.zones)
+                    try store.upsertActivityMinutes(samples.steps)
+                } catch AuthError.httpStatus(404) {
+                    return
+                }
             },
             // Training sessions — GET /training-sessions/list. Cap 90 d (§7).
             SyncDomainDescriptor(
