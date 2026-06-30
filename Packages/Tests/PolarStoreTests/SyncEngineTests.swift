@@ -74,6 +74,17 @@ final class SyncEngineTests: XCTestCase {
         )
     }
 
+    func testSyncWindowClampsFutureAnchorToValidWindow() {
+        let future = now.addingTimeInterval(5 * 86_400) // skewed/corrupt anchor, 5 days ahead
+        let window = WindowPlanner.syncWindow(
+            lastSync: future, lookbackDays: 40, overlapDays: 2, now: now, calendar: cal
+        )
+        XCTAssertLessThanOrEqual(window.from, window.to)        // never inverted
+        XCTAssertEqual(window.from, cal.startOfDay(for: now))   // clamped to today
+        // ⇒ a non-empty per-day plan, so the engine can't false-success on zero work.
+        XCTAssertEqual(WindowPlanner.dailyWindows(window, calendar: cal).count, 1)
+    }
+
     // MARK: HERC-051 — partial-failure isolation (Safeguard 2)
 
     func testPartialFailureIsolatesDomainsAndRecordsOnlySuccess() async throws {

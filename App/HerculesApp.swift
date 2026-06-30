@@ -32,7 +32,7 @@ struct HerculesApp: App {
             // engine reads/records via `SyncStore`) and inject it as the coordinator.
             let clients = auth.makeDataClients()
             let engine = SyncEngine(
-                descriptors: SyncRegistry.standard(clients: clients, store: store, now: { Date() }),
+                descriptors: SyncRegistry.standard(clients: clients, store: store),
                 store: store,
                 now: { Date() }
             )

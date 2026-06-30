@@ -8,12 +8,11 @@ import PolarProtocol
 public enum SyncRegistry {
 
     /// Build the standard set of domain descriptors. `clients` supplies the
-    /// authenticated fetch calls; `store` the idempotent upserts; `now` is the
-    /// engine's clock (used for window planning, not inside actions).
+    /// authenticated fetch calls; `store` the idempotent upserts. Window planning
+    /// (and its clock) lives entirely in the engine, so the registry needs none.
     public static func standard(
         clients: SyncDataClients,
-        store: any StoreWriting,
-        now: @Sendable () -> Date
+        store: any StoreWriting
     ) -> [SyncDomainDescriptor] {
         [
             // Sleep — GET /v3/users/sleep. Server-bounded (~28 d).

@@ -74,9 +74,12 @@ public enum WindowPlanner {
     /// The effective fetch window for an incremental sync (HERC-054): the full
     /// `lookbackDays` backfill when a domain has never synced (`lastSync == nil`),
     /// otherwise `[startOfDay(lastSync) − overlapDays, now]` — only the days
-    /// changed since the last *successful* sync. The lower bound is clamped so it
-    /// never precedes the configured lookback floor. `overlapDays <= 0` means
-    /// "since lastSync, no buffer."
+    /// changed since the last *successful* sync. The lower bound is clamped into
+    /// `[lookbackFrom, startOfDay(now)]`: never older than the configured lookback,
+    /// and never *after* today — a future-dated or clock-skewed `lastSync` would
+    /// otherwise produce `from > to` (an empty/inverted window the engine would
+    /// treat as a no-op success). Worst case re-pulls today, which the idempotent
+    /// store absorbs. `overlapDays <= 0` means "since lastSync, no buffer."
     public static func syncWindow(
         lastSync: Date?,
         lookbackDays: Int,
@@ -91,6 +94,7 @@ public enum WindowPlanner {
         let lastDay = calendar.startOfDay(for: lastSync)
         let candidateFrom = calendar.date(byAdding: .day, value: -safeOverlap, to: lastDay) ?? lastDay
         let lookbackFrom = recentWindow(days: lookbackDays, now: now, calendar: calendar).from
-        return DateWindow(from: max(candidateFrom, lookbackFrom), to: now)
+        let from = min(max(candidateFrom, lookbackFrom), calendar.startOfDay(for: now))
+        return DateWindow(from: from, to: now)
     }
 }
