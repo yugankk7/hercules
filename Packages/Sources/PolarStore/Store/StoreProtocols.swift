@@ -29,6 +29,13 @@ public protocol StoreWriting: Sendable {
 public protocol StoreReading: Sendable {
     func heartRateMinutes(in interval: DateInterval) throws -> [HeartRateMinute]
     func activityDay(date: String) throws -> ActivityDayView?
+    /// The most recent `activity_day` row by date, or `nil` when none exists. Backs
+    /// the dashboard glance, which shows the latest synced day without the caller
+    /// having to know which dates are present.
+    func latestActivityDay() throws -> ActivityDayView?
+    /// All `activity_day` dates (`YYYY-MM-DD`), most-recent first. Backs the detail
+    /// screen's day-swipe.
+    func activityDates() throws -> [String]
     func sleepNight(date: String) throws -> SleepNightView?
     func recharge(date: String) throws -> RechargeView?
     func cardioLoad(in range: ClosedRange<String>) throws -> [CardioLoadView]

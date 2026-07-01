@@ -159,4 +159,139 @@ final class PolarStoreTests: XCTestCase {
         XCTAssertTrue(try db.heartRateMinutes(in: interval).isEmpty)
         XCTAssertNil(try db.sleepNight(date: "2026-06-20"))
     }
+
+    // MARK: HERC-042 — latest activity day picks the most recent by date
+
+    func testLatestActivityDayReturnsMostRecent() throws {
+        let db = try PolarDatabase(inMemory: true)
+        try db.upsertActivity(day: makeActivityDay(start: "2026-06-27T00:00:00", steps: 5000), zones: [])
+        try db.upsertActivity(day: makeActivityDay(start: "2026-06-29T00:00:00", steps: 8432), zones: [])
+        try db.upsertActivity(day: makeActivityDay(start: "2026-06-28T00:00:00", steps: 6000), zones: [])
+
+        let latest = try XCTUnwrap(try db.latestActivityDay())
+        XCTAssertEqual(latest.date, "2026-06-29")
+        XCTAssertEqual(latest.steps, 8432)
+    }
+
+    // MARK: HERC-061 — store-backed dashboard provider populates the Activity card
+
+    func testStoreDashboardProviderPopulatesActivityCard() async throws {
+        let db = try PolarDatabase(inMemory: true)
+        try db.upsertActivity(
+            day: makeActivityDay(
+                start: "2026-06-29T00:00:00", steps: 8432,
+                calories: 2450, activeDuration: "PT1H23M", distance: 6100
+            ),
+            zones: []
+        )
+        try db.recordSync(domain: SyncDomain.activity.rawValue, window: "2026-06-29")
+
+        let snapshot = await StoreDashboardProvider(store: db).snapshot()
+
+        // All 8 cards present, in CardKind order; only Daily Activity is populated.
+        XCTAssertEqual(snapshot.cards.map(\.kind), CardKind.allCases)
+        let activity = try XCTUnwrap(snapshot.cards.first { $0.kind == .dailyActivity })
+        XCTAssertEqual(activity.state, .populated)
+        XCTAssertEqual(activity.headline, "8,432 STEPS")
+        XCTAssertEqual(activity.detail, "2,450 KCAL · 6.1 KM · 1H 23M ACTIVE")
+        for other in snapshot.cards where other.kind != .dailyActivity {
+            XCTAssertEqual(other.state, .empty, "\(other.kind) should stay empty this slice")
+        }
+        if case .syncedAt = snapshot.freshness {} else {
+            XCTFail("freshness should reflect the recorded sync")
+        }
+    }
+
+    // MARK: HERC-061 — empty store yields an empty card, never an error
+
+    func testStoreDashboardProviderEmptyStore() async throws {
+        let db = try PolarDatabase(inMemory: true)
+        let snapshot = await StoreDashboardProvider(store: db).snapshot()
+
+        XCTAssertEqual(snapshot.cards.map(\.kind), CardKind.allCases)
+        XCTAssertTrue(snapshot.cards.allSatisfy { $0.state == .empty })
+        XCTAssertEqual(snapshot.freshness, .neverSynced)
+    }
+
+    // MARK: HERC-061 — activity detail provider derives zones / band / HR
+
+    func testStoreActivityDetailProviderBuildsDetail() async throws {
+        let db = try PolarDatabase(inMemory: true)
+        var utc = Calendar(identifier: .gregorian); utc.timeZone = .gmt
+        let dayStart = utc.date(from: DateComponents(year: 2026, month: 6, day: 29))!
+        func at(_ minute: Int) -> Date { dayStart.addingTimeInterval(Double(minute) * 60) }
+
+        // Zones: 3 SLEEP (early), 5 SEDENTARY, 4 LIGHT, 2 MODERATE, 1 VIGOROUS.
+        var zones: [ActivityZoneSample] = (0..<3).map { ActivityZoneSample(minute: at($0), zone: .sleep) }
+        zones += (480..<485).map { ActivityZoneSample(minute: at($0), zone: .sedentary) }
+        zones += (600..<604).map { ActivityZoneSample(minute: at($0), zone: .light) }
+        zones += (1080..<1082).map { ActivityZoneSample(minute: at($0), zone: .moderate) }
+        zones += [ActivityZoneSample(minute: at(1085), zone: .vigorous)]
+
+        try db.upsertActivity(
+            day: makeActivityDay(start: "2026-06-29T00:00:00", steps: 8432, calories: 2450,
+                                 activeDuration: "PT1H23M", distance: 6100, dailyActivity: 90),
+            zones: zones
+        )
+        try db.upsertHeartRateMinutes([
+            HeartRateMinute(minute: at(480), min: 60, avg: 66, max: 72),
+            HeartRateMinute(minute: at(1085), min: 140, avg: 150, max: 158),
+        ])
+
+        let provider = StoreActivityDetailProvider(store: db)
+        let days = await provider.availableDays()
+        XCTAssertEqual(days, ["2026-06-29"])
+        let result = await provider.detail(for: "2026-06-29")
+        let detail = try XCTUnwrap(result)
+
+        XCTAssertEqual(detail.steps, 8432)
+        XCTAssertEqual(detail.distanceKm, 6.1, accuracy: 0.001)
+        XCTAssertEqual(detail.activeMinutes, 83)
+        XCTAssertEqual(detail.dailyActivityPct, 90)
+        // REST / SIT / LOW / MED / HIGH
+        XCTAssertEqual(detail.zones.map(\.minutes), [0, 5, 4, 2, 1])
+        XCTAssertEqual(detail.awakeMinutes, 12)              // SLEEP excluded
+        XCTAssertEqual(detail.intensity.count, 144)
+        XCTAssertEqual(detail.intensity[48], 1)            // minute 480 (08:00) → SIT (level 1)
+        XCTAssertEqual(detail.intensity.max(), 4)           // VIGOROUS bucket
+        XCTAssertEqual(detail.hr.count, 2)
+        XCTAssertEqual(detail.hr.first?.bpm, 66)
+        XCTAssertNotNil(detail.sleepBlock)
+    }
+
+    func testStoreActivityDetailProviderListsDaysNewestFirst() async throws {
+        let db = try PolarDatabase(inMemory: true)
+        try db.upsertActivity(day: makeActivityDay(start: "2026-06-27T00:00:00", steps: 5000), zones: [])
+        try db.upsertActivity(day: makeActivityDay(start: "2026-06-29T00:00:00", steps: 8432), zones: [])
+        try db.upsertActivity(day: makeActivityDay(start: "2026-06-28T00:00:00", steps: 6000), zones: [])
+
+        let provider = StoreActivityDetailProvider(store: db)
+        let days = await provider.availableDays()
+        XCTAssertEqual(days, ["2026-06-29", "2026-06-28", "2026-06-27"])
+        let older = await provider.detail(for: "2026-06-27")
+        XCTAssertEqual(older?.steps, 5000)
+    }
+
+    func testStoreActivityDetailProviderEmptyStoreReturnsNil() async throws {
+        let db = try PolarDatabase(inMemory: true)
+        let provider = StoreActivityDetailProvider(store: db)
+        let days = await provider.availableDays()
+        let detail = await provider.detail(for: "2026-06-29")
+        XCTAssertTrue(days.isEmpty)
+        XCTAssertNil(detail)
+    }
+
+    /// Decode an `ActivityDay` from a minimal v3 payload (its only initializer is
+    /// `Decodable`; `date` is derived from `start_time`).
+    private func makeActivityDay(
+        start: String, steps: Int, calories: Int = 0,
+        activeDuration: String = "PT0S", distance: Double = 0, dailyActivity: Int = 0
+    ) throws -> ActivityDay {
+        let json = """
+        {"start_time":"\(start)","steps":\(steps),"calories":\(calories),
+         "active_duration":"\(activeDuration)","distance_from_steps":\(distance),
+         "daily_activity":\(dailyActivity)}
+        """
+        return try JSONDecoder().decode(ActivityDay.self, from: Data(json.utf8))
+    }
 }

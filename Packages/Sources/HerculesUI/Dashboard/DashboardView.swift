@@ -9,21 +9,35 @@ struct DashboardView: View {
     let model: DashboardModel
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                header
-                LazyVStack(spacing: 10) {
-                    ForEach(model.cards) { card in
-                        DashboardCardView(card: card)
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    header
+                    LazyVStack(spacing: 10) {
+                        ForEach(model.cards) { card in
+                            if model.hasDetail(for: card.kind) {
+                                NavigationLink(value: card.kind) {
+                                    DashboardCardView(card: card)
+                                }
+                                .buttonStyle(.plain)
+                            } else {
+                                DashboardCardView(card: card)
+                            }
+                        }
                     }
                 }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 28)
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 28)
+            .background(Theme.background)
+            .refreshable { await model.refresh() }
+            .task { await model.load() }
+            .navigationDestination(for: CardKind.self) { kind in
+                if let detail = model.detailModel(for: kind) {
+                    ActivityDetailView(model: detail)
+                }
+            }
         }
-        .background(Theme.background)
-        .refreshable { await model.refresh() }
-        .task { await model.load() }
     }
 
     private var header: some View {

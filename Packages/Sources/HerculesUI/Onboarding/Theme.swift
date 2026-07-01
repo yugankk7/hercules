@@ -15,6 +15,18 @@ public enum Theme {
     public static let hairline = Color(red: 0.086, green: 0.141, blue: 0.173)   // #16242C
     public static let muted = Color(red: 0.369, green: 0.447, blue: 0.502)      // #5E7280
     public static let faint = Color(red: 0.227, green: 0.318, blue: 0.376)      // #3A5160
+    public static let panelDark = Color(red: 0.027, green: 0.059, blue: 0.075)  // #070F13
+    public static let grid = Color(red: 0.075, green: 0.137, blue: 0.169)       // #13232B
+
+    /// Data-encoding intensity ramp (REST→HIGH), used for zone bars / density lines
+    /// (CLAUDE.md palette). Index 0…4 maps low→high.
+    public static let zoneRamp: [Color] = [
+        Color(red: 0.165, green: 0.259, blue: 0.325), // #2A4253 REST
+        Color(red: 0.227, green: 0.318, blue: 0.376), // #3A5160 SIT
+        Color(red: 0.369, green: 0.447, blue: 0.502), // #5E7280 LOW
+        Color(red: 0.878, green: 0.475, blue: 0.227), // #E0793A MED
+        Color(red: 0.996, green: 0.498, blue: 0.176), // #FE7F2D HIGH
+    ]
 
     /// Azeret Mono isn't bundled yet — fall back to the system monospaced face,
     /// which preserves the tabular-figure behaviour the design depends on.

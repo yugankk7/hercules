@@ -36,7 +36,14 @@ struct HerculesApp: App {
                 store: store,
                 now: { Date() }
             )
-            model = DashboardModel(coordinator: engine)
+            // HERC-061: read the populated feed (Daily Activity card) and its detail
+            // screen from the *same* store via `StoreReading`; the stub providers only
+            // emitted empty cards / synthetic data.
+            model = DashboardModel(
+                provider: StoreDashboardProvider(store: store),
+                coordinator: engine,
+                activityDetail: StoreActivityDetailProvider(store: store)
+            )
             #if DEBUG
             print("[Hercules] PolarStore opened at Application Support/\(PolarDatabase.defaultFilename)")
             #endif

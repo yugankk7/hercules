@@ -19,13 +19,30 @@ public final class DashboardModel {
 
     private let provider: any DashboardProviding
     private let coordinator: any RefreshCoordinating
+    private let activityDetail: any ActivityDetailProviding
 
     public init(
         provider: any DashboardProviding = StubDashboardProvider(),
-        coordinator: any RefreshCoordinating = StubRefreshCoordinator()
+        coordinator: any RefreshCoordinating = StubRefreshCoordinator(),
+        activityDetail: any ActivityDetailProviding = StubActivityDetailProvider()
     ) {
         self.provider = provider
         self.coordinator = coordinator
+        self.activityDetail = activityDetail
+    }
+
+    /// Whether tapping `kind`'s card pushes a detail screen. Only Daily Activity has
+    /// one this slice; the rest stay non-navigable until their features land.
+    public func hasDetail(for kind: CardKind) -> Bool {
+        kind == .dailyActivity
+    }
+
+    /// Build the view-model for a card's detail screen, or `nil` if it has none.
+    public func detailModel(for kind: CardKind) -> ActivityDetailModel? {
+        switch kind {
+        case .dailyActivity: ActivityDetailModel(provider: activityDetail)
+        default: nil
+        }
     }
 
     /// Pull the current snapshot on appear (local-first; instant).

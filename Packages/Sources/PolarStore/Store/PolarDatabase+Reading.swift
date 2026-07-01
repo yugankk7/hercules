@@ -26,6 +26,21 @@ extension PolarDatabase: StoreReading {
         }
     }
 
+    public func latestActivityDay() throws -> ActivityDayView? {
+        try dbWriter.read { db in
+            guard let record = try ActivityDayRecord
+                .order(Column("date").desc)
+                .fetchOne(db) else { return nil }
+            return try record.toView()
+        }
+    }
+
+    public func activityDates() throws -> [String] {
+        try dbWriter.read { db in
+            try String.fetchAll(db, sql: "SELECT date FROM activity_day ORDER BY date DESC")
+        }
+    }
+
     public func sleepNight(date: String) throws -> SleepNightView? {
         try dbWriter.read { db in
             guard let record = try SleepNightRecord.fetchOne(db, key: date) else { return nil }
