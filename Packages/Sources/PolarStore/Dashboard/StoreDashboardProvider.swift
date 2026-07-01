@@ -21,15 +21,34 @@ public struct StoreDashboardProvider: DashboardProviding {
         // Reads never throw to the UI: a failed read degrades to the `.empty`
         // first-run state, never an error (Norm 5).
         let activity = try? store.latestActivityDay()
+        let sleep = latestSleepNight()
+        let boost = latestSleepwiseDay()
+        let nightsLogged = (try? store.sleepwiseNightsLogged()) ?? 0
         let cards = CardKind.allCases.map { kind in
             switch kind {
             case .dailyActivity:
                 ActivityCardFormat.card(from: activity)
+            case .sleep:
+                SleepCardFormat.card(from: sleep)
+            case .boostFromSleep:
+                BoostCardFormat.card(from: boost, nightsLogged: nightsLogged)
             default:
                 DashboardCard(kind: kind, state: .empty)
             }
         }
         return DashboardSnapshot(cards: cards, freshness: freshness())
+    }
+
+    /// The most-recent stored sleep night, or `nil` (degrades to `.empty`).
+    private func latestSleepNight() -> SleepNightView? {
+        guard let date = (try? store.sleepDates())?.first else { return nil }
+        return (try? store.sleepNight(date: date)) ?? nil
+    }
+
+    /// The most-recent merged SleepWise night, or `nil` (degrades to `.empty`).
+    private func latestSleepwiseDay() -> SleepwiseDayView? {
+        guard let date = (try? store.sleepwiseDates())?.first else { return nil }
+        return (try? store.sleepwiseDay(date: date)) ?? nil
     }
 
     /// Feed freshness is the most-recent successful sync across **all** domains —
@@ -93,5 +112,54 @@ enum ActivityCardFormat {
         let hours = total / 3600
         let minutes = (total % 3600) / 60
         return hours > 0 ? "\(hours)H \(minutes)M" : "\(minutes)M"
+    }
+}
+
+/// Display formatting for the SLEEP card glance (mirrors `ActivityCardFormat`).
+/// Fixed `en_US` locale; absent data is the designed first-run `.empty`.
+enum SleepCardFormat {
+
+    /// Score as the headline; sleep duration · continuity class as the detail.
+    static func card(from night: SleepNightView?) -> DashboardCard {
+        guard let night else { return DashboardCard(kind: .sleep, state: .empty) }
+        let asleep = [night.stages.light, night.stages.deep, night.stages.rem]
+            .compactMap { $0 }.reduce(0, +) / 60
+        let headline = night.score.map { "\($0) SCORE" } ?? "\(hoursMinutes(asleep)) SLEEP"
+        var parts = [hoursMinutes(asleep)]
+        if let continuityClass = night.continuityClass {
+            parts.append("CONTINUITY \(continuityClass)/3")
+        }
+        return DashboardCard(kind: .sleep, state: .populated, headline: headline,
+                             detail: parts.joined(separator: " · "))
+    }
+
+    /// Minutes → `"7H 15M"`.
+    private static func hoursMinutes(_ minutes: Int) -> String {
+        "\(minutes / 60)H \(String(format: "%02d", minutes % 60))M"
+    }
+}
+
+/// Display formatting for the BOOST card glance. Below the calibration threshold
+/// the glance is `.calibrating`; a forecast night is `.populated`; absent is
+/// `.empty`.
+enum BoostCardFormat {
+
+    static func card(from day: SleepwiseDayView?, nightsLogged: Int,
+                     calibrationTarget: Int = 14) -> DashboardCard {
+        guard let day else { return DashboardCard(kind: .boostFromSleep, state: .empty) }
+        if nightsLogged < calibrationTarget {
+            return DashboardCard(
+                kind: .boostFromSleep, state: .calibrating,
+                headline: "CALIBRATING", detail: "NIGHTS LOGGED \(nightsLogged) / \(calibrationTarget)"
+            )
+        }
+        guard let grade = day.grade else {
+            return DashboardCard(kind: .boostFromSleep, state: .empty)
+        }
+        return DashboardCard(
+            kind: .boostFromSleep, state: .populated,
+            headline: String(format: "%.1f/10 BOOST", grade),
+            detail: day.classification?.label ?? "FORECAST"
+        )
     }
 }

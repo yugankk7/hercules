@@ -11,6 +11,10 @@ import Foundation
 /// reads/writes via `lastSync(domain:)` / `recordSync(domain:window:)`.
 public enum SyncDomain: String, Sendable, CaseIterable, Equatable {
     case sleep
+    /// SleepWise (Boost From Sleep): alertness + circadian-bedtime, merged per
+    /// night. Additive — feeds `freshness()` (`max` over domains) and `SyncReport`
+    /// with no exhaustive switch to break (Safeguard 9).
+    case sleepwise
     case recharge
     case cardioLoad
     case continuousHR

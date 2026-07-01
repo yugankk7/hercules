@@ -40,6 +40,31 @@ extension PolarDatabase: StoreWriting {
         }
     }
 
+    public func upsertSleepwise(_ alertness: [Alertness], circadian: [CircadianBedtime]) throws {
+        guard !(alertness.isEmpty && circadian.isEmpty) else { return }
+        // One authoritative offset per user (alertness); circadian's is unreliable.
+        let fallbackOffset = alertness.first?.tzOffsetMinutes ?? 0
+
+        // Zip the two arrays by wake-day key; a night present in only one array
+        // still upserts its available fields (degrade per-field).
+        var merged: [String: (alertness: Alertness?, circadian: CircadianBedtime?)] = [:]
+        for entry in alertness {
+            merged[entry.wakeDayKey(), default: (nil, nil)].alertness = entry
+        }
+        for entry in circadian {
+            merged[entry.wakeDayKey(offsetMinutes: fallbackOffset), default: (nil, nil)].circadian = entry
+        }
+
+        try dbWriter.write { db in
+            for (key, pair) in merged {
+                try SleepwiseDayRecord(
+                    date: key, alertness: pair.alertness, circadian: pair.circadian,
+                    fallbackOffset: fallbackOffset
+                ).upsert(db)
+            }
+        }
+    }
+
     public func upsertRecharge(_ recharges: [NightlyRecharge]) throws {
         guard !recharges.isEmpty else { return }
         try dbWriter.write { db in

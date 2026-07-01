@@ -42,7 +42,9 @@ struct HerculesApp: App {
             model = DashboardModel(
                 provider: StoreDashboardProvider(store: store),
                 coordinator: engine,
-                activityDetail: StoreActivityDetailProvider(store: store)
+                activityDetail: StoreActivityDetailProvider(store: store),
+                sleepDetail: StoreSleepDetailProvider(store: store),
+                boostDetail: StoreBoostDetailProvider(store: store)
             )
             #if DEBUG
             print("[Hercules] PolarStore opened at Application Support/\(PolarDatabase.defaultFilename)")

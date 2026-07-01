@@ -36,6 +36,26 @@ public struct SleepNightView: Sendable, Equatable {
     public let endTime: Date?
 }
 
+/// `sleepwise_day` row + restored enums, hourly buckets, and gate/window ranges
+/// (fractional **local** hours, anchored via the stored `tzOffsetMinutes`). One
+/// merged alertness + circadian night keyed by wake-day.
+public struct SleepwiseDayView: Sendable, Equatable {
+    public let date: String
+    public let grade: Double?
+    public let classification: GradeClass?
+    public let validity: Validity
+    public let inertia: SleepInertia?
+    public let hourly: [AlertnessHour]
+    /// Sleep gate window in fractional local hours (`nil` when circadian absent).
+    public let gate: ClosedRange<Double>?
+    /// Preferred sleep window in fractional local hours (`nil` when circadian absent).
+    public let window: ClosedRange<Double>?
+    public let quality: BedtimeQuality?
+    /// The single authoritative offset (from the alertness entry) used to localise
+    /// all of the night's UTC times.
+    public let tzOffsetMinutes: Int
+}
+
 /// `recharge` row + decoded HRV / breathing sample maps.
 public struct RechargeView: Sendable, Equatable {
     public let date: String

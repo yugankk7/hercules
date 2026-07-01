@@ -14,6 +14,10 @@ public protocol StoreWriting: Sendable {
     func upsertActivityMinutes(_ minutes: [StepMinute]) throws
     func upsertActivity(day: ActivityDay, zones: [ActivityZoneSample]) throws
     func upsertSleep(_ nights: [SleepNight]) throws
+    /// Merge the two SleepWise arrays by wake-day key and upsert one row per
+    /// night (a night present in only one array upserts its available fields).
+    /// Empty input is a no-op success (Safeguard 7).
+    func upsertSleepwise(_ alertness: [Alertness], circadian: [CircadianBedtime]) throws
     func upsertRecharge(_ recharges: [NightlyRecharge]) throws
     func upsertCardioLoad(_ loads: [CardioLoad]) throws
     func upsertTrainingSessions(_ sessions: [TrainingSession]) throws
@@ -37,8 +41,22 @@ public protocol StoreReading: Sendable {
     /// screen's day-swipe.
     func activityDates() throws -> [String]
     func sleepNight(date: String) throws -> SleepNightView?
+    /// All `sleep_night` dates (`YYYY-MM-DD`), most-recent first. Backs the Sleep
+    /// Detail day-swipe (mirrors `activityDates()`).
+    func sleepDates() throws -> [String]
+    /// Sleep nights whose `date` falls in `range` (inclusive), ascending — one
+    /// query, not N single reads, for the 7-night week aggregate (mirrors
+    /// `cardioLoad(in:)`).
+    func sleepNights(in range: ClosedRange<String>) throws -> [SleepNightView]
     func recharge(date: String) throws -> RechargeView?
     func cardioLoad(in range: ClosedRange<String>) throws -> [CardioLoadView]
+    /// The most recent merged SleepWise night, or `nil` when none. Keyed by
+    /// wake-day (`sleep_period_end_time`).
+    func sleepwiseDay(date: String) throws -> SleepwiseDayView?
+    /// All `sleepwise_day` dates (`YYYY-MM-DD`), most-recent first.
+    func sleepwiseDates() throws -> [String]
+    /// Count of merged SleepWise nights — the fresh-user calibration gate.
+    func sleepwiseNightsLogged() throws -> Int
     func trainingSessions(in interval: DateInterval) throws -> [TrainingSessionView]
     func sportName(id: Int) throws -> String?
     func device() throws -> DeviceView?

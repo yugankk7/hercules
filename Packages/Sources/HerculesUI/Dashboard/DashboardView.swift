@@ -33,8 +33,11 @@ struct DashboardView: View {
             .refreshable { await model.refresh() }
             .task { await model.load() }
             .navigationDestination(for: CardKind.self) { kind in
-                if let detail = model.detailModel(for: kind) {
-                    ActivityDetailView(model: detail)
+                switch model.detailModel(for: kind) {
+                case .activity(let detail): ActivityDetailView(model: detail)
+                case .sleep(let detail): SleepDetailView(model: detail)
+                case .boost(let detail): BoostView(model: detail)
+                case .none: EmptyView()
                 }
             }
         }

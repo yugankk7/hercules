@@ -44,6 +44,25 @@ public struct V3DataClient: Sendable {
         return try decode([CardioLoad].self, from: data)
     }
 
+    // MARK: - SleepWise (Boost From Sleep)
+
+    /// `GET /users/sleepwise/alertness/date` → **top-level array** (~28 nights),
+    /// no envelope (mirrors `fetchCardioLoad`, not the per-day activity path).
+    /// Empty / no-data ⇒ `[]`.
+    public func fetchAlertness() async throws -> [Alertness] {
+        let data = try await transport.get(path: "/users/sleepwise/alertness/date")
+        guard !data.isEmpty else { return [] }
+        return try decode([Alertness].self, from: data)
+    }
+
+    /// `GET /users/sleepwise/circadian-bedtime/date` → **top-level array**
+    /// (~28 nights). Empty / no-data ⇒ `[]`.
+    public func fetchCircadianBedtime() async throws -> [CircadianBedtime] {
+        let data = try await transport.get(path: "/users/sleepwise/circadian-bedtime/date")
+        guard !data.isEmpty else { return [] }
+        return try decode([CircadianBedtime].self, from: data)
+    }
+
     // MARK: - Continuous HR (down-sampled)
 
     /// `GET /users/continuous-heart-rate?from=&to=` (dateOnly). The body groups

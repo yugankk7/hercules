@@ -48,6 +48,22 @@ extension PolarDatabase: StoreReading {
         }
     }
 
+    public func sleepDates() throws -> [String] {
+        try dbWriter.read { db in
+            try String.fetchAll(db, sql: "SELECT date FROM sleep_night ORDER BY date DESC")
+        }
+    }
+
+    public func sleepNights(in range: ClosedRange<String>) throws -> [SleepNightView] {
+        try dbWriter.read { db in
+            try SleepNightRecord
+                .filter(Column("date") >= range.lowerBound && Column("date") <= range.upperBound)
+                .order(Column("date"))
+                .fetchAll(db)
+                .map { try $0.toView() }
+        }
+    }
+
     public func recharge(date: String) throws -> RechargeView? {
         try dbWriter.read { db in
             guard let record = try RechargeRecord.fetchOne(db, key: date) else { return nil }
@@ -62,6 +78,25 @@ extension PolarDatabase: StoreReading {
                 .order(Column("date"))
                 .fetchAll(db)
                 .map { try $0.toView() }
+        }
+    }
+
+    public func sleepwiseDay(date: String) throws -> SleepwiseDayView? {
+        try dbWriter.read { db in
+            guard let record = try SleepwiseDayRecord.fetchOne(db, key: date) else { return nil }
+            return try record.toView()
+        }
+    }
+
+    public func sleepwiseDates() throws -> [String] {
+        try dbWriter.read { db in
+            try String.fetchAll(db, sql: "SELECT date FROM sleepwise_day ORDER BY date DESC")
+        }
+    }
+
+    public func sleepwiseNightsLogged() throws -> Int {
+        try dbWriter.read { db in
+            try Int.fetchOne(db, sql: "SELECT count(*) FROM sleepwise_day") ?? 0
         }
     }
 

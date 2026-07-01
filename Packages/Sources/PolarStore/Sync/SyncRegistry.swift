@@ -19,6 +19,16 @@ public enum SyncRegistry {
             SyncDomainDescriptor(domain: .sleep, priority: .p1, policy: .windowless) { _ in
                 try store.upsertSleep(try await clients.v3.fetchSleep())
             },
+            // SleepWise — GET /v3/users/sleepwise/alertness/date +
+            // /circadian-bedtime/date. Each returns the full ~28-night set in one
+            // call (windowless, like .sleep — capture 2026-07-01), so the descriptor
+            // fetches both arrays once and upserts the merged nights. A decode/store
+            // failure surfaces as this domain's failure without blocking others.
+            SyncDomainDescriptor(domain: .sleepwise, priority: .p1, policy: .windowless) { _ in
+                let alertness = try await clients.v3.fetchAlertness()
+                let circadian = try await clients.v3.fetchCircadianBedtime()
+                try store.upsertSleepwise(alertness, circadian: circadian)
+            },
             // Nightly recharge — GET /v3/users/nightly-recharge. Server-bounded (~28 d).
             SyncDomainDescriptor(domain: .recharge, priority: .p1, policy: .windowless) { _ in
                 try store.upsertRecharge(try await clients.v3.fetchNightlyRecharge())

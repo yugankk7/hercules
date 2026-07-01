@@ -20,27 +20,48 @@ public final class DashboardModel {
     private let provider: any DashboardProviding
     private let coordinator: any RefreshCoordinating
     private let activityDetail: any ActivityDetailProviding
+    private let sleepDetail: any SleepDetailProviding
+    private let boostDetail: any BoostDetailProviding
 
     public init(
         provider: any DashboardProviding = StubDashboardProvider(),
         coordinator: any RefreshCoordinating = StubRefreshCoordinator(),
-        activityDetail: any ActivityDetailProviding = StubActivityDetailProvider()
+        activityDetail: any ActivityDetailProviding = StubActivityDetailProvider(),
+        sleepDetail: any SleepDetailProviding = StubSleepDetailProvider(),
+        boostDetail: any BoostDetailProviding = StubBoostDetailProvider()
     ) {
         self.provider = provider
         self.coordinator = coordinator
         self.activityDetail = activityDetail
+        self.sleepDetail = sleepDetail
+        self.boostDetail = boostDetail
     }
 
-    /// Whether tapping `kind`'s card pushes a detail screen. Only Daily Activity has
-    /// one this slice; the rest stay non-navigable until their features land.
+    /// A built detail-screen view-model, routed by `CardKind`. Generalizes the
+    /// former `.dailyActivity`-only wire so each new detail screen is one case;
+    /// the bespoke views stay distinct (Approach 2).
+    public enum DetailRoute {
+        case activity(ActivityDetailModel)
+        case sleep(SleepDetailModel)
+        case boost(BoostDetailModel)
+    }
+
+    /// Whether tapping `kind`'s card pushes a detail screen. Daily Activity, Sleep,
+    /// and Boost route today; the rest stay non-navigable until their features land.
     public func hasDetail(for kind: CardKind) -> Bool {
-        kind == .dailyActivity
+        switch kind {
+        case .dailyActivity, .sleep, .boostFromSleep: true
+        default: false
+        }
     }
 
-    /// Build the view-model for a card's detail screen, or `nil` if it has none.
-    public func detailModel(for kind: CardKind) -> ActivityDetailModel? {
+    /// Build the route (with its view-model) for a card's detail screen, or `nil`
+    /// if it has none yet.
+    public func detailModel(for kind: CardKind) -> DetailRoute? {
         switch kind {
-        case .dailyActivity: ActivityDetailModel(provider: activityDetail)
+        case .dailyActivity: .activity(ActivityDetailModel(provider: activityDetail))
+        case .sleep: .sleep(SleepDetailModel(provider: sleepDetail))
+        case .boostFromSleep: .boost(BoostDetailModel(provider: boostDetail))
         default: nil
         }
     }

@@ -25,6 +25,34 @@ public struct SleepStagesDTO: Codable, Sendable, Equatable {
     }
 }
 
+/// One hourly alertness bucket in `sleepwise_day.hourly_json`. Enums are stored
+/// as their canonical tokens and restored by the enum's own `parse` (Safeguard 9).
+struct AlertnessHourDTO: Codable, Sendable, Equatable {
+    let start: Date
+    let end: Date
+    let level: String
+    let validity: String
+
+    enum CodingKeys: String, CodingKey {
+        case start
+        case end
+        case level
+        case validity
+    }
+
+    init(_ hour: AlertnessHour) {
+        start = hour.start
+        end = hour.end
+        level = hour.level.token
+        validity = hour.validity.token
+    }
+
+    func toModel() -> AlertnessHour {
+        AlertnessHour(start: start, end: end,
+                      level: AlertnessLevel.parse(level), validity: Validity.parse(validity))
+    }
+}
+
 /// One per-minute intensity-zone label in `activity_day.zones_json`.
 struct ZoneEntryDTO: Codable, Sendable, Equatable {
     let minuteTs: Int

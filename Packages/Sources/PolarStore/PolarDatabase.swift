@@ -162,14 +162,36 @@ public final class PolarDatabase: Sendable {
             }
         }
 
+        // v2 (HERC-092) — SleepWise merged night. Additive: creates one new table
+        // and touches no existing row (Safeguard 7). Shapes follow the live
+        // capture (2026-07-01): grade is REAL, enum bands are TEXT tokens, hourly
+        // buckets are JSON, gate/window are raw UTC datetimes localised at read
+        // time, and a single alertness-derived offset is stored per night.
+        migrator.registerMigration("v2") { db in
+            try db.create(table: "sleepwise_day") { t in
+                t.primaryKey("date", .text)          // wake-day key
+                t.column("grade", .double)
+                t.column("classification", .text)
+                t.column("validity", .text)
+                t.column("sleep_inertia", .text)
+                t.column("hourly_json", .text)
+                t.column("gate_start", .datetime)
+                t.column("gate_end", .datetime)
+                t.column("window_start", .datetime)
+                t.column("window_end", .datetime)
+                t.column("quality", .text)
+                t.column("tz_offset_minutes", .integer)
+            }
+        }
+
         return migrator
     }
 
-    /// The ten phase-1 tables created by migration `v1`.
+    /// The eleven tables created by migrations `v1` (ten) + `v2` (`sleepwise_day`).
     static let expectedTables = [
         "hr_minute", "activity_minute", "activity_day", "sleep_night",
         "recharge", "cardio_load", "training_session", "sport_ref",
-        "device", "sync_state",
+        "device", "sync_state", "sleepwise_day",
     ]
 
     /// Acceptance check (HERC-002 + HERC-040): a throwaway DB opens, migrates, and
